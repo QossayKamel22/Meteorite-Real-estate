@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { company, credentials } from "@/lib/content";
+import Reveal from "@/components/Reveal";
 
 export default function AboutIntro() {
   return (
     <section className="bg-brand-paper">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div>
+          <Reveal>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
               About {company.name}
             </p>
@@ -23,22 +24,21 @@ export default function AboutIntro() {
               Read our full story
               <span aria-hidden="true">→</span>
             </Link>
-          </div>
+          </Reveal>
 
-          <ul className="space-y-4">
-            {credentials.map((item) => (
-              <li
-                key={item}
-                className="flex items-start gap-3 rounded-2xl border border-brand-line bg-white p-5"
-              >
-                <span
-                  className="mt-1 h-2 w-2 flex-none rounded-full bg-brand-gold"
-                  aria-hidden="true"
-                />
-                <span className="text-[15px] leading-relaxed text-brand-ink/75">{item}</span>
-              </li>
+          <div role="list" className="space-y-4">
+            {credentials.map((item, i) => (
+              <Reveal key={item} delay={i * 0.08}>
+                <div role="listitem" className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
+                  <span
+                    className="mt-1 h-2 w-2 flex-none rounded-full bg-brand-gold"
+                    aria-hidden="true"
+                  />
+                  <span className="text-[15px] leading-relaxed text-brand-ink/75">{item}</span>
+                </div>
+              </Reveal>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </section>

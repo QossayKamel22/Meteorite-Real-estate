@@ -2,14 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { company, navLinks } from "@/lib/content";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-line/70 bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/70">
+    <header
+      className={`glass-nav sticky top-0 z-50 border-b transition-[border-color,box-shadow] duration-300 ${
+        scrolled ? "border-brand-line/70 shadow-[0_1px_0_rgba(13,16,49,0.04)]" : "border-transparent"
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2" aria-label={`${company.name} home`}>
           <Image
@@ -43,7 +55,7 @@ export default function Header() {
           </Link>
           <Link
             href="/login"
-            className="rounded-full bg-brand-navy px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-brand-navy-light"
+            className="rounded-full bg-brand-navy px-5 py-2.5 text-[15px] font-medium text-white transition-all duration-200 hover:scale-[1.03] hover:bg-brand-navy-light"
           >
             Sign in
           </Link>
@@ -78,7 +90,7 @@ export default function Header() {
       </div>
 
       {open && (
-        <div id="mobile-menu" className="border-t border-brand-line/70 bg-white lg:hidden">
+        <div id="mobile-menu" className="glass-nav border-t border-brand-line/70 lg:hidden">
           <nav className="flex flex-col px-4 py-3" aria-label="Mobile">
             {navLinks.map((link) => (
               <Link

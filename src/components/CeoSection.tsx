@@ -1,22 +1,25 @@
 import Image from "next/image";
 import { ceo } from "@/lib/content";
+import Reveal from "@/components/Reveal";
 
 export default function CeoSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
       <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,380px)_1fr]">
-        <div className="relative mx-auto w-full max-w-sm">
-          <div className="absolute -inset-3 -z-10 rounded-[2rem] bg-brand-gold/15" />
-          <Image
-            src={ceo.photo}
-            alt={`Portrait of ${ceo.name}`}
-            width={640}
-            height={640}
-            className="aspect-square w-full rounded-[1.75rem] border border-brand-line object-cover object-top shadow-sm"
-          />
-        </div>
+        <Reveal className="mx-auto w-full max-w-sm">
+          <div className="relative">
+            <div className="absolute -inset-3 -z-10 rounded-[2rem] bg-brand-gold/15" />
+            <Image
+              src={ceo.photo}
+              alt={`Portrait of ${ceo.name}`}
+              width={640}
+              height={640}
+              className="glass shimmer-border aspect-square w-full rounded-[1.75rem] object-cover object-top p-1.5"
+            />
+          </div>
+        </Reveal>
 
-        <div>
+        <Reveal delay={0.12}>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
             Leadership
           </p>
@@ -34,7 +37,7 @@ export default function CeoSection() {
             {ceo.credentials.map((item) => (
               <li
                 key={item}
-                className="rounded-full border border-brand-line bg-brand-paper px-4 py-1.5 text-sm font-medium text-brand-ink/70"
+                className="glass rounded-full px-4 py-1.5 text-sm font-medium text-brand-ink/70"
               >
                 {item}
               </li>
@@ -50,7 +53,7 @@ export default function CeoSection() {
             View full leadership profile
             <span aria-hidden="true">→</span>
           </a>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { company, credentials, ceo } from "@/lib/content";
 import CeoSection from "@/components/CeoSection";
+import AgentsSection from "@/components/AgentsSection";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -55,6 +56,7 @@ export default function AboutUsPage() {
 
       <div className="mt-4 -mx-4 sm:-mx-6 lg:-mx-8">
         <CeoSection />
+        <AgentsSection />
       </div>
     </div>
   );

@@ -72,6 +72,43 @@ export const testimonials = [
   },
 ];
 
+/**
+ * Full agent roster as published on meteoriterealestate.com/agents/ (3 profiles
+ * live on the site as of 2026-09-17). Note: the live site's agent-profile
+ * template displays "CEO and Founder" above every agent's name, including
+ * Hattab and Zamily — almost certainly an unedited CMS template default,
+ * since the About page and company records identify Saad Abdullah Soboh
+ * alone as CEO and Founder. We use the live site's own breadcrumb
+ * category ("Agent") for the other two rather than repeat what reads as a
+ * templating error.
+ */
+export const agents = [
+  {
+    name: "Saad Abdullah Soboh",
+    title: "CEO and Founder",
+    photo: "/brand/saad-abdullah-soboh.jpg",
+    email: "s.soboh@meteoriterealestate.com",
+    phone: "+971 50 110 2242",
+    profileUrl: "https://meteoriterealestate.com/agents/saad-abdullah-soboh/",
+  },
+  {
+    name: "Mohd Amin Mohammad Hattab",
+    title: "Agent",
+    photo: "/brand/agent-mohd-amin-hattab.png",
+    email: "Mohd.Hattab@meteoriterealestate.com",
+    phone: "+971 52 699 7631",
+    profileUrl: "https://meteoriterealestate.com/agents/mohd-amin-mohammad-hattab/",
+  },
+  {
+    name: "Meher Samir M Zamily",
+    title: "Agent",
+    photo: "/brand/agent-meher-samir.png",
+    email: "info@meteoriterealestate.com",
+    phone: "+971 50 659 9176",
+    profileUrl: "https://meteoriterealestate.com/agents/meher-samir/",
+  },
+] as const;
+
 export const ceo = {
   name: "Saad Abdullah Soboh",
   title: "CEO and Founder",

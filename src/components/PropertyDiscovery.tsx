@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { externalListings } from "@/lib/content";
+import Reveal from "@/components/Reveal";
 
 const categories = [
   { label: "Apartments & Studios", forSale: `${externalListings.bayutForSale}&category=apartment`, forRent: `${externalListings.bayutForRent}&category=apartment` },
@@ -11,55 +12,56 @@ const categories = [
 export default function PropertyDiscovery() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div className="max-w-xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-            Live Inventory
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy sm:text-4xl">
-            Explore our current listings
-          </h2>
-          <p className="mt-3 text-base leading-relaxed text-brand-ink/60">
-            Our full, continuously-updated portfolio is hosted on Bayut, our verified listing
-            partner — browse by category below or view our complete agency profile.
-          </p>
+      <Reveal>
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div className="max-w-xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
+              Live Inventory
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy sm:text-4xl">
+              Explore our current listings
+            </h2>
+            <p className="mt-3 text-base leading-relaxed text-brand-ink/60">
+              Our full, continuously-updated portfolio is hosted on Bayut, our verified listing
+              partner — browse by category below or view our complete agency profile.
+            </p>
+          </div>
+          <a
+            href={externalListings.bayutCompanyForSale}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="whitespace-nowrap rounded-full bg-brand-navy px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.03] hover:bg-brand-navy-light"
+          >
+            View full agency profile
+          </a>
         </div>
-        <a
-          href={externalListings.bayutCompanyForSale}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="whitespace-nowrap rounded-full bg-brand-navy px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-navy-light"
-        >
-          View full agency profile
-        </a>
-      </div>
+      </Reveal>
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {categories.map((cat) => (
-          <div
-            key={cat.label}
-            className="group flex flex-col justify-between rounded-2xl border border-brand-line bg-white p-6 transition-shadow hover:shadow-md"
-          >
-            <h3 className="text-lg font-semibold text-brand-navy">{cat.label}</h3>
-            <div className="mt-5 flex flex-col gap-2 text-sm font-medium">
-              <a
-                href={cat.forSale}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-brand-navy hover:text-brand-gold"
-              >
-                For sale <span aria-hidden="true">→</span>
-              </a>
-              <a
-                href={cat.forRent}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-brand-ink/60 hover:text-brand-gold"
-              >
-                For rent <span aria-hidden="true">→</span>
-              </a>
+        {categories.map((cat, i) => (
+          <Reveal key={cat.label} delay={i * 0.07}>
+            <div className="glass shimmer-border group flex h-full flex-col justify-between rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1">
+              <h3 className="text-lg font-semibold text-brand-navy">{cat.label}</h3>
+              <div className="mt-5 flex flex-col gap-2 text-sm font-medium">
+                <a
+                  href={cat.forSale}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-brand-navy hover:text-brand-gold"
+                >
+                  For sale <span aria-hidden="true">→</span>
+                </a>
+                <a
+                  href={cat.forRent}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-brand-ink/60 hover:text-brand-gold"
+                >
+                  For rent <span aria-hidden="true">→</span>
+                </a>
+              </div>
             </div>
-          </div>
+          </Reveal>
         ))}
       </div>
 
