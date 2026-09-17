@@ -18,12 +18,17 @@ export default function DevelopersAndCertificate() {
               Registered with the following developers
             </h2>
             <span className="mx-auto mt-4 block h-0.5 w-16 rounded-full bg-brand-gold" />
+            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-brand-ink/60">
+              Our registrations span Dubai&apos;s leading master developers — hover any mark for
+              its name, or view our full certificate below.
+            </p>
           </div>
         </Reveal>
 
         <Reveal delay={0.1}>
           <div className="relative mt-10 overflow-hidden rounded-3xl border border-brand-gold/20 bg-gradient-to-b from-white to-brand-paper py-10 shadow-[0_20px_60px_-30px_rgba(219,204,59,0.5)]">
             <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-gold/10 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-brand-gold/10 blur-3xl" />
             <LogoMarquee />
             <p className="relative mt-4 text-center text-xs text-brand-ink/40">
               {developerPartners.length} registered developer partnerships across Dubai

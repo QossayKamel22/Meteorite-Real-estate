@@ -7,6 +7,8 @@ import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
 import RouteTransitionOverlay from "@/components/RouteTransitionOverlay";
+import ScrollProgressBar from "@/components/ScrollProgressBar";
+import BackToTop from "@/components/BackToTop";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,10 +32,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <AuthProvider>
             <FavoritesProvider>
+              <ScrollProgressBar />
               <RouteTransitionOverlay />
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />
+              <BackToTop />
             </FavoritesProvider>
           </AuthProvider>
         </ThemeProvider>
