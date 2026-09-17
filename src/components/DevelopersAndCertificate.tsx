@@ -22,9 +22,10 @@ export default function DevelopersAndCertificate() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="shimmer-border relative mt-10 overflow-hidden rounded-3xl border border-brand-line bg-white py-10">
+          <div className="relative mt-10 overflow-hidden rounded-3xl border border-brand-gold/20 bg-gradient-to-b from-white to-brand-paper py-10 shadow-[0_20px_60px_-30px_rgba(219,204,59,0.5)]">
+            <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-gold/10 blur-3xl" />
             <LogoMarquee />
-            <p className="mt-2 text-center text-xs text-brand-ink/40">
+            <p className="relative mt-4 text-center text-xs text-brand-ink/40">
               {developerPartners.length} registered developer partnerships across Dubai
             </p>
           </div>
@@ -45,14 +46,16 @@ export default function DevelopersAndCertificate() {
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <Reveal delay={0.1}>
             <ImageLightbox src={certificate.image} alt="Meteorite Real Estate — Dubai Land Department RERA registration certificate">
-              <div className="glass shimmer-border overflow-hidden rounded-3xl bg-white p-3">
-                <Image
-                  src={certificate.image}
-                  alt="Real Estate Office Registration Certificate — Dubai Land Department, RERA"
-                  width={1289}
-                  height={907}
-                  className="w-full rounded-2xl"
-                />
+              <div className="glass shimmer-border group overflow-hidden rounded-3xl bg-white p-3">
+                <div className="overflow-hidden rounded-2xl">
+                  <Image
+                    src={certificate.image}
+                    alt="Real Estate Office Registration Certificate — Dubai Land Department, RERA"
+                    width={1289}
+                    height={907}
+                    className="w-full transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
               </div>
             </ImageLightbox>
           </Reveal>

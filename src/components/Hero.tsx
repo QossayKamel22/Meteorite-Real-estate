@@ -1,20 +1,64 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { ChevronDown, ShieldCheck, Star } from "lucide-react";
 import { stats, ceo, testimonials } from "@/lib/content";
 import Particles from "@/components/Particles";
 
+const QUOTE_INTERVAL_MS = 4500;
+
 export default function Hero() {
   const reduceMotion = useReducedMotion();
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const timer = window.setInterval(
+      () => setQuoteIndex((i) => (i + 1) % testimonials.length),
+      QUOTE_INTERVAL_MS
+    );
+    return () => window.clearInterval(timer);
+  }, [reduceMotion]);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), {
+    stiffness: 150,
+    damping: 18,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), {
+    stiffness: 150,
+    damping: 18,
+  });
+
+  function handlePointerMove(e: React.MouseEvent<HTMLDivElement>) {
+    if (reduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
+  }
+
+  function handlePointerLeave() {
+    mouseX.set(0);
+    mouseY.set(0);
+  }
+
   const rise = (delay: number) => ({
     initial: { opacity: 0, y: reduceMotion ? 0 : 18 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
   });
-  const featuredQuote = testimonials[0];
+  const quote = testimonials[quoteIndex];
 
   return (
     <section className="relative overflow-hidden bg-brand-navy cine-bars">
@@ -91,7 +135,7 @@ export default function Hero() {
                 alt={ceo.name}
                 width={36}
                 height={36}
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-brand-navy"
+                className="h-9 w-9 rounded-full object-cover ring-2 ring-brand-navy transition-transform duration-300 hover:scale-110"
               />
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white ring-2 ring-brand-navy">
                 +11
@@ -103,11 +147,16 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        <div className="relative">
+        <div
+          className="relative [perspective:1000px]"
+          onMouseMove={handlePointerMove}
+          onMouseLeave={handlePointerLeave}
+        >
           <motion.div
             initial={{ opacity: 0, y: reduceMotion ? 0 : 24, scale: reduceMotion ? 1 : 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            style={reduceMotion ? undefined : { rotateX, rotateY, transformStyle: "preserve-3d" }}
             className="glass shimmer-border rounded-3xl p-7 sm:p-8"
           >
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-heading/60">
@@ -129,19 +178,44 @@ export default function Hero() {
             initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className={`glass glass-dark shimmer-border absolute -bottom-8 -left-6 hidden max-w-[15rem] rounded-2xl p-4 sm:block ${reduceMotion ? "" : "float-y"}`}
+            className={`glass glass-dark shimmer-border absolute -bottom-8 -left-6 hidden w-[16rem] rounded-2xl p-4 sm:block ${reduceMotion ? "" : "float-y"}`}
           >
-            <div className="flex items-center gap-1 text-brand-gold">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={quote.name}
+                initial={{ opacity: 0, x: reduceMotion ? 0 : 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: reduceMotion ? 0 : -10 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="flex items-center gap-1 text-brand-gold">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
+                  ))}
+                </div>
+                <p className="mt-2 min-h-[2.5rem] text-xs leading-relaxed text-white/80">
+                  &ldquo;{quote.quote.slice(0, 78)}
+                  {quote.quote.length > 78 ? "…" : ""}&rdquo;
+                </p>
+                <p className="mt-2 text-[11px] font-semibold text-white/50">
+                  — {quote.name}, {quote.role}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="mt-3 flex items-center gap-1.5">
+              {testimonials.map((t, i) => (
+                <button
+                  key={t.name}
+                  type="button"
+                  aria-label={`Show feedback from ${t.name}`}
+                  onClick={() => setQuoteIndex(i)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === quoteIndex ? "w-5 bg-brand-gold" : "w-1.5 bg-white/25"
+                  }`}
+                />
               ))}
             </div>
-            <p className="mt-2 text-xs leading-relaxed text-white/80">
-              &ldquo;{featuredQuote.quote.slice(0, 78)}…&rdquo;
-            </p>
-            <p className="mt-2 text-[11px] font-semibold text-white/50">
-              — {featuredQuote.name}, {featuredQuote.role}
-            </p>
           </motion.div>
         </div>
       </div>

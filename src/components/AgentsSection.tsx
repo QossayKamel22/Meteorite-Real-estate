@@ -37,7 +37,7 @@ function AgentCard({
               src={agent.photo}
               alt={`Portrait of ${agent.name}`}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
               sizes="128px"
             />
           </div>
