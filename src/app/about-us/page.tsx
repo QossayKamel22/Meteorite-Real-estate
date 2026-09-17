@@ -7,6 +7,7 @@ import CeoSection from "@/components/CeoSection";
 import AgentsSection from "@/components/AgentsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
+import DevelopersAndCertificate from "@/components/DevelopersAndCertificate";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -87,6 +88,8 @@ export default function AboutUsPage() {
           </div>
         </Reveal>
       </section>
+
+      <DevelopersAndCertificate />
 
       <CeoSection />
       <AgentsSection variant="about" />

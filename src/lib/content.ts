@@ -20,6 +20,43 @@ export const company = {
   copyrightNotice: "© 2020 Meteoriterealestate. All Rights Reserved.",
 };
 
+/**
+ * Real Estate Office Registration Certificate, issued by Dubai Land
+ * Department / RERA, as displayed on meteoriterealestate.com/about-us/
+ * ("OUR CERTIFICATE"). Trade name on the certificate is the LLC's legal
+ * name, which differs slightly in formatting from the public brand name.
+ */
+export const certificate = {
+  image: "/brand/certificate-rera.jpg",
+  tradeName: "Meteorite Real Estate L.L.C",
+  licenseNo: "916037",
+  registrationDate: "10/11/2020",
+  expiryDate: "9/11/2026",
+  classification: "General Office Classification",
+  activities: ["Leasing Property Brokerage Agents", "Real Estate Buying & Selling Brokerage"],
+  issuer: "Dubai Land Department · RERA",
+};
+
+/**
+ * Developer partner logos as shown under "REGISTERED WITH FOLLOWING
+ * DEVELOPERS" on the origin About Us page. Names are transcribed from the
+ * visible logos in that image, for alt text only.
+ */
+export const developerPartners = {
+  image: "/brand/developer-partners.png",
+  names: [
+    "Binghatti",
+    "Nakheel",
+    "Dubai Properties",
+    "Sobha Realty",
+    "Dubai Holding",
+    "Majid Al Futtaim",
+    "Al-Futtaim",
+    "The Sustainable City",
+    "Emaar",
+  ],
+};
+
 export const socialLinks = {
   facebook: "https://www.facebook.com/MeteoriteRE",
   twitter: "https://twitter.com/MeteoriteRE",
