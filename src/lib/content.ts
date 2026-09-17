@@ -118,7 +118,7 @@ export const testimonials = [
  * templating error.
  *
  * Qossay Kamel was added directly by request (not sourced from the live
- * site) as IT Development Manager & Marketing — no public agent profile
+ * site) as IT Development Manager & Marketing Lead — no public agent profile
  * or phone on file, so those fields are omitted rather than invented.
  */
 export const agents = [
@@ -148,7 +148,7 @@ export const agents = [
   },
   {
     name: "Qossay Kamel",
-    title: "IT Development Manager & Marketing",
+    title: "IT Development Manager & Marketing Lead",
     photo: "/brand/agent-qossay-kamel.jpg",
     email: "kamelqossay@gmail.com",
   },
