@@ -17,7 +17,7 @@ export default function Hero() {
   const featuredQuote = testimonials[0];
 
   return (
-    <section className="relative overflow-hidden bg-brand-navy">
+    <section className="relative overflow-hidden bg-brand-navy cine-bars">
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="/brand/hero-dubai-skyline.jpg"
@@ -27,11 +27,27 @@ export default function Hero() {
           className={`object-cover opacity-45 ${reduceMotion ? "" : "ken-burns"}`}
           sizes="100vw"
         />
+        {!reduceMotion && <div className="light-sweep" />}
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/75 to-brand-navy/40" />
       <div className="glow-field opacity-70" />
       <div className="grain-overlay" />
       <Particles />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+        className="absolute right-4 top-20 z-10 hidden items-center gap-2 sm:right-6 sm:top-24 sm:flex lg:right-8"
+      >
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-gold opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-gold" />
+        </span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-white/60">
+          Live in Dubai
+        </span>
+      </motion.div>
 
       <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-24 sm:px-6 sm:py-32 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-40">
         <div>

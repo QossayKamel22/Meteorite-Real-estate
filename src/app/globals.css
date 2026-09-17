@@ -237,18 +237,66 @@ body {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
-/* Slow cinematic zoom for hero photography ("life mode") */
+/* Slow cinematic pan + zoom for hero photography — simulates a drone shot
+   ("live video" feel) from a single still photo, no fabricated footage. */
 .ken-burns {
-  animation: ken-burns 24s ease-in-out infinite alternate;
+  animation: ken-burns 28s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 @keyframes ken-burns {
-  from {
-    transform: scale(1);
+  0% {
+    transform: scale(1.06) translate3d(0, 0, 0);
   }
-  to {
-    transform: scale(1.12);
+  100% {
+    transform: scale(1.18) translate3d(-1.5%, -1%, 0);
   }
+}
+
+/* Diagonal light sweep, like a lens catching sunlight — reinforces motion */
+.light-sweep {
+  position: absolute;
+  inset: -20%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(219, 204, 59, 0.16) 48%,
+    rgba(219, 204, 59, 0.05) 52%,
+    transparent 60%
+  );
+  animation: light-sweep 10s ease-in-out infinite;
+}
+
+@keyframes light-sweep {
+  0%,
+  100% {
+    transform: translateX(-15%);
+  }
+  50% {
+    transform: translateX(15%);
+  }
+}
+
+/* Thin cinematic letterbox bars, framing the hero like a video player */
+.cine-bars::before,
+.cine-bars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, rgba(219, 204, 59, 0.4), transparent);
+}
+
+.cine-bars::before {
+  top: 0;
+}
+
+.cine-bars::after {
+  bottom: 0;
 }
 
 /* Drifting gold particles scattered over hero/CTA sections */
@@ -292,7 +340,8 @@ body {
   .shimmer-border::after,
   .ken-burns,
   .particle,
-  .float-y {
+  .float-y,
+  .light-sweep {
     animation: none;
   }
 }
