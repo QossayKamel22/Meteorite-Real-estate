@@ -12,12 +12,13 @@ import {
   useTransform,
 } from "framer-motion";
 import { ChevronDown, ShieldCheck, Star } from "lucide-react";
-import { stats, ceo, testimonials } from "@/lib/content";
+import { ceo, testimonials } from "@/lib/content";
+import type { StatsList } from "@/lib/site-stats";
 import Particles from "@/components/Particles";
 
 const QUOTE_INTERVAL_MS = 4500;
 
-export default function Hero() {
+export default function Hero({ stats }: { stats: StatsList }) {
   const reduceMotion = useReducedMotion();
   const [quoteIndex, setQuoteIndex] = useState(0);
 
@@ -142,7 +143,7 @@ export default function Hero() {
               </div>
             </div>
             <p className="text-sm text-white/60">
-              Meet the <Link href="/about-us" className="font-semibold text-brand-gold hover:underline">team</Link> behind 250+ happy customers
+              Meet the <Link href="/about-us" className="font-semibold text-brand-gold hover:underline">team</Link> behind {stats.find((s) => s.key === "happyCustomers")?.value ?? 250}+ happy customers
             </p>
           </motion.div>
         </div>

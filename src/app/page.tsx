@@ -7,11 +7,14 @@ import CeoSection from "@/components/CeoSection";
 import AgentsSection from "@/components/AgentsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
+import { getStatsList } from "@/lib/site-stats";
 
-export default function Home() {
+export default async function Home() {
+  const stats = await getStatsList();
+
   return (
     <>
-      <Hero />
+      <Hero stats={stats} />
       <StatsSection />
       <AboutIntro />
       <PhotoCollage />

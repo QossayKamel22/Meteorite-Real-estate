@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CreditCard, ShieldCheck, Lock } from "lucide-react";
-import { company, paymentTiers, stats } from "@/lib/content";
+import { company, paymentTiers } from "@/lib/content";
+import { getStatsList } from "@/lib/site-stats";
 import StatCounter, { type StatIconKey } from "@/components/StatCounter";
 import Reveal from "@/components/Reveal";
 
@@ -8,7 +9,9 @@ export const metadata: Metadata = { title: "Payment" };
 
 const statIcons: StatIconKey[] = ["building", "users", "trophy", "smile"];
 
-export default function PaymentPage() {
+export default async function PaymentPage() {
+  const stats = await getStatsList();
+
   return (
     <div className="relative overflow-hidden">
       <section className="relative overflow-hidden bg-brand-navy py-20 sm:py-24">

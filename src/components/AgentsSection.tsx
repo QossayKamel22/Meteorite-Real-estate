@@ -1,9 +1,8 @@
 import Image from "next/image";
 import { BadgeCheck, Crown, Mail, Phone } from "lucide-react";
-import { agents, stats, company } from "@/lib/content";
+import { agents, company } from "@/lib/content";
+import { getStats } from "@/lib/site-stats";
 import Reveal from "@/components/Reveal";
-
-const agentCount = stats.find((s) => s.label === "Professional Agents")?.value ?? agents.length;
 
 function AgentCard({
   agent,
@@ -84,8 +83,10 @@ function AgentCard({
   );
 }
 
-export default function AgentsSection({ variant = "home" }: { variant?: "home" | "about" }) {
+export default async function AgentsSection({ variant = "home" }: { variant?: "home" | "about" }) {
   const isAbout = variant === "about";
+  const stats = await getStats();
+  const agentCount = stats.professionalAgents;
 
   return (
     <section className={`relative overflow-hidden bg-brand-navy ${isAbout ? "py-28" : "py-24"}`}>

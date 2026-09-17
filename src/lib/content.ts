@@ -80,6 +80,12 @@ export const navLinks = [
   { label: "Contact Us", href: "/contact-us" },
 ];
 
+/**
+ * Original values as scraped from the live site. These are no longer
+ * read directly by the UI — the live, admin-editable numbers come from
+ * src/lib/site-stats.ts (backed by data/site-stats.json). Kept here as
+ * the documented source-of-truth for what the numbers originally were.
+ */
 export const stats = [
   { value: 325, label: "Properties Submitted" },
   { value: 12, label: "Professional Agents" },

@@ -1,10 +1,12 @@
-import { stats } from "@/lib/content";
+import { getStatsList } from "@/lib/site-stats";
 import StatCounter, { type StatIconKey } from "@/components/StatCounter";
 import Reveal from "@/components/Reveal";
 
 const icons: StatIconKey[] = ["building", "users", "trophy", "smile"];
 
-export default function StatsSection() {
+export default async function StatsSection() {
+  const stats = await getStatsList();
+
   return (
     <section id="stats" className="relative overflow-hidden border-y border-brand-line bg-brand-paper py-20">
       <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
