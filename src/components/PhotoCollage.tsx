@@ -47,7 +47,7 @@ export default function PhotoCollage() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-3 gap-4">
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {agents.map((agent) => (
                   <div
                     key={agent.name}
@@ -71,7 +71,7 @@ export default function PhotoCollage() {
               </div>
 
               <p className="mt-4 text-center text-xs text-brand-ink/40">
-                {company.name} — {agents.length} of our licensed agents, in Dubai
+                {company.name} — {agents.length} of our team, in Dubai
               </p>
             </div>
           </Reveal>

@@ -116,6 +116,10 @@ export const testimonials = [
  * alone as CEO and Founder. We use the live site's own breadcrumb
  * category ("Agent") for the other two rather than repeat what reads as a
  * templating error.
+ *
+ * Qossay Kamel was added directly by request (not sourced from the live
+ * site) as IT Development Manager & Marketing — no public agent profile
+ * or phone on file, so those fields are omitted rather than invented.
  */
 export const agents = [
   {
@@ -141,6 +145,12 @@ export const agents = [
     email: "info@meteoriterealestate.com",
     phone: "+971 50 659 9176",
     profileUrl: "https://meteoriterealestate.com/agents/meher-samir/",
+  },
+  {
+    name: "Qossay Kamel",
+    title: "IT Development Manager & Marketing",
+    photo: "/brand/agent-qossay-kamel.jpg",
+    email: "kamelqossay@gmail.com",
   },
 ] as const;
 

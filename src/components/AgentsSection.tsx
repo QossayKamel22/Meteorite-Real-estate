@@ -52,13 +52,15 @@ function AgentCard({
         <p className="mt-1 text-sm font-medium text-brand-gold">{agent.title}</p>
 
         <div className="mt-5 flex items-center gap-2">
-          <a
-            href={`tel:${agent.phone.replace(/\s/g, "")}`}
-            aria-label={`Call ${agent.name}`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-white/70 transition-colors hover:bg-brand-gold hover:text-brand-navy"
-          >
-            <Phone size={15} />
-          </a>
+          {"phone" in agent && agent.phone && (
+            <a
+              href={`tel:${agent.phone.replace(/\s/g, "")}`}
+              aria-label={`Call ${agent.name}`}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-white/70 transition-colors hover:bg-brand-gold hover:text-brand-navy"
+            >
+              <Phone size={15} />
+            </a>
+          )}
           <a
             href={`mailto:${agent.email}`}
             aria-label={`Email ${agent.name}`}
@@ -66,14 +68,16 @@ function AgentCard({
           >
             <Mail size={15} />
           </a>
-          <a
-            href={agent.profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-1 inline-flex items-center gap-1 text-sm font-medium text-white/60 transition-colors group-hover:text-brand-gold"
-          >
-            Profile <span aria-hidden="true">→</span>
-          </a>
+          {"profileUrl" in agent && agent.profileUrl && (
+            <a
+              href={agent.profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-1 inline-flex items-center gap-1 text-sm font-medium text-white/60 transition-colors group-hover:text-brand-gold"
+            >
+              Profile <span aria-hidden="true">→</span>
+            </a>
+          )}
         </div>
       </div>
     </Reveal>
@@ -98,8 +102,8 @@ export default function AgentsSection({ variant = "home" }: { variant?: "home" |
                 {isAbout ? "The people behind every deal" : "Meet the agents behind Meteorite"}
               </h2>
               <p className="mt-3 max-w-xl text-base leading-relaxed text-white/60">
-                {agentCount}+ licensed professionals support our clients across Dubai — these are
-                the {agents.length} with public profiles today.
+                {agentCount}+ licensed professionals support our clients across Dubai — meet the
+                {" "}{agents.length} team members with public profiles today.
               </p>
             </div>
             <div className="glass glass-dark flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/80">
@@ -109,7 +113,7 @@ export default function AgentsSection({ variant = "home" }: { variant?: "home" |
           </div>
         </Reveal>
 
-        <div className={`mt-12 grid gap-6 sm:grid-cols-2 ${isAbout ? "lg:grid-cols-3" : "lg:grid-cols-3"}`}>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {agents.map((agent, i) => (
             <AgentCard key={agent.name} agent={agent} delay={i * 0.08} featured={isAbout && i === 0} />
           ))}
