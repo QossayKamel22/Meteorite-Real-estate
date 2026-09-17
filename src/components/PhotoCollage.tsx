@@ -1,11 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ceo, agents } from "@/lib/content";
+import { ceo, agents, company } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 
 export default function PhotoCollage() {
-  const [hattab, meher] = agents.slice(1);
-
   return (
     <section className="relative overflow-hidden bg-brand-paper py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -31,64 +29,50 @@ export default function PhotoCollage() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <div className="grid grid-cols-6 grid-rows-6 gap-3 sm:gap-4" style={{ aspectRatio: "6 / 5" }}>
-              <div className="group relative col-span-4 row-span-4 overflow-hidden rounded-3xl shadow-[0_20px_50px_-20px_rgba(13,16,49,0.35)]">
+            <div>
+              <div className="group relative aspect-[16/10] overflow-hidden rounded-3xl shadow-[0_24px_60px_-24px_rgba(13,16,49,0.35)]">
                 <Image
                   src="/brand/hero-dubai-skyline.jpg"
                   alt="Dubai skyline — where Meteorite operates"
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 1024px) 60vw, 400px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 1024px) 90vw, 560px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/50 via-transparent to-transparent" />
-                <p className="absolute bottom-3 left-4 text-xs font-semibold uppercase tracking-wide text-white/90">
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-brand-navy/5 to-transparent" />
+                <p className="absolute bottom-4 left-5 text-sm font-semibold uppercase tracking-wide text-white">
                   Dubai, UAE
                 </p>
-              </div>
-
-              <div className="group relative col-span-2 row-span-3 overflow-hidden rounded-3xl shadow-[0_16px_40px_-18px_rgba(13,16,49,0.35)]">
-                <Image
-                  src={ceo.photo}
-                  alt={ceo.name}
-                  fill
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
-                  sizes="200px"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/80 to-transparent p-3">
-                  <p className="text-[11px] font-semibold text-white">{ceo.name.split(" ")[0]}</p>
+                <div className="glass glass-dark absolute right-4 top-4 rounded-full px-4 py-1.5 text-xs font-semibold text-white">
+                  Since 2005
                 </div>
               </div>
 
-              <div className="group relative col-span-2 row-span-3 overflow-hidden rounded-3xl shadow-[0_16px_40px_-18px_rgba(13,16,49,0.35)]">
-                <Image
-                  src={hattab.photo}
-                  alt={hattab.name}
-                  fill
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
-                  sizes="200px"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/80 to-transparent p-3">
-                  <p className="text-[11px] font-semibold text-white">{hattab.name.split(" ")[0]}</p>
-                </div>
+              <div className="mt-4 grid grid-cols-3 gap-4">
+                {agents.map((agent) => (
+                  <div
+                    key={agent.name}
+                    className="group relative aspect-square overflow-hidden rounded-2xl shadow-[0_12px_30px_-16px_rgba(13,16,49,0.4)]"
+                  >
+                    <Image
+                      src={agent.photo}
+                      alt={agent.name}
+                      fill
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                      sizes="(max-width: 1024px) 30vw, 180px"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/85 to-transparent px-3 pb-2.5 pt-6">
+                      <p className="truncate text-xs font-semibold text-white">
+                        {agent.name === ceo.name ? ceo.name.split(" ")[0] : agent.name.split(" ")[0]}
+                      </p>
+                      <p className="truncate text-[10px] text-white/60">{agent.title}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className="group relative col-span-2 row-span-2 overflow-hidden rounded-3xl shadow-[0_16px_40px_-18px_rgba(13,16,49,0.35)]">
-                <Image
-                  src={meher.photo}
-                  alt={meher.name}
-                  fill
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
-                  sizes="200px"
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/80 to-transparent p-3">
-                  <p className="text-[11px] font-semibold text-white">{meher.name.split(" ")[0]}</p>
-                </div>
-              </div>
-
-              <div className="glass shimmer-border col-span-4 row-span-2 flex flex-col items-center justify-center rounded-3xl text-center">
-                <p className="text-2xl font-semibold tracking-tight text-heading">2005</p>
-                <p className="text-xs font-medium text-brand-ink/50">Serving Dubai since</p>
-              </div>
+              <p className="mt-4 text-center text-xs text-brand-ink/40">
+                {company.name} — {agents.length} of our licensed agents, in Dubai
+              </p>
             </div>
           </Reveal>
         </div>
