@@ -17,7 +17,7 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <Image
-              src="/brand/logo.png"
+              src="/brand/logo-transparent.png"
               alt={`${company.name} logo`}
               width={149}
               height={27}

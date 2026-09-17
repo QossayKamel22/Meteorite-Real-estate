@@ -13,7 +13,7 @@ export default function ContactUsPage() {
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
         Contact Us
       </p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
         We&apos;d love to hear from you
       </h1>
 
@@ -35,17 +35,17 @@ export default function ContactUsPage() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
               Direct
             </h2>
-            <a href={`tel:${company.phoneE164}`} className="mt-2 block text-[15px] font-medium text-brand-navy hover:text-brand-gold">
+            <a href={`tel:${company.phoneE164}`} className="mt-2 block text-[15px] font-medium text-heading hover:text-brand-gold">
               {company.phoneDisplay}
             </a>
-            <a href={`mailto:${company.email}`} className="mt-1 block text-[15px] font-medium text-brand-navy hover:text-brand-gold">
+            <a href={`mailto:${company.email}`} className="mt-1 block text-[15px] font-medium text-heading hover:text-brand-gold">
               {company.email}
             </a>
             <a
               href={company.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-1 block text-[15px] font-medium text-brand-navy hover:text-brand-gold"
+              className="mt-1 block text-[15px] font-medium text-heading hover:text-brand-gold"
             >
               WhatsApp
             </a>

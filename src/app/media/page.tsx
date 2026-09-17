@@ -7,7 +7,7 @@ export default function MediaPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:px-8">
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Media</p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
         Property video tours
       </h1>
       <p className="mt-5 text-lg leading-relaxed text-brand-ink/70">
@@ -23,7 +23,7 @@ export default function MediaPage() {
         View property videos
       </a>
       <p className="mt-6 text-sm">
-        <Link href="/contact-us" className="font-medium text-brand-navy hover:text-brand-gold">
+        <Link href="/contact-us" className="font-medium text-heading hover:text-brand-gold">
           Or contact us for a private tour →
         </Link>
       </p>

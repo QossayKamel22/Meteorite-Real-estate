@@ -7,6 +7,7 @@ export default function ContactCta() {
       <Reveal>
         <div className="relative overflow-hidden rounded-[2rem] bg-brand-navy px-8 py-12 sm:px-14 sm:py-16">
           <div className="glow-field" />
+          <div className="grain-overlay" />
           <div className="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
             <div className="max-w-xl">
               <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">

@@ -25,6 +25,7 @@ export default function Hero() {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/75 to-brand-navy/40" />
       <div className="glow-field opacity-70" />
+      <div className="grain-overlay" />
 
       <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-24 sm:px-6 sm:py-32 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-40">
         <div>
@@ -70,14 +71,14 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           className="glass shimmer-border rounded-3xl p-7 sm:p-8"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-navy/60">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-heading/60">
             At a glance
           </p>
           <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-6">
             {stats.slice(0, 2).map((stat) => (
               <div key={stat.label}>
-                <dt className="text-sm text-brand-navy/60">{stat.label}</dt>
-                <dd className="mt-1 text-2xl font-semibold tracking-tight text-brand-navy">
+                <dt className="text-sm text-heading/60">{stat.label}</dt>
+                <dd className="mt-1 text-2xl font-semibold tracking-tight text-heading">
                   {stat.value}+
                 </dd>
               </div>

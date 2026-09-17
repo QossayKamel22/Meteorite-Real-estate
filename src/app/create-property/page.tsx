@@ -9,7 +9,7 @@ export default function CreatePropertyPage() {
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
         List With Us
       </p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
         Add your property
       </h1>
       <p className="mt-5 text-lg leading-relaxed text-brand-ink/70">
@@ -27,7 +27,7 @@ export default function CreatePropertyPage() {
         </a>
         <a
           href={`mailto:${company.email}`}
-          className="rounded-full border border-brand-line px-7 py-3.5 text-[15px] font-semibold text-brand-navy transition-colors hover:bg-brand-paper"
+          className="rounded-full border border-brand-line px-7 py-3.5 text-[15px] font-semibold text-heading transition-colors hover:bg-brand-paper"
         >
           Email {company.email}
         </a>

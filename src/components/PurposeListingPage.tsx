@@ -18,7 +18,7 @@ export default function PurposeListingPage({
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
         {isForSale ? "For Sale" : "For Rent"}
       </p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
         Properties {isForSale ? "for sale" : "for rent"}
       </h1>
       <p className="mt-4 max-w-2xl text-lg leading-relaxed text-brand-ink/70">
@@ -43,9 +43,9 @@ export default function PurposeListingPage({
             href={`${baseUrl}&category=${label.toLowerCase()}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group rounded-2xl border border-brand-line bg-white p-6 transition-shadow hover:shadow-md"
+            className="group rounded-2xl border border-brand-line bg-surface p-6 transition-shadow hover:shadow-md"
           >
-            <h2 className="text-lg font-semibold text-brand-navy">{label}s</h2>
+            <h2 className="text-lg font-semibold text-heading">{label}s</h2>
             <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-ink/60 group-hover:text-brand-gold">
               Browse listings <span aria-hidden="true">→</span>
             </span>

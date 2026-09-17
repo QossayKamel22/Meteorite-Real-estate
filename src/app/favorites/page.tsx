@@ -10,7 +10,7 @@ export default function FavoritesPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Saved</p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
         Your saved properties
       </h1>
       <p className="mt-4 text-base leading-relaxed text-brand-ink/60">
@@ -32,7 +32,7 @@ export default function FavoritesPage() {
               href={externalListings.bayutCompanyForSale}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border border-brand-line px-6 py-3 text-sm font-semibold text-brand-navy hover:bg-brand-paper"
+              className="rounded-full border border-brand-line px-6 py-3 text-sm font-semibold text-heading hover:bg-brand-paper"
             >
               View full portfolio
             </a>

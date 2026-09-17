@@ -14,7 +14,7 @@ export default function AboutUsPage() {
       <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
         About Us
       </p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-brand-navy sm:text-5xl">
+      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
         {company.name}
       </h1>
       <p className="mt-6 text-lg leading-relaxed text-brand-ink/75">{company.legalTagline}</p>
@@ -28,7 +28,7 @@ export default function AboutUsPage() {
       </div>
 
       <div className="mt-10 rounded-2xl border border-brand-line p-6">
-        <h2 className="text-lg font-semibold text-brand-navy">Registration Details</h2>
+        <h2 className="text-lg font-semibold text-heading">Registration Details</h2>
         <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-brand-ink/50">Office Address</dt>

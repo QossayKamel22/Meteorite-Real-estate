@@ -23,7 +23,7 @@ export default function CeoSection() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
             Leadership
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
             {ceo.name}
           </h2>
           <p className="mt-1 text-base font-medium text-brand-ink/60">{ceo.title}</p>
@@ -48,7 +48,7 @@ export default function CeoSection() {
             href={ceo.profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-navy hover:text-brand-gold"
+            className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold"
           >
             View full leadership profile
             <span aria-hidden="true">→</span>

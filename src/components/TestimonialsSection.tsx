@@ -10,7 +10,7 @@ export default function TestimonialsSection() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
               Client Feedback
             </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-brand-navy sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
               What our clients say
             </h2>
           </div>
@@ -23,7 +23,7 @@ export default function TestimonialsSection() {
                 <blockquote className="text-[15px] leading-relaxed text-brand-ink/80">
                   &ldquo;{t.quote}&rdquo;
                 </blockquote>
-                <figcaption className="mt-5 text-sm font-semibold text-brand-navy">
+                <figcaption className="mt-5 text-sm font-semibold text-heading">
                   {t.name}
                   <span className="ml-1.5 font-normal text-brand-ink/50">— {t.role}</span>
                 </figcaption>

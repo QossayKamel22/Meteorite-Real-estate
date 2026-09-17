@@ -37,7 +37,7 @@ export default function ContactForm() {
           onChange={(e) => setName(e.target.value)}
           type="text"
           required
-          className="mt-1.5 w-full rounded-xl border border-brand-line px-4 py-3 text-[15px] outline-none focus:border-brand-navy"
+          className="mt-1.5 w-full rounded-xl border border-brand-line px-4 py-3 text-[15px] outline-none focus:border-brand-gold"
         />
       </div>
       <div>
@@ -50,7 +50,7 @@ export default function ContactForm() {
           onChange={(e) => setEmail(e.target.value)}
           type="email"
           required
-          className="mt-1.5 w-full rounded-xl border border-brand-line px-4 py-3 text-[15px] outline-none focus:border-brand-navy"
+          className="mt-1.5 w-full rounded-xl border border-brand-line px-4 py-3 text-[15px] outline-none focus:border-brand-gold"
         />
       </div>
       <div>
@@ -63,7 +63,7 @@ export default function ContactForm() {
           onChange={(e) => setMessage(e.target.value)}
           rows={5}
           required
-          className="mt-1.5 w-full rounded-xl border border-brand-line px-4 py-3 text-[15px] outline-none focus:border-brand-navy"
+          className="mt-1.5 w-full rounded-xl border border-brand-line px-4 py-3 text-[15px] outline-none focus:border-brand-gold"
         />
       </div>
 

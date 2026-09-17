@@ -39,7 +39,7 @@ export default function StatCounter({ value }: { value: number }) {
   }, [value]);
 
   return (
-    <p ref={ref} className="text-3xl font-semibold tracking-tight text-brand-navy sm:text-4xl">
+    <p ref={ref} className="text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
       {display.toLocaleString()}+
     </p>
   );
