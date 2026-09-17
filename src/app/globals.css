@@ -237,10 +237,62 @@ body {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
+/* Slow cinematic zoom for hero photography ("life mode") */
+.ken-burns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+}
+
+@keyframes ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+/* Drifting gold particles scattered over hero/CTA sections */
+.particle {
+  position: absolute;
+  border-radius: 999px;
+  background: var(--brand-gold);
+  opacity: 0.5;
+  animation: particle-drift ease-in-out infinite;
+}
+
+@keyframes particle-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.25;
+  }
+  50% {
+    transform: translate(var(--drift-x, 12px), var(--drift-y, -18px));
+    opacity: 0.6;
+  }
+}
+
+.float-y {
+  animation: float-y 5s ease-in-out infinite;
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .glow-field::before,
   .glow-field::after,
-  .shimmer-border::after {
+  .shimmer-border::after,
+  .ken-burns,
+  .particle,
+  .float-y {
     animation: none;
   }
 }
