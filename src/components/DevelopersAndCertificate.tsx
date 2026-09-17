@@ -3,6 +3,7 @@ import { Award, CalendarCheck, FileCheck2, ShieldCheck } from "lucide-react";
 import { certificate, developerPartners } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import ImageLightbox from "@/components/ImageLightbox";
+import LogoMarquee from "@/components/LogoMarquee";
 
 export default function DevelopersAndCertificate() {
   return (
@@ -21,14 +22,11 @@ export default function DevelopersAndCertificate() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="glass shimmer-border mt-10 rounded-3xl bg-white p-8 sm:p-12">
-            <Image
-              src={developerPartners.image}
-              alt={`Meteorite Real Estate is registered with: ${developerPartners.names.join(", ")}`}
-              width={900}
-              height={212}
-              className="h-auto w-full"
-            />
+          <div className="shimmer-border relative mt-10 overflow-hidden rounded-3xl border border-brand-line bg-white py-10">
+            <LogoMarquee />
+            <p className="mt-2 text-center text-xs text-brand-ink/40">
+              {developerPartners.length} registered developer partnerships across Dubai
+            </p>
           </div>
         </Reveal>
 

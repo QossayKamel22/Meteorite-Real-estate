@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
+import RouteTransitionOverlay from "@/components/RouteTransitionOverlay";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <AuthProvider>
             <FavoritesProvider>
+              <RouteTransitionOverlay />
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />

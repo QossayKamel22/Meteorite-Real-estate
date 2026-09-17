@@ -39,23 +39,21 @@ export const certificate = {
 
 /**
  * Developer partner logos as shown under "REGISTERED WITH FOLLOWING
- * DEVELOPERS" on the origin About Us page. Names are transcribed from the
- * visible logos in that image, for alt text only.
+ * DEVELOPERS" on the origin About Us page. Individual logos were cropped
+ * from that same source image (developer-partners.png) — same real
+ * partnerships, isolated per-logo for a cleaner marquee presentation.
  */
-export const developerPartners = {
-  image: "/brand/developer-partners.png",
-  names: [
-    "Binghatti",
-    "Nakheel",
-    "Dubai Properties",
-    "Sobha Realty",
-    "Dubai Holding",
-    "Majid Al Futtaim",
-    "Al-Futtaim",
-    "The Sustainable City",
-    "Emaar",
-  ],
-};
+export const developerPartners = [
+  { name: "Binghatti", logo: "/brand/developers/binghatti.png" },
+  { name: "Nakheel", logo: "/brand/developers/nakheel.png" },
+  { name: "Dubai Properties", logo: "/brand/developers/dubai-properties.png" },
+  { name: "Sobha Realty", logo: "/brand/developers/sobha.png" },
+  { name: "Dubai Holding", logo: "/brand/developers/dubai-holding.png" },
+  { name: "Majid Al Futtaim", logo: "/brand/developers/majid-al-futtaim.png" },
+  { name: "Al-Futtaim", logo: "/brand/developers/al-futtaim.png" },
+  { name: "The Sustainable City", logo: "/brand/developers/sustainable-city.png" },
+  { name: "Emaar", logo: "/brand/developers/emaar.png" },
+] as const;
 
 export const socialLinks = {
   facebook: "https://www.facebook.com/MeteoriteRE",
