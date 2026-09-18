@@ -1,24 +1,40 @@
 import { NextResponse } from "next/server";
-import { timingSafeEqual } from "crypto";
+import { timingSafeEqual, createHash } from "crypto";
 import {
   ADMIN_SESSION_COOKIE,
   ADMIN_SESSION_MAX_AGE,
   createAdminSessionToken,
+  hasTrustedOrigin,
   isAdminConfigured,
 } from "@/lib/admin-auth";
+import { isRateLimited, clearRateLimit, getClientKey } from "@/lib/rate-limit";
 
 function safeCompare(a: string, b: string): boolean {
-  const bufA = Buffer.from(a);
-  const bufB = Buffer.from(b);
-  if (bufA.length !== bufB.length) return false;
-  return timingSafeEqual(bufA, bufB);
+  // Hash both first so the comparison is always fixed-length — comparing
+  // raw buffers of different lengths would short-circuit before
+  // timingSafeEqual and leak the expected password's length via timing.
+  const hashA = createHash("sha256").update(a).digest();
+  const hashB = createHash("sha256").update(b).digest();
+  return timingSafeEqual(hashA, hashB);
 }
 
 export async function POST(request: Request) {
+  if (!hasTrustedOrigin(request)) {
+    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  }
+
   if (!isAdminConfigured()) {
     return NextResponse.json(
       { error: "Admin login is not configured on this deployment." },
       { status: 503 }
+    );
+  }
+
+  const clientKey = getClientKey(request);
+  if (isRateLimited(clientKey)) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please try again later." },
+      { status: 429 }
     );
   }
 
@@ -38,6 +54,8 @@ export async function POST(request: Request) {
   if (!safeCompare(password, expected)) {
     return NextResponse.json({ error: "Incorrect password." }, { status: 401 });
   }
+
+  clearRateLimit(clientKey);
 
   const token = await createAdminSessionToken();
   const response = NextResponse.json({ ok: true });

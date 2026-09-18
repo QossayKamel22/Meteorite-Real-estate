@@ -38,3 +38,18 @@ export async function verifyAdminSessionToken(token: string | undefined): Promis
 }
 
 export const ADMIN_SESSION_MAX_AGE = SESSION_DURATION_SECONDS;
+
+/**
+ * Defense-in-depth against CSRF for state-changing admin requests, on top
+ * of the SameSite=Lax session cookie. Rejects cross-origin POST/PUT calls
+ * even if a browser's SameSite handling is bypassed or misconfigured.
+ */
+export function hasTrustedOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return true; // same-origin requests from older browsers may omit Origin
+  try {
+    return new URL(origin).host === new URL(request.url).host;
+  } catch {
+    return false;
+  }
+}

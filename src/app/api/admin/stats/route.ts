@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/admin-auth";
+import { ADMIN_SESSION_COOKIE, hasTrustedOrigin, verifyAdminSessionToken } from "@/lib/admin-auth";
 import { STAT_FIELDS, getStats, updateStats, type SiteStats } from "@/lib/site-stats";
 
 async function requireAdmin(): Promise<boolean> {
@@ -18,6 +18,9 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  if (!hasTrustedOrigin(request)) {
+    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  }
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }

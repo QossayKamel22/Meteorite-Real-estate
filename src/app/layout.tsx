@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
-import RouteTransitionOverlay from "@/components/RouteTransitionOverlay";
-import ScrollProgressBar from "@/components/ScrollProgressBar";
-import BackToTop from "@/components/BackToTop";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,18 +22,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <AuthProvider>
-            <FavoritesProvider>
-              <ScrollProgressBar />
-              <RouteTransitionOverlay />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <BackToTop />
-            </FavoritesProvider>
+            <FavoritesProvider>{children}</FavoritesProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

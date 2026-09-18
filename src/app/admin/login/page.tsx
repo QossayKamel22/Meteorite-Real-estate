@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Lock } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -36,17 +36,10 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center bg-brand-paper px-4">
+    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-16">
       <div className="glass shimmer-border w-full max-w-sm rounded-3xl p-8">
         <div className="flex flex-col items-center text-center">
-          <Image
-            src="/brand/logo-transparent.png"
-            alt="Meteorite Real Estate"
-            width={160}
-            height={29}
-            className="h-8 w-auto"
-          />
-          <div className="mt-6 flex h-11 w-11 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
             <Lock size={18} />
           </div>
           <h1 className="mt-4 text-xl font-semibold tracking-tight text-heading">
@@ -60,16 +53,25 @@ export default function AdminLoginPage() {
             <label htmlFor="password" className="block text-sm font-medium text-brand-ink/70">
               Admin password
             </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              autoFocus
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1.5 w-full rounded-xl border border-brand-line bg-surface px-4 py-3 text-[15px] outline-none focus:border-brand-gold"
-            />
+            <div className="relative mt-1.5">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                autoFocus
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-xl border border-brand-line bg-surface px-4 py-3 pr-14 text-[15px] outline-none focus:border-brand-gold"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold text-brand-ink/50 hover:text-heading"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           {error && (
