@@ -33,15 +33,20 @@ function GoogleIcon() {
 export default function AuthForm({ mode }: { mode: Mode }) {
   const isLogin = mode === "login";
   const router = useRouter();
-  const { user, signInWithGoogle, error: authError } = useAuth();
+  const {
+    user,
+    signInWithGoogle,
+    signInWithEmail,
+    registerWithEmail,
+    actionLoading,
+    error: authError,
+  } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -54,15 +59,9 @@ export default function AuthForm({ mode }: { mode: Mode }) {
     router.push(isSafeLocalPath ? (redirectTo as string) : "/");
   }, [user, router]);
 
-  async function handleGoogle() {
-    setGoogleLoading(true);
-    await signInWithGoogle();
-    setGoogleLoading(false);
-  }
-
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setNotice("");
+    setError("");
 
     if (!isLogin && !name.trim()) {
       setError("Please enter your full name.");
@@ -72,15 +71,16 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       setError("Please enter a valid email address.");
       return;
     }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
 
-    setError("");
-    setNotice(
-      "Email/password sign-in isn't connected yet — use Google sign-in above, or continue as a guest."
-    );
+    if (isLogin) {
+      await signInWithEmail(email, password);
+    } else {
+      await registerWithEmail(name, email, password);
+    }
   }
 
   function handleGuest() {
@@ -104,18 +104,13 @@ export default function AuthForm({ mode }: { mode: Mode }) {
 
       <button
         type="button"
-        onClick={handleGoogle}
-        disabled={googleLoading}
+        onClick={signInWithGoogle}
+        disabled={actionLoading}
         className="mt-8 flex w-full items-center justify-center gap-3 rounded-full border border-brand-line bg-surface px-6 py-3.5 text-[15px] font-semibold text-heading transition-colors hover:bg-brand-paper disabled:opacity-60"
       >
         <GoogleIcon />
-        {googleLoading ? "Signing in…" : "Continue with Google"}
+        Continue with Google
       </button>
-      {authError && (
-        <p role="alert" className="mt-2 text-sm font-medium text-red-600">
-          {authError}
-        </p>
-      )}
 
       <div className="mt-6 flex items-center gap-3 text-xs text-brand-ink/40">
         <span className="h-px flex-1 bg-brand-line" />
@@ -165,6 +160,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
               onChange={(e) => setPassword(e.target.value)}
               type={showPassword ? "text" : "password"}
               autoComplete={isLogin ? "current-password" : "new-password"}
+              minLength={6}
               className="w-full rounded-xl border border-brand-line px-4 py-3 pr-12 text-[15px] outline-none focus:border-brand-gold"
             />
             <button
@@ -185,20 +181,16 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           )}
         </div>
 
-        {error && (
+        {(error || authError) && (
           <p role="alert" className="text-sm font-medium text-red-600">
-            {error}
-          </p>
-        )}
-        {notice && (
-          <p role="status" className="rounded-xl bg-brand-paper p-4 text-sm leading-relaxed text-brand-ink/70">
-            {notice}
+            {error || authError}
           </p>
         )}
 
         <button
           type="submit"
-          className="w-full rounded-full bg-brand-navy px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light"
+          disabled={actionLoading}
+          className="w-full rounded-full bg-brand-navy px-6 py-3.5 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light disabled:opacity-60"
         >
           {isLogin ? "Sign in" : "Create account"}
         </button>

@@ -4,6 +4,7 @@ import "./globals.css";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
+import AuthLoadingOverlay from "@/components/AuthLoadingOverlay";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider>
           <AuthProvider>
             <FavoritesProvider>{children}</FavoritesProvider>
+            <AuthLoadingOverlay />
           </AuthProvider>
         </ThemeProvider>
       </body>
