@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ChevronDown, ChevronUp, ExternalLink, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ClipboardPaste, ExternalLink, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Property, PropertyInput } from "@/lib/properties-data";
+import { parseBayutText } from "@/lib/bayut-parser";
 import ImageUploadField from "@/components/ImageUploadField";
 
 type FormState = {
@@ -21,6 +22,7 @@ type FormState = {
   description: string;
   amenities: string;
   image: string;
+  sourceUrl: string;
   visible: boolean;
 };
 
@@ -38,6 +40,7 @@ const EMPTY_FORM: FormState = {
   description: "",
   amenities: "",
   image: "",
+  sourceUrl: "",
   visible: true,
 };
 
@@ -56,6 +59,7 @@ function propertyToForm(p: Property): FormState {
     description: p.description ?? "",
     amenities: p.amenities?.join("\n") ?? "",
     image: p.image,
+    sourceUrl: p.sourceUrl ?? "",
     visible: p.visible !== false,
   };
 }
@@ -78,6 +82,7 @@ function formToPayload(form: FormState): PropertyInput {
       .map((a) => a.trim())
       .filter(Boolean),
     image: form.image.trim(),
+    sourceUrl: form.sourceUrl.trim() || undefined,
     visible: form.visible,
   } as PropertyInput;
 }
@@ -263,6 +268,19 @@ function PropertyForm({
             className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
           />
         </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-medium text-brand-ink/60">
+            Original listing link (optional)
+          </label>
+          <input
+            type="url"
+            value={form.sourceUrl}
+            onChange={(e) => set("sourceUrl", e.target.value)}
+            placeholder="https://www.bayut.com/property/…"
+            className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
+          />
+        </div>
       </div>
 
       <label className="flex items-center gap-2 pt-1 text-sm font-medium text-brand-ink/70">
@@ -298,12 +316,113 @@ function formatPrice(p: Property): string {
   return p.purpose === "rent" ? `${amount} / ${p.rentFrequency === "monthly" ? "mo" : "yr"}` : amount;
 }
 
+function BayutImportPanel({
+  onCancel,
+  onImported,
+}: {
+  onCancel: () => void;
+  onImported: (parsed: ReturnType<typeof parseBayutText>) => void;
+}) {
+  const [text, setText] = useState("");
+
+  const preview = text.trim() ? parseBayutText(text) : null;
+  const foundCount = preview ? Object.keys(preview).length : 0;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-brand-gold/40 bg-surface p-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm font-semibold text-heading">Import from Bayut</p>
+        <button type="button" onClick={onCancel} aria-label="Close">
+          <X size={16} className="text-brand-ink/50" />
+        </button>
+      </div>
+      <p className="mt-2 text-xs leading-relaxed text-brand-ink/55">
+        Bayut blocks automated fetching, so this can&apos;t pull a listing on its own. Instead:
+        open the listing on bayut.com in this browser, select the whole page (⌘/Ctrl+A), copy it,
+        and paste it below — the price, beds, baths, size, location and title will be pulled out
+        automatically. You&apos;ll still need to upload the photo yourself.
+      </p>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={8}
+        placeholder="Paste the copied Bayut listing page here…"
+        className="mt-3 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-xs outline-none focus:border-brand-gold"
+      />
+      {preview && (
+        <div className="mt-3 rounded-lg bg-brand-paper p-3 text-xs text-brand-ink/70">
+          <p className="font-semibold text-heading">
+            {foundCount > 0 ? `Found ${foundCount} field(s):` : "Nothing recognizable yet"}
+          </p>
+          {foundCount > 0 && (
+            <ul className="mt-1.5 space-y-0.5">
+              {preview.title && <li>Title: {preview.title}</li>}
+              {preview.location && <li>Location: {preview.location}</li>}
+              {preview.price && (
+                <li>
+                  Price: AED {preview.price.toLocaleString()}
+                  {preview.rentFrequency ? ` / ${preview.rentFrequency}` : ""}
+                </li>
+              )}
+              {(preview.isStudio || preview.bedrooms !== undefined) && (
+                <li>Bedrooms: {preview.isStudio ? "Studio" : preview.bedrooms}</li>
+              )}
+              {preview.bathrooms !== undefined && <li>Bathrooms: {preview.bathrooms}</li>}
+              {preview.sizeSqft && <li>Size: {preview.sizeSqft.toLocaleString()} sqft</li>}
+              {preview.sourceUrl && <li>Link: {preview.sourceUrl}</li>}
+            </ul>
+          )}
+        </div>
+      )}
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          type="button"
+          disabled={!preview || foundCount === 0}
+          onClick={() => preview && onImported(preview)}
+          className="rounded-full bg-brand-navy px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-navy-light disabled:opacity-40"
+        >
+          Use these fields
+        </button>
+        <button type="button" onClick={onCancel} className="text-sm font-medium text-brand-ink/50 hover:text-heading">
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPropertiesPanel({ properties }: { properties: Property[] }) {
   const router = useRouter();
   const [adding, setAdding] = useState(false);
+  const [addInitial, setAddInitial] = useState<FormState>(EMPTY_FORM);
+  const [importing, setImporting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  function openBlankAddForm() {
+    setAddInitial(EMPTY_FORM);
+    setAdding(true);
+    setImporting(false);
+  }
+
+  function handleImported(parsed: ReturnType<typeof parseBayutText>) {
+    setAddInitial({
+      ...EMPTY_FORM,
+      title: parsed.title ?? "",
+      location: parsed.location ?? "",
+      price: parsed.price ? String(parsed.price) : "",
+      rentFrequency: parsed.rentFrequency ?? "yearly",
+      purpose: parsed.rentFrequency ? "rent" : "sale",
+      isStudio: parsed.isStudio ?? false,
+      bedrooms: parsed.bedrooms !== undefined ? String(parsed.bedrooms) : "",
+      bathrooms: parsed.bathrooms !== undefined ? String(parsed.bathrooms) : "",
+      sizeSqft: parsed.sizeSqft ? String(parsed.sizeSqft) : "",
+      sourceUrl: parsed.sourceUrl ?? "",
+    });
+    setImporting(false);
+    setAdding(true);
+  }
 
   async function handleAdd(form: FormState): Promise<string | null> {
     const res = await fetch("/api/admin/properties", {
@@ -456,7 +575,7 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
         })}
       </ul>
 
-      {adding ? (
+      {adding && (
         <div className="mt-4 rounded-2xl border border-brand-gold/40 bg-surface p-4">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-heading">New property</p>
@@ -465,20 +584,35 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
             </button>
           </div>
           <PropertyForm
-            initial={EMPTY_FORM}
+            initial={addInitial}
             submitLabel="Add property"
             onCancel={() => setAdding(false)}
             onSubmit={handleAdd}
           />
         </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
-        >
-          <Plus size={15} /> Add property
-        </button>
+      )}
+
+      {importing && (
+        <BayutImportPanel onCancel={() => setImporting(false)} onImported={handleImported} />
+      )}
+
+      {!adding && !importing && (
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={openBlankAddForm}
+            className="flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+          >
+            <Plus size={15} /> Add property
+          </button>
+          <button
+            type="button"
+            onClick={() => setImporting(true)}
+            className="flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+          >
+            <ClipboardPaste size={15} /> Import from Bayut
+          </button>
+        </div>
       )}
     </div>
   );

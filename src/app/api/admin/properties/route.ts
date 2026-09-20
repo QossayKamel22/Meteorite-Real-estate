@@ -37,6 +37,8 @@ function parsePropertyInput(body: Record<string, unknown>): PropertyInput | stri
     : undefined;
   const isStudio = body.isStudio === true;
   const visible = typeof body.visible === "boolean" ? body.visible : true;
+  const sourceUrl =
+    typeof body.sourceUrl === "string" && body.sourceUrl.trim() ? body.sourceUrl.trim() : undefined;
 
   return {
     title,
@@ -45,6 +47,7 @@ function parsePropertyInput(body: Record<string, unknown>): PropertyInput | stri
     type,
     location,
     image,
+    ...(sourceUrl ? { sourceUrl } : {}),
     bedrooms,
     bathrooms,
     sizeSqft,

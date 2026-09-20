@@ -55,6 +55,7 @@ function parsePropertyPatch(body: Record<string, unknown>): Partial<PropertyInpu
   }
   if (typeof body.isStudio === "boolean") patch.isStudio = body.isStudio;
   if (typeof body.visible === "boolean") patch.visible = body.visible;
+  if (typeof body.sourceUrl === "string") patch.sourceUrl = body.sourceUrl.trim() || undefined;
 
   return patch;
 }
