@@ -73,9 +73,9 @@ function mapAuthErrorCode(code: string | undefined): string {
  * (see /api/auth/session) and provisions the Firestore user profile. This is
  * what determines admin access — there is no separate admin login.
  */
-async function syncServerSession(firebaseUser: User): Promise<Role | null> {
+async function syncServerSession(firebaseUser: User, forceRefreshToken = false): Promise<Role | null> {
   try {
-    const idToken = await firebaseUser.getIdToken();
+    const idToken = await firebaseUser.getIdToken(forceRefreshToken);
     const res = await fetch("/api/auth/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -109,8 +109,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(mapUser(firebaseUser));
+      // While suppressed, registerWithEmail owns `user`/`role` entirely (and
+      // sets them itself once the display name is in place) — if this
+      // listener also called setUser here with the pre-rename user, every
+      // consumer (the redirect effect, the header avatar) would briefly see
+      // a nameless account before the corrected one arrives.
       if (!suppressAutoSyncRef.current) {
+        setUser(mapUser(firebaseUser));
         if (firebaseUser) {
           const r = await syncServerSession(firebaseUser);
           setRole(r);
@@ -174,10 +179,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await updateProfile(credential.user, { displayName: name.trim() });
       }
       // The listener's automatic sync is suppressed above, so this is the
-      // only sync call for registration — it runs after the display name is
-      // set, so Firestore gets the name instead of racing a null one.
+      // only sync call for registration. It force-refreshes the ID token —
+      // without that, getIdToken() returns the cached pre-rename token (its
+      // "name" claim only updates on the next natural refresh), and the
+      // server would still write the display name as null.
       setUser(mapUser(credential.user));
-      const r = await syncServerSession(credential.user);
+      const r = await syncServerSession(credential.user, true);
       setRole(r);
     } catch (err) {
       setError(mapAuthErrorCode((err as { code?: string })?.code));
