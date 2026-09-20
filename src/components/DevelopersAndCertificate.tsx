@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { Award, CalendarCheck, FileCheck2, ShieldCheck } from "lucide-react";
-import { certificate, developerPartners } from "@/lib/content";
+import { developerPartners } from "@/lib/content";
+import { getCertificates } from "@/lib/certificates-data";
 import Reveal from "@/components/Reveal";
 import ImageLightbox from "@/components/ImageLightbox";
 import LogoMarquee from "@/components/LogoMarquee";
 
-export default function DevelopersAndCertificate() {
+export default async function DevelopersAndCertificate() {
+  const certificates = await getCertificates();
+
   return (
     <section className="bg-brand-paper py-20 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -36,99 +39,113 @@ export default function DevelopersAndCertificate() {
           </div>
         </Reveal>
 
-        <div className="mt-20 text-center">
-          <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              Official Registration
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
-              Our certificate
-            </h2>
-            <span className="mx-auto mt-4 block h-0.5 w-16 rounded-full bg-brand-gold" />
-          </Reveal>
-        </div>
-
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <Reveal delay={0.1}>
-            <ImageLightbox src={certificate.image} alt="Meteorite Real Estate — Dubai Land Department RERA registration certificate">
-              <div className="glass shimmer-border group overflow-hidden rounded-3xl bg-white p-3">
-                <div className="overflow-hidden rounded-2xl">
-                  <Image
-                    src={certificate.image}
-                    alt="Real Estate Office Registration Certificate — Dubai Land Department, RERA"
-                    width={1289}
-                    height={907}
-                    className="w-full transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+        {certificates.map((certificate, i) => (
+          <div key={certificate.id}>
+            {i === 0 && (
+              <div className="mt-20 text-center">
+                <Reveal>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
+                    Official Registration
+                  </p>
+                  <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
+                    Our certificate{certificates.length > 1 ? "s" : ""}
+                  </h2>
+                  <span className="mx-auto mt-4 block h-0.5 w-16 rounded-full bg-brand-gold" />
+                </Reveal>
               </div>
-            </ImageLightbox>
-          </Reveal>
+            )}
 
-          <Reveal delay={0.18}>
-            <div className="space-y-4">
-              <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
-                <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                  <FileCheck2 size={18} strokeWidth={1.75} />
-                </span>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
-                    Trade Name
-                  </p>
-                  <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
-                    {certificate.tradeName}
-                  </p>
+            <div className={`grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center ${i === 0 ? "mt-10" : "mt-16"}`}>
+              <Reveal delay={0.1}>
+                <ImageLightbox src={certificate.image} alt={certificate.title}>
+                  <div className="glass shimmer-border group overflow-hidden rounded-3xl bg-white p-3">
+                    <div className="overflow-hidden rounded-2xl">
+                      <Image
+                        src={certificate.image}
+                        alt={certificate.title}
+                        width={1289}
+                        height={907}
+                        className="w-full transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  </div>
+                </ImageLightbox>
+              </Reveal>
+
+              <Reveal delay={0.18}>
+                <div className="space-y-4">
+                  <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
+                    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                      <FileCheck2 size={18} strokeWidth={1.75} />
+                    </span>
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
+                        Title
+                      </p>
+                      <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
+                        {certificate.title}
+                      </p>
+                    </div>
+                  </div>
+
+                  {certificate.licenseNo && (
+                    <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
+                      <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                        <ShieldCheck size={18} strokeWidth={1.75} />
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
+                          License No.
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
+                          {certificate.licenseNo}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(certificate.registrationDate || certificate.expiryDate) && (
+                    <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
+                      <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                        <CalendarCheck size={18} strokeWidth={1.75} />
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
+                          Registered · Expires
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
+                          {certificate.registrationDate} — {certificate.expiryDate}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {certificate.activities && certificate.activities.length > 0 && (
+                    <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
+                      <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                        <Award size={18} strokeWidth={1.75} />
+                      </span>
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
+                          Activities
+                        </p>
+                        <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
+                          {certificate.activities.join(" · ")}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {certificate.issuer && (
+                    <p className="pt-1 text-xs text-brand-ink/45">
+                      Issued by {certificate.issuer}. Click the certificate to view full size.
+                    </p>
+                  )}
                 </div>
-              </div>
-
-              <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
-                <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                  <ShieldCheck size={18} strokeWidth={1.75} />
-                </span>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
-                    License No.
-                  </p>
-                  <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
-                    {certificate.licenseNo} · {certificate.classification}
-                  </p>
-                </div>
-              </div>
-
-              <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
-                <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                  <CalendarCheck size={18} strokeWidth={1.75} />
-                </span>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
-                    Registered · Expires
-                  </p>
-                  <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
-                    {certificate.registrationDate} — {certificate.expiryDate}
-                  </p>
-                </div>
-              </div>
-
-              <div className="glass shimmer-border flex items-start gap-3 rounded-2xl p-5">
-                <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                  <Award size={18} strokeWidth={1.75} />
-                </span>
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-brand-ink/50">
-                    Activities
-                  </p>
-                  <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">
-                    {certificate.activities.join(" · ")}
-                  </p>
-                </div>
-              </div>
-
-              <p className="pt-1 text-xs text-brand-ink/45">
-                Issued by {certificate.issuer}. Click the certificate to view full size.
-              </p>
+              </Reveal>
             </div>
-          </Reveal>
-        </div>
+          </div>
+        ))}
       </div>
     </section>
   );

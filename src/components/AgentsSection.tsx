@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { BadgeCheck, Crown, Mail, Phone } from "lucide-react";
-import { agents, company } from "@/lib/content";
+import { company } from "@/lib/content";
 import { getStats } from "@/lib/site-stats";
+import { getAgents, type Agent } from "@/lib/agents-data";
 import Reveal from "@/components/Reveal";
 
 function AgentCard({
@@ -9,7 +10,7 @@ function AgentCard({
   delay,
   featured = false,
 }: {
-  agent: (typeof agents)[number];
+  agent: Agent;
   delay: number;
   featured?: boolean;
 }) {
@@ -85,7 +86,7 @@ function AgentCard({
 
 export default async function AgentsSection({ variant = "home" }: { variant?: "home" | "about" }) {
   const isAbout = variant === "about";
-  const stats = await getStats();
+  const [stats, agents] = await Promise.all([getStats(), getAgents()]);
   const agentCount = stats.professionalAgents;
 
   return (
@@ -116,7 +117,7 @@ export default async function AgentsSection({ variant = "home" }: { variant?: "h
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {agents.map((agent, i) => (
-            <AgentCard key={agent.name} agent={agent} delay={i * 0.08} featured={isAbout && i === 0} />
+            <AgentCard key={agent.id} agent={agent} delay={i * 0.08} featured={isAbout && i === 0} />
           ))}
         </div>
 

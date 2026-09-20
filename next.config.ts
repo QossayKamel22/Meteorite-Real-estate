@@ -15,6 +15,11 @@ const isDev = process.env.NODE_ENV === "development";
  * already effectively zero. The other directives below still guard
  * against clickjacking, base-tag hijacking, cross-origin form
  * submission, and object/embed-based attacks.
+ *
+ * img-src allows https: broadly because the admin dashboard lets an
+ * authenticated admin paste an arbitrary image URL for agent photos
+ * and certificates (see next.config images.remotePatterns below) — a
+ * deliberate tradeoff for "no Storage/Blaze plan" per project decision.
  */
 const csp = [
   "default-src 'self'",
@@ -22,15 +27,22 @@ const csp = [
   "form-action 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
-  "frame-src 'self' https://www.google.com",
-  "img-src 'self' data:",
+  "frame-src 'self' https://www.google.com https://meteorite-real-estate.firebaseapp.com",
+  "img-src 'self' data: https:",
   "font-src 'self' data:",
   `style-src 'self' 'unsafe-inline'`,
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "connect-src 'self'",
+  "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com",
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  images: {
+    // Admin-pasted agent/certificate image URLs can come from any host —
+    // there's no file upload (Firebase Storage needs the paid Blaze plan,
+    // deliberately not enabled). Trusted because only an authenticated
+    // admin can set these URLs, not arbitrary site visitors.
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
+  },
   async headers() {
     return [
       {

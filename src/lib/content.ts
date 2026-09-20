@@ -21,23 +21,6 @@ export const company = {
 };
 
 /**
- * Real Estate Office Registration Certificate, issued by Dubai Land
- * Department / RERA, as displayed on meteoriterealestate.com/about-us/
- * ("OUR CERTIFICATE"). Trade name on the certificate is the LLC's legal
- * name, which differs slightly in formatting from the public brand name.
- */
-export const certificate = {
-  image: "/brand/certificate-rera.jpg",
-  tradeName: "Meteorite Real Estate L.L.C",
-  licenseNo: "916037",
-  registrationDate: "10/11/2020",
-  expiryDate: "9/11/2026",
-  classification: "General Office Classification",
-  activities: ["Leasing Property Brokerage Agents", "Real Estate Buying & Selling Brokerage"],
-  issuer: "Dubai Land Department · RERA",
-};
-
-/**
  * Developer partner logos as shown under "REGISTERED WITH FOLLOWING
  * DEVELOPERS" on the origin About Us page. Individual logos were cropped
  * from that same source image (developer-partners.png) — same real
@@ -83,8 +66,8 @@ export const navLinks = [
 /**
  * Original values as scraped from the live site. These are no longer
  * read directly by the UI — the live, admin-editable numbers come from
- * src/lib/site-stats.ts (backed by data/site-stats.json). Kept here as
- * the documented source-of-truth for what the numbers originally were.
+ * src/lib/site-stats.ts (backed by Firestore). Kept here as the
+ * documented source-of-truth for what the numbers originally were.
  */
 export const stats = [
   { value: 325, label: "Properties Submitted" },
@@ -113,67 +96,8 @@ export const testimonials = [
   },
 ];
 
-/**
- * Full agent roster as published on meteoriterealestate.com/agents/ (3 profiles
- * live on the site as of 2026-09-17). Note: the live site's agent-profile
- * template displays "CEO and Founder" above every agent's name, including
- * Hattab and Zamily — almost certainly an unedited CMS template default,
- * since the About page and company records identify Saad Abdullah Soboh
- * alone as CEO and Founder. We use the live site's own breadcrumb
- * category ("Agent") for the other two rather than repeat what reads as a
- * templating error.
- *
- * Qossay Kamel was added directly by request (not sourced from the live
- * site) as IT & Marketing Manager — no public agent profile
- * or phone on file, so those fields are omitted rather than invented.
- */
-export const agents = [
-  {
-    name: "Saad Abdullah Soboh",
-    title: "CEO and Founder",
-    photo: "/brand/saad-abdullah-soboh.jpg",
-    email: "s.soboh@meteoriterealestate.com",
-    phone: "+971 50 110 2242",
-    profileUrl: "https://meteoriterealestate.com/agents/saad-abdullah-soboh/",
-  },
-  {
-    name: "Mohd Amin Mohammad Hattab",
-    title: "Agent",
-    photo: "/brand/agent-mohd-amin-hattab.png",
-    email: "Mohd.Hattab@meteoriterealestate.com",
-    phone: "+971 52 699 7631",
-    profileUrl: "https://meteoriterealestate.com/agents/mohd-amin-mohammad-hattab/",
-  },
-  {
-    name: "Meher Samir M Zamily",
-    title: "Agent",
-    photo: "/brand/agent-meher-samir.png",
-    email: "info@meteoriterealestate.com",
-    phone: "+971 50 659 9176",
-    profileUrl: "https://meteoriterealestate.com/agents/meher-samir/",
-  },
-  {
-    name: "Qossay Kamel",
-    title: "IT & Marketing Manager",
-    photo: "/brand/agent-qossay-kamel.jpg",
-    email: "kamelqossay@gmail.com",
-  },
-] as const;
-
-export const ceo = {
-  name: "Saad Abdullah Soboh",
-  title: "CEO and Founder",
-  photo: "/brand/saad-abdullah-soboh.jpg",
-  bio: "Welcome to our boutique real estate firm, where our CEO and Founder personally oversee every aspect of our services. With a customer-focused approach, we take pride in delivering exceptional property management services for leasing and selling tailored solutions to your unique needs.",
-  background:
-    "Over 17 years in banking — mortgage, valuations, escrow law, business development, credit administration, and comprehensive business banking services — brought to Meteorite's real estate brokerage, leasing, sales, valuation and negotiation practice.",
-  credentials: [
-    `Broker Card #${company.brokerCard}`,
-    `RERA ORN ${company.orn}`,
-    "72 credit hours of real estate training across 9 courses",
-  ],
-  profileUrl: "https://meteoriterealestate.com/agents/saad-abdullah-soboh/",
-};
+// Agent roster and CEO bio moved to src/lib/agents-data.ts (Firestore-backed,
+// admin-editable). See SEED_AGENTS there for the original verified values.
 
 export const credentials = [
   "RERA & Dubai Land Department certified brokerage",

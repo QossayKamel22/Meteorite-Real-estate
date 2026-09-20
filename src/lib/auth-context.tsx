@@ -1,35 +1,86 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut as firebaseSignOut,
+  type User,
+} from "firebase/auth";
+import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase-client";
 
-type AuthUser = { name: string; email: string };
+export type AuthUser = {
+  uid: string;
+  name: string | null;
+  email: string | null;
+  photoURL: string | null;
+};
 
 type AuthContextValue = {
   user: AuthUser | null;
-  isGuest: boolean;
-  continueAsGuest: () => void;
-  signOut: () => void;
+  loading: boolean;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+  error: string | null;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-/**
- * No authentication backend is connected in this deployment. This provider
- * only tracks guest mode locally so the UI can be built and tested end to
- * end. Wiring `user` to a real signed-in identity requires a backend
- * (e.g. Supabase Auth, NextAuth with a database adapter) — see
- * /login and /register for what's implemented vs. stubbed.
- */
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user] = useState<AuthUser | null>(null);
-  const [isGuest, setIsGuest] = useState(true);
+function mapUser(user: User | null): AuthUser | null {
+  if (!user) return null;
+  return {
+    uid: user.uid,
+    name: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
+  };
+}
 
-  const continueAsGuest = useCallback(() => setIsGuest(true), []);
-  const signOut = useCallback(() => setIsGuest(true), []);
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isFirebaseConfigured) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time config check, not derived from props/state
+      setLoading(false);
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(mapUser(firebaseUser));
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  const signInWithGoogle = async () => {
+    setError(null);
+    if (!isFirebaseConfigured) {
+      setError("Sign-in isn't configured on this deployment yet.");
+      return;
+    }
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (err) {
+      const code = (err as { code?: string })?.code;
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") return;
+      if (code === "auth/operation-not-allowed") {
+        setError("Google sign-in isn't enabled for this project yet.");
+        return;
+      }
+      setError("Sign-in failed. Please try again.");
+    }
+  };
+
+  const signOut = async () => {
+    setError(null);
+    await firebaseSignOut(auth);
+  };
 
   const value = useMemo(
-    () => ({ user, isGuest, continueAsGuest, signOut }),
-    [user, isGuest, continueAsGuest, signOut]
+    () => ({ user, loading, signInWithGoogle, signOut, error }),
+    [user, loading, error]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

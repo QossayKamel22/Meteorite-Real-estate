@@ -1,47 +1,81 @@
 import type { Metadata } from "next";
-import { BarChart3, Clock } from "lucide-react";
+import { BarChart3, Clock, IdCard, ShieldCheck } from "lucide-react";
 import { getStatsList } from "@/lib/site-stats";
+import { getAgents } from "@/lib/agents-data";
+import { getCertificates } from "@/lib/certificates-data";
 import AdminStatsForm from "@/components/AdminStatsForm";
+import AdminAgentsPanel from "@/components/AdminAgentsPanel";
+import AdminCertificatesPanel from "@/components/AdminCertificatesPanel";
 import AdminSignOutButton from "@/components/AdminSignOutButton";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const fields = await getStatsList();
+  const [fields, agents, certificates] = await Promise.all([
+    getStatsList(),
+    getAgents(),
+    getCertificates(),
+  ]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-      <nav aria-label="Breadcrumb" className="text-sm text-brand-ink/45">
-        Dashboard <span className="mx-1.5">/</span>{" "}
-        <span className="text-brand-ink/70">Homepage Statistics</span>
-      </nav>
-
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-heading">
-            Homepage Statistics
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-heading">Dashboard</h1>
           <p className="mt-1 text-sm text-brand-ink/55">
-            Edit the numbers shown across the site&apos;s stat sections.
+            Manage the numbers, team, and certificates shown across the site.
           </p>
         </div>
         <AdminSignOutButton />
       </div>
 
-      <div className="glass shimmer-border mt-8 rounded-3xl p-6 sm:p-8">
-        <div className="flex items-start gap-3 rounded-xl bg-brand-paper p-4 text-sm leading-relaxed text-brand-ink/60">
-          <BarChart3 size={16} className="mt-0.5 flex-none text-brand-gold" />
-          <p>
-            These four numbers appear on the Homepage, About Us, and Payment page stat sections.
-            Changes save immediately and go live on the next page load — no rebuild or deploy
-            needed.
-          </p>
+      <section className="glass shimmer-border mt-8 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+            <BarChart3 size={16} strokeWidth={1.75} />
+          </span>
+          <h2 className="text-lg font-semibold text-heading">Homepage Statistics</h2>
         </div>
+        <p className="mt-3 text-sm leading-relaxed text-brand-ink/60">
+          These four numbers appear on the Homepage, About Us, and Payment page stat sections.
+        </p>
         <div className="mt-6">
           <AdminStatsForm fields={fields} />
         </div>
-      </div>
+      </section>
+
+      <section className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+            <IdCard size={16} strokeWidth={1.75} />
+          </span>
+          <h2 className="text-lg font-semibold text-heading">Team</h2>
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-brand-ink/60">
+          Shown on the Homepage &quot;Our Team&quot; section, the About Us &quot;Leadership &amp;
+          Team&quot; section, and the Faces &amp; Places photo strip. The first agent with a bio
+          filled in appears as the featured Leadership profile.
+        </p>
+        <div className="mt-6">
+          <AdminAgentsPanel agents={agents} />
+        </div>
+      </section>
+
+      <section className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+            <ShieldCheck size={16} strokeWidth={1.75} />
+          </span>
+          <h2 className="text-lg font-semibold text-heading">Certificates</h2>
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-brand-ink/60">
+          Shown in the About Us &quot;Our Certificate&quot; section.
+        </p>
+        <div className="mt-6">
+          <AdminCertificatesPanel certificates={certificates} />
+        </div>
+      </section>
 
       <p className="mt-6 flex items-center gap-1.5 text-xs text-brand-ink/40">
         <Clock size={13} />

@@ -88,6 +88,7 @@ flowchart LR
 | Animation | [Framer Motion](https://www.framer.com/motion/) (`Reveal.tsx` scroll-in wrapper, hero entrance, `useReducedMotion`-aware) |
 | UI runtime | React 19 |
 | Fonts | `next/font` — Inter |
+| Backend | Firebase — Firestore (admin-editable content) + Firebase Auth (Google sign-in) |
 | State | React Context (`AuthProvider`, `FavoritesProvider`) + `localStorage` |
 | Linting | ESLint (`eslint-config-next`) |
 
@@ -142,13 +143,39 @@ Every company fact rendered on this site — phone numbers, email, RERA ORN, bro
 
 > If you update a fact in `content.ts`, cite where it came from in the commit message.
 
+## Firebase
+
+The site is backed by a real Firebase project (`meteorite-real-estate`):
+
+- **Firestore** stores the admin-editable data — homepage stats, the agent/team
+  roster, and certificates (`src/lib/site-stats.ts`, `agents-data.ts`,
+  `certificates-data.ts`). Read/written server-side only, via the Admin SDK
+  (`src/lib/firebase-admin.ts`) with a service account — no client ever talks
+  to Firestore directly, and `firestore.rules` denies all direct client
+  access as defense-in-depth.
+- **Firebase Auth** powers Google sign-in for site visitors
+  (`src/lib/firebase-client.ts`, `auth-context.tsx`). One manual step is
+  required and can't be automated: enable the **Google** provider under
+  Firebase Console → Authentication → Sign-in method. Until that's done,
+  sign-in shows a clear "not enabled yet" message rather than failing
+  silently.
+- Copy `.env.example` to `.env.local` and fill in the Firebase config
+  (from Project Settings → General → your web app) and the Admin SDK
+  credentials (from Project Settings → Service Accounts → Generate new
+  private key).
+- Agent photos and certificate images are set as pasted URLs, not file
+  uploads — Firebase Storage now requires the paid Blaze plan on new
+  projects, which this deployment deliberately doesn't enable.
+
 ## Known gaps & roadmap
 
 | Area | Status | What's needed |
 |---|---|---|
-| Authentication | 🟡 UI complete, not wired | Connect a real provider (Supabase Auth, NextAuth + DB adapter). Currently shows an honest "not connected" notice instead of a fake successful login. |
+| Google sign-in | 🟡 Code complete, provider not enabled | Enable the Google provider in Firebase Console (see above) — one click, can't be automated. |
+| Email/password sign-in | 🟡 UI only | Shows an honest "not connected" notice; Google sign-in is the working path today. |
 | Native property listings | 🟡 Linked out | Live site exposes no scrapable structured listing data (prices/specs). Pages link to the company's real Bayut portfolio instead of fabricated cards. |
-| Favorites sync | 🟡 Device-local only | Needs real property IDs + an account backend to sync across devices. |
+| Favorites sync | 🟡 Device-local only | Needs real property IDs + syncing to the signed-in user's account. |
+| Agent/certificate images | 🟡 URL-based | No file upload — Firebase Storage needs the Blaze plan, not enabled by choice. Paste a hosted image URL instead. |
 | Media / Payment / Add Property | 🟡 Linked out | Original page content on WordPress couldn't be verified or migrated — these link to the live pages / WhatsApp / email instead. |
 
 ## Quality checks

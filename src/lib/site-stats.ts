@@ -1,8 +1,7 @@
 import "server-only";
-import { promises as fs } from "fs";
-import path from "path";
+import { adminDb } from "@/lib/firebase-admin";
 
-const DATA_PATH = path.join(process.cwd(), "data", "site-stats.json");
+const STATS_DOC = adminDb.collection("stats").doc("homepage");
 
 export const STAT_FIELDS = [
   { key: "propertiesSubmitted", label: "Properties Submitted" },
@@ -14,6 +13,10 @@ export const STAT_FIELDS = [
 export type StatKey = (typeof STAT_FIELDS)[number]["key"];
 export type SiteStats = Record<StatKey, number>;
 
+/**
+ * Original values as scraped from the live site — used only to seed
+ * Firestore the first time this document is read, if it doesn't exist yet.
+ */
 const DEFAULTS: SiteStats = {
   propertiesSubmitted: 325,
   professionalAgents: 12,
@@ -21,24 +24,14 @@ const DEFAULTS: SiteStats = {
   happyCustomers: 250,
 };
 
-/**
- * Reads editable homepage stats from data/site-stats.json.
- *
- * NOTE: this uses the local filesystem, so admin edits persist only when
- * this app runs on a persistent Node server (self-hosted, a VM, etc).
- * On ephemeral serverless hosts (e.g. Vercel's default deployment) the
- * filesystem resets on every deploy/cold start — edits would not survive.
- * For production on serverless, swap this module's read/write for a real
- * database (Postgres, Supabase, etc.) while keeping the same interface.
- */
+/** Reads editable homepage stats from Firestore (stats/homepage). */
 export async function getStats(): Promise<SiteStats> {
-  try {
-    const raw = await fs.readFile(DATA_PATH, "utf-8");
-    const parsed = JSON.parse(raw) as Partial<SiteStats>;
-    return { ...DEFAULTS, ...parsed };
-  } catch {
+  const snap = await STATS_DOC.get();
+  if (!snap.exists) {
+    await STATS_DOC.set(DEFAULTS);
     return DEFAULTS;
   }
+  return { ...DEFAULTS, ...(snap.data() as Partial<SiteStats>) };
 }
 
 export async function getStatsList() {
@@ -49,6 +42,5 @@ export async function getStatsList() {
 export type StatsList = Awaited<ReturnType<typeof getStatsList>>;
 
 export async function updateStats(next: SiteStats): Promise<void> {
-  await fs.mkdir(path.dirname(DATA_PATH), { recursive: true });
-  await fs.writeFile(DATA_PATH, JSON.stringify(next, null, 2) + "\n", "utf-8");
+  await STATS_DOC.set(next);
 }

@@ -1,14 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { ADMIN_SESSION_COOKIE, hasTrustedOrigin, verifyAdminSessionToken } from "@/lib/admin-auth";
+import { hasTrustedOrigin, requireAdmin } from "@/lib/admin-auth";
 import { STAT_FIELDS, getStats, updateStats, type SiteStats } from "@/lib/site-stats";
-
-async function requireAdmin(): Promise<boolean> {
-  const store = await cookies();
-  const token = store.get(ADMIN_SESSION_COOKIE)?.value;
-  return verifyAdminSessionToken(token);
-}
 
 export async function GET() {
   if (!(await requireAdmin())) {

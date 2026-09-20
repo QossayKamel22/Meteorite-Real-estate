@@ -12,13 +12,14 @@ import {
   useTransform,
 } from "framer-motion";
 import { ChevronDown, ShieldCheck, Star } from "lucide-react";
-import { ceo, testimonials } from "@/lib/content";
+import { testimonials } from "@/lib/content";
 import type { StatsList } from "@/lib/site-stats";
+import type { Agent } from "@/lib/agents-data";
 import Particles from "@/components/Particles";
 
 const QUOTE_INTERVAL_MS = 4500;
 
-export default function Hero({ stats }: { stats: StatsList }) {
+export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
   const reduceMotion = useReducedMotion();
   const [quoteIndex, setQuoteIndex] = useState(0);
 

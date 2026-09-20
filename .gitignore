@@ -37,6 +37,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# firebase — service account keys must never be committed
+.secrets-firebase-admin.json
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

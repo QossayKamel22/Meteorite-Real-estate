@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Heart, Menu, X } from "lucide-react";
 import { company, navLinks } from "@/lib/content";
 import ThemeToggle from "@/components/ThemeToggle";
+import UserAvatarMenu from "@/components/UserAvatarMenu";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -58,12 +59,7 @@ export default function Header() {
             <Heart size={18} />
           </Link>
           <ThemeToggle />
-          <Link
-            href="/login"
-            className="ml-2 rounded-full bg-brand-navy px-5 py-2.5 text-[15px] font-medium text-white transition-all duration-200 hover:scale-[1.03] hover:bg-brand-navy-light"
-          >
-            Sign in
-          </Link>
+          <UserAvatarMenu variant="desktop" />
         </div>
 
         <div className="flex items-center gap-1 lg:hidden">
@@ -101,13 +97,7 @@ export default function Header() {
             >
               <Heart size={17} /> Saved Properties
             </Link>
-            <Link
-              href="/login"
-              className="mt-2 rounded-full bg-brand-navy px-5 py-3 text-center text-base font-medium text-white"
-              onClick={() => setOpen(false)}
-            >
-              Sign in
-            </Link>
+            <UserAvatarMenu variant="mobile" />
           </nav>
         </div>
       )}

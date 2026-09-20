@@ -8,13 +8,15 @@ import AgentsSection from "@/components/AgentsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
 import { getStatsList } from "@/lib/site-stats";
+import { getAgents } from "@/lib/agents-data";
 
 export default async function Home() {
-  const stats = await getStatsList();
+  const [stats, agents] = await Promise.all([getStatsList(), getAgents()]);
+  const ceo = agents.find((a) => a.bio) ?? agents[0];
 
   return (
     <>
-      <Hero stats={stats} />
+      <Hero stats={stats} ceo={ceo} />
       <StatsSection />
       <AboutIntro />
       <PhotoCollage />

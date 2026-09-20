@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ceo, agents, company } from "@/lib/content";
+import { company } from "@/lib/content";
+import { getAgents } from "@/lib/agents-data";
 import Reveal from "@/components/Reveal";
 
-export default function PhotoCollage() {
+export default async function PhotoCollage() {
+  const agents = await getAgents();
+
   return (
     <section className="relative overflow-hidden bg-brand-paper py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -50,7 +53,7 @@ export default function PhotoCollage() {
               <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {agents.map((agent) => (
                   <div
-                    key={agent.name}
+                    key={agent.id}
                     className="group relative aspect-square overflow-hidden rounded-2xl shadow-[0_12px_30px_-16px_rgba(13,16,49,0.4)]"
                   >
                     <Image
@@ -62,7 +65,7 @@ export default function PhotoCollage() {
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/85 to-transparent px-3 pb-2.5 pt-6">
                       <p className="truncate text-xs font-semibold text-white">
-                        {agent.name === ceo.name ? ceo.name.split(" ")[0] : agent.name.split(" ")[0]}
+                        {agent.name.split(" ")[0]}
                       </p>
                       <p className="truncate text-[10px] text-white/60">{agent.title}</p>
                     </div>

@@ -1,5 +1,6 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
 
 export const ADMIN_SESSION_COOKIE = "meteorite_admin_session";
 const SESSION_DURATION_SECONDS = 8 * 60 * 60; // 8 hours
@@ -52,4 +53,11 @@ export function hasTrustedOrigin(request: Request): boolean {
   } catch {
     return false;
   }
+}
+
+/** Shared guard for API route handlers: is the current request an authenticated admin? */
+export async function requireAdmin(): Promise<boolean> {
+  const store = await cookies();
+  const token = store.get(ADMIN_SESSION_COOKIE)?.value;
+  return verifyAdminSessionToken(token);
 }
