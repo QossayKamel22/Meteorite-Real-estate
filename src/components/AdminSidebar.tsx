@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, IdCard, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, Building2, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/homepage", label: "Homepage", icon: LayoutTemplate },
+  { href: "/admin/properties", label: "Properties", icon: Building2 },
+  { href: "/admin/media", label: "Media", icon: ImageIcon },
   { href: "/admin/statistics", label: "Statistics", icon: BarChart3 },
   { href: "/admin/team", label: "Team", icon: IdCard },
   { href: "/admin/certificates", label: "Certificates", icon: ShieldCheck },

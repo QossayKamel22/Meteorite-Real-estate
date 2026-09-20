@@ -1,21 +1,17 @@
-import { Building2, Home, ShieldCheck, Store, Warehouse } from "lucide-react";
+import { Building2, Home, ShieldCheck } from "lucide-react";
 import { externalListings, credentials } from "@/lib/content";
+import { getProperties, type Purpose } from "@/lib/properties-data";
 import Reveal from "@/components/Reveal";
+import PropertyCard from "@/components/PropertyCard";
 
-const categories = [
-  { label: "Apartment", icon: Building2 },
-  { label: "Villa", icon: Home },
-  { label: "Townhouse", icon: Warehouse },
-  { label: "Commercial", icon: Store },
-];
-
-export default function PurposeListingPage({
+export default async function PurposeListingPage({
   purpose,
 }: {
   purpose: "for-sale" | "for-rent";
 }) {
   const isForSale = purpose === "for-sale";
-  const baseUrl = isForSale ? externalListings.bayutForSale : externalListings.bayutForRent;
+  const dataPurpose: Purpose = isForSale ? "sale" : "rent";
+  const properties = await getProperties({ purpose: dataPurpose });
   const companyUrl = isForSale
     ? externalListings.bayutCompanyForSale
     : externalListings.bayutCompanyForRent;
@@ -37,46 +33,50 @@ export default function PurposeListingPage({
               Properties {isForSale ? "for sale" : "for rent"}
             </h1>
             <p className="mt-4 text-base leading-relaxed text-white/65">
-              Our live, continuously-updated portfolio of {isForSale ? "sale" : "rental"} listings
-              is hosted on Bayut, our verified listing partner, so you always see current pricing
-              and availability.
+              {properties.length > 0
+                ? `${properties.length} current ${isForSale ? "sale" : "rental"} listing${properties.length === 1 ? "" : "s"} from our own portfolio.`
+                : `Our current ${isForSale ? "sale" : "rental"} listings.`}{" "}
+              For our full, continuously-updated inventory, see our Bayut portfolio below.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        {properties.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {properties.map((property, i) => (
+              <PropertyCard key={property.id} property={property} delay={i * 0.06} />
+            ))}
+          </div>
+        ) : (
+          <Reveal>
+            <p className="rounded-2xl border border-dashed border-brand-line p-10 text-center text-sm text-brand-ink/55">
+              No {isForSale ? "sale" : "rental"} listings published right now — check our full
+              portfolio on Bayut below, or contact us directly.
+            </p>
+          </Reveal>
+        )}
+
+        <Reveal delay={0.1}>
+          <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-brand-line bg-brand-paper p-8 text-center sm:flex-row sm:justify-between sm:text-left">
+            <p className="text-sm text-brand-ink/70">
+              Looking for more options? Browse our complete, live inventory on Bayut, our verified
+              listing partner.
             </p>
             <a
               href={companyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-7 inline-flex rounded-full bg-brand-gold px-7 py-3.5 text-[15px] font-semibold text-brand-navy shadow-[0_8px_24px_-8px_rgba(219,204,59,0.6)] transition-transform duration-200 hover:scale-[1.03]"
+              className="whitespace-nowrap rounded-full bg-brand-gold px-6 py-3 text-sm font-semibold text-brand-navy shadow-[0_8px_24px_-8px_rgba(219,204,59,0.6)] transition-transform duration-200 hover:scale-[1.03]"
             >
-              View all {isForSale ? "sale" : "rental"} listings on Bayut
+              View all on Bayut
             </a>
-          </Reveal>
-        </div>
-      </section>
+          </div>
+        </Reveal>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((cat, i) => (
-            <Reveal key={cat.label} delay={i * 0.08}>
-              <a
-                href={`${baseUrl}&category=${cat.label.toLowerCase()}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass shimmer-border group flex h-full flex-col justify-between rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1.5"
-              >
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                  <cat.icon size={20} strokeWidth={1.75} />
-                </div>
-                <h2 className="mt-4 text-lg font-semibold text-heading">{cat.label}s</h2>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-ink/60 group-hover:text-brand-gold">
-                  Browse listings <span aria-hidden="true">→</span>
-                </span>
-              </a>
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal delay={0.24}>
-          <div className="mt-10 grid gap-4 rounded-2xl border border-brand-line bg-brand-paper p-6 sm:grid-cols-3">
+        <Reveal delay={0.16}>
+          <div className="mt-6 grid gap-4 rounded-2xl border border-brand-line bg-brand-paper p-6 sm:grid-cols-3">
             {credentials.map((item) => (
               <div key={item} className="flex items-center gap-3">
                 <ShieldCheck size={16} className="flex-none text-brand-gold" />
@@ -84,13 +84,6 @@ export default function PurposeListingPage({
               </div>
             ))}
           </div>
-        </Reveal>
-
-        <Reveal delay={0.3}>
-          <p className="mt-6 text-xs text-brand-ink/45">
-            We link directly to our official Bayut portfolio rather than duplicating prices and
-            availability here, so the information you see is always accurate.
-          </p>
         </Reveal>
       </section>
     </div>

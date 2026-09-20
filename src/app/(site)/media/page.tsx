@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { Building2, Camera, Home, PlayCircle, Store, Warehouse } from "lucide-react";
+import { Building2, Camera, ExternalLink, Home, PlayCircle, Store, Warehouse } from "lucide-react";
 import { company, externalListings, socialLinks } from "@/lib/content";
+import { getMediaPosts } from "@/lib/media-posts-data";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = { title: "Media" };
@@ -13,7 +15,17 @@ const categories = [
   { label: "Commercial", icon: Store, href: externalListings.bayutForSale + "&category=commercial" },
 ];
 
-export default function MediaPage() {
+const PLATFORM_LABEL: Record<string, string> = {
+  instagram: "Instagram",
+  facebook: "Facebook",
+  twitter: "X",
+  youtube: "YouTube",
+  other: "Social",
+};
+
+export default async function MediaPage() {
+  const posts = await getMediaPosts();
+
   return (
     <div>
       <section className="relative overflow-hidden bg-brand-navy py-20 sm:py-24">
@@ -28,18 +40,63 @@ export default function MediaPage() {
               Media
             </p>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Property video tours
+              News, updates &amp; social
             </h1>
             <p className="mt-4 text-base leading-relaxed text-white/65">
-              Each listing has its own walkthrough video, hosted alongside its full details on
-              our verified Bayut portfolio — browse by category to find one.
+              The latest from our team, plus video tours hosted alongside full listing details on
+              our verified Bayut portfolio.
             </p>
           </Reveal>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {posts.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post, i) => (
+              <Reveal key={post.id} delay={i * 0.06}>
+                <article className="glass shimmer-border flex h-full flex-col overflow-hidden rounded-2xl">
+                  {post.image && (
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
+                      <Image src={post.image} alt={post.title} fill className="object-cover" sizes="(min-width: 1024px) 33vw, 50vw" />
+                      {post.kind === "social" && post.platform && (
+                        <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+                          {PLATFORM_LABEL[post.platform]}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div className="flex flex-1 flex-col p-5">
+                    <h3 className="text-base font-semibold text-heading">{post.title}</h3>
+                    {post.body && <p className="mt-2 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
+                    {post.kind === "social" && post.url && (
+                      <a
+                        href={post.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-gold hover:underline"
+                      >
+                        View on {post.platform ? PLATFORM_LABEL[post.platform] : "social media"}
+                        <ExternalLink size={13} />
+                      </a>
+                    )}
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className={`mx-auto max-w-6xl px-4 ${posts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>
+        <Reveal>
+          <h2 className="text-lg font-semibold text-heading">Property video tours</h2>
+          <p className="mt-1 text-sm text-brand-ink/60">
+            Each listing has its own walkthrough video, hosted alongside its full details on our
+            verified Bayut portfolio — browse by category to find one.
+          </p>
+        </Reveal>
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((cat, i) => (
             <Reveal key={cat.label} delay={i * 0.07}>
               <a

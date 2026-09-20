@@ -69,9 +69,16 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Properties: published ones are public; admins see and manage everything.
+    // Properties: visible ones are public; admins see and manage everything.
     match /properties/{propertyId} {
-      allow read: if resource.data.published == true || isAdmin();
+      allow read: if resource.data.visible == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Media posts (social links + native photo posts): visible ones are
+    // public; admins see and manage everything.
+    match /mediaPosts/{postId} {
+      allow read: if resource.data.visible == true || isAdmin();
       allow write: if isAdmin();
     }
 
