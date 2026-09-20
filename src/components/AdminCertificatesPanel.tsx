@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Certificate, CertificateInput } from "@/lib/certificates-data";
+import ImageUploadField from "@/components/ImageUploadField";
 
 type FormState = {
   title: string;
@@ -72,8 +73,14 @@ function CertificateForm({
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  const [imageError, setImageError] = useState("");
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.image) {
+      setImageError("Please upload an image.");
+      return;
+    }
     setSaving(true);
     setError("");
     const err = await onSubmit(form);
@@ -83,6 +90,18 @@ function CertificateForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-xl bg-brand-paper p-4">
+      <ImageUploadField
+        label="Certificate image *"
+        value={form.image}
+        onChange={(dataUrl) => {
+          setImageError("");
+          set("image", dataUrl);
+        }}
+        shape="wide"
+        maxDimension={1200}
+      />
+      {imageError && <p className="text-xs font-medium text-red-600">{imageError}</p>}
+
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
           <label className="block text-xs font-medium text-brand-ink/60">Title *</label>
@@ -90,16 +109,6 @@ function CertificateForm({
             required
             value={form.title}
             onChange={(e) => set("title", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Image URL *</label>
-          <input
-            required
-            value={form.image}
-            onChange={(e) => set("image", e.target.value)}
-            placeholder="https://…"
             className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
           />
         </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Agent, AgentInput } from "@/lib/agents-data";
+import ImageUploadField from "@/components/ImageUploadField";
 
 type FormState = {
   name: string;
@@ -80,8 +81,14 @@ function AgentForm({
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  const [photoError, setPhotoError] = useState("");
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.photo) {
+      setPhotoError("Please upload a photo.");
+      return;
+    }
     setSaving(true);
     setError("");
     const err = await onSubmit(form);
@@ -91,6 +98,17 @@ function AgentForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-xl bg-brand-paper p-4">
+      <ImageUploadField
+        label="Photo *"
+        value={form.photo}
+        onChange={(dataUrl) => {
+          setPhotoError("");
+          set("photo", dataUrl);
+        }}
+        shape="square"
+      />
+      {photoError && <p className="text-xs font-medium text-red-600">{photoError}</p>}
+
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label className="block text-xs font-medium text-brand-ink/60">Name *</label>
@@ -107,16 +125,6 @@ function AgentForm({
             required
             value={form.title}
             onChange={(e) => set("title", e.target.value)}
-            className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Photo URL *</label>
-          <input
-            required
-            value={form.photo}
-            onChange={(e) => set("photo", e.target.value)}
-            placeholder="https://…"
             className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
           />
         </div>

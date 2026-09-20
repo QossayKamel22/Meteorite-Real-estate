@@ -16,10 +16,12 @@ const isDev = process.env.NODE_ENV === "development";
  * against clickjacking, base-tag hijacking, cross-origin form
  * submission, and object/embed-based attacks.
  *
- * img-src allows https: broadly because the admin dashboard lets an
- * authenticated admin paste an arbitrary image URL for agent photos
- * and certificates (see next.config images.remotePatterns below) — a
- * deliberate tradeoff for "no Storage/Blaze plan" per project decision.
+ * img-src allows data: because agent photos and certificate images are
+ * uploaded from the admin's device, resized/compressed client-side, and
+ * stored as base64 data URLs directly on the Firestore document — there's
+ * no Firebase Storage (needs the paid Blaze plan, deliberately not
+ * enabled). https: is also allowed for backward compatibility with any
+ * externally-hosted image URLs set before upload replaced URL entry.
  */
 const csp = [
   "default-src 'self'",
@@ -27,20 +29,20 @@ const csp = [
   "form-action 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
-  "frame-src 'self' https://www.google.com https://meteorite-real-estate.firebaseapp.com",
+  "frame-src 'self' https://www.google.com https://meteorite-real-estate.firebaseapp.com https://accounts.google.com",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
   `style-src 'self' 'unsafe-inline'`,
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
-  "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com",
+  `script-src 'self' 'unsafe-inline' https://apis.google.com${isDev ? " 'unsafe-eval'" : ""}`,
+  "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com https://accounts.google.com",
 ].join("; ");
 
 const nextConfig: NextConfig = {
   images: {
-    // Admin-pasted agent/certificate image URLs can come from any host —
-    // there's no file upload (Firebase Storage needs the paid Blaze plan,
-    // deliberately not enabled). Trusted because only an authenticated
-    // admin can set these URLs, not arbitrary site visitors.
+    // Uploaded agent/certificate photos are base64 data URLs (next/image
+    // handles data: URLs natively, bypassing this). Kept for backward
+    // compatibility with any externally-hosted URLs set before upload
+    // replaced URL entry — not used by the admin UI anymore.
     remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
   async headers() {
