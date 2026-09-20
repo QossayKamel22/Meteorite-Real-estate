@@ -44,7 +44,7 @@ export default async function PurposeListingPage({
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {properties.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {properties.map((property, i) => (
               <PropertyCard key={property.id} property={property} delay={i * 0.06} />
             ))}
@@ -76,7 +76,7 @@ export default async function PurposeListingPage({
         </Reveal>
 
         <Reveal delay={0.16}>
-          <div className="mt-6 grid gap-4 rounded-2xl border border-brand-line bg-brand-paper p-6 sm:grid-cols-3">
+          <div className="mt-6 grid grid-cols-1 gap-4 rounded-2xl border border-brand-line bg-brand-paper p-6 sm:grid-cols-3">
             {credentials.map((item) => (
               <div key={item} className="flex items-center gap-3">
                 <ShieldCheck size={16} className="flex-none text-brand-gold" />

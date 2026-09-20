@@ -52,7 +52,7 @@ export default async function MediaPage() {
 
       {posts.length > 0 && (
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post, i) => (
               <Reveal key={post.id} delay={i * 0.06}>
                 <article className="glass shimmer-border flex h-full flex-col overflow-hidden rounded-2xl">
@@ -96,7 +96,7 @@ export default async function MediaPage() {
             verified Bayut portfolio — browse by category to find one.
           </p>
         </Reveal>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((cat, i) => (
             <Reveal key={cat.label} delay={i * 0.07}>
               <a

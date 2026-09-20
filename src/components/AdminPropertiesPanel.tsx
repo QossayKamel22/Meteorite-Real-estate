@@ -338,40 +338,56 @@ function BayutImportPanel({
       </div>
       <p className="mt-2 text-xs leading-relaxed text-brand-ink/55">
         Bayut blocks automated fetching, so this can&apos;t pull a listing on its own. Instead:
-        open the listing on bayut.com in this browser, select the whole page (⌘/Ctrl+A), copy it,
-        and paste it below — the price, beds, baths, size, location and title will be pulled out
-        automatically. You&apos;ll still need to upload the photo yourself.
+        open the listing on bayut.com, right-click → <strong>View Page Source</strong> (or press
+        ⌘+Option+U / Ctrl+U), select all (⌘/Ctrl+A) on that source page, copy it, and paste it
+        below. That pulls out the price, beds, baths, size, location, title, description,
+        amenities, <strong>and the listing photo</strong> — reviewing everything before you save is
+        still a good idea. Pasting the visible page text instead of the source still works for
+        everything except the photo.
       </p>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={8}
-        placeholder="Paste the copied Bayut listing page here…"
+        placeholder="Paste the copied Bayut page source (or text) here…"
         className="mt-3 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-xs outline-none focus:border-brand-gold"
       />
       {preview && (
-        <div className="mt-3 rounded-lg bg-brand-paper p-3 text-xs text-brand-ink/70">
-          <p className="font-semibold text-heading">
-            {foundCount > 0 ? `Found ${foundCount} field(s):` : "Nothing recognizable yet"}
-          </p>
-          {foundCount > 0 && (
-            <ul className="mt-1.5 space-y-0.5">
-              {preview.title && <li>Title: {preview.title}</li>}
-              {preview.location && <li>Location: {preview.location}</li>}
-              {preview.price && (
-                <li>
-                  Price: AED {preview.price.toLocaleString()}
-                  {preview.rentFrequency ? ` / ${preview.rentFrequency}` : ""}
-                </li>
-              )}
-              {(preview.isStudio || preview.bedrooms !== undefined) && (
-                <li>Bedrooms: {preview.isStudio ? "Studio" : preview.bedrooms}</li>
-              )}
-              {preview.bathrooms !== undefined && <li>Bathrooms: {preview.bathrooms}</li>}
-              {preview.sizeSqft && <li>Size: {preview.sizeSqft.toLocaleString()} sqft</li>}
-              {preview.sourceUrl && <li>Link: {preview.sourceUrl}</li>}
-            </ul>
+        <div className="mt-3 flex flex-col gap-3 rounded-lg bg-brand-paper p-3 text-xs text-brand-ink/70 sm:flex-row">
+          {preview.image && (
+            /* eslint-disable-next-line @next/next/no-img-element -- external Bayut URL, previewed before any next/image config concerns apply */
+            <img
+              src={preview.image}
+              alt="Detected listing photo"
+              className="h-24 w-32 flex-none rounded-lg border border-brand-line object-cover"
+            />
           )}
+          <div>
+            <p className="font-semibold text-heading">
+              {foundCount > 0 ? `Found ${foundCount} field(s):` : "Nothing recognizable yet"}
+            </p>
+            {foundCount > 0 && (
+              <ul className="mt-1.5 space-y-0.5">
+                {preview.title && <li>Title: {preview.title}</li>}
+                {preview.location && <li>Location: {preview.location}</li>}
+                {preview.price && (
+                  <li>
+                    Price: AED {preview.price.toLocaleString()}
+                    {preview.rentFrequency ? ` / ${preview.rentFrequency}` : ""}
+                  </li>
+                )}
+                {(preview.isStudio || preview.bedrooms !== undefined) && (
+                  <li>Bedrooms: {preview.isStudio ? "Studio" : preview.bedrooms}</li>
+                )}
+                {preview.bathrooms !== undefined && <li>Bathrooms: {preview.bathrooms}</li>}
+                {preview.sizeSqft && <li>Size: {preview.sizeSqft.toLocaleString()} sqft</li>}
+                {preview.amenities && <li>Amenities: {preview.amenities.length} matched</li>}
+                {preview.description && <li>Description: found</li>}
+                {preview.image && <li>Photo: found</li>}
+                {preview.sourceUrl && <li>Link: {preview.sourceUrl}</li>}
+              </ul>
+            )}
+          </div>
         </div>
       )}
       <div className="mt-3 flex items-center gap-3">
@@ -419,6 +435,9 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
       bathrooms: parsed.bathrooms !== undefined ? String(parsed.bathrooms) : "",
       sizeSqft: parsed.sizeSqft ? String(parsed.sizeSqft) : "",
       sourceUrl: parsed.sourceUrl ?? "",
+      image: parsed.image ?? "",
+      description: parsed.description ?? "",
+      amenities: parsed.amenities?.join("\n") ?? "",
     });
     setImporting(false);
     setAdding(true);
