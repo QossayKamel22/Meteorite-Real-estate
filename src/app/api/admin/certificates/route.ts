@@ -24,10 +24,12 @@ function parseCertificateInput(body: Record<string, unknown>): CertificateInput 
   const activities = Array.isArray(body.activities)
     ? body.activities.filter((a): a is string => typeof a === "string" && a.trim().length > 0)
     : undefined;
+  const visible = typeof body.visible === "boolean" ? body.visible : true;
 
   return {
     title,
     image,
+    visible,
     ...(issuer ? { issuer } : {}),
     ...(licenseNo ? { licenseNo } : {}),
     ...(registrationDate ? { registrationDate } : {}),
@@ -40,7 +42,7 @@ export async function GET() {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
-  return NextResponse.json(await getCertificates());
+  return NextResponse.json(await getCertificates({ includeHidden: true }));
 }
 
 export async function POST(request: Request) {

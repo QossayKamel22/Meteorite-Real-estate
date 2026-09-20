@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
-import { updateCertificate, deleteCertificate, type CertificateInput } from "@/lib/certificates-data";
+import {
+  updateCertificate,
+  deleteCertificate,
+  moveCertificate,
+  type CertificateInput,
+} from "@/lib/certificates-data";
 
 function parseCertificatePatch(body: Record<string, unknown>): Partial<CertificateInput> | string {
   if (typeof body.title === "string" && !body.title.trim()) return "Title cannot be empty.";
@@ -21,6 +26,7 @@ function parseCertificatePatch(body: Record<string, unknown>): Partial<Certifica
       (a): a is string => typeof a === "string" && a.trim().length > 0
     );
   }
+  if (typeof body.visible === "boolean") patch.visible = body.visible;
   return patch;
 }
 
@@ -46,6 +52,33 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   }
 
   await updateCertificate(id, parsed);
+
+  revalidatePath("/about-us");
+
+  return NextResponse.json({ ok: true });
+}
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!hasTrustedOrigin(request)) {
+    return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
+  }
+  if (!(await requireAdmin())) {
+    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  const { id } = await params;
+  let body: Record<string, unknown>;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
+  if (body.move !== "up" && body.move !== "down") {
+    return NextResponse.json({ error: "move must be 'up' or 'down'." }, { status: 400 });
+  }
+
+  await moveCertificate(id, body.move);
 
   revalidatePath("/about-us");
 

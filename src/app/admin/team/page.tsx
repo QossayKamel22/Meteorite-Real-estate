@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Team · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminTeamPage() {
-  const agents = await getAgents();
+  const agents = await getAgents({ includeHidden: true });
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">

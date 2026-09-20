@@ -12,25 +12,36 @@ import {
   useTransform,
 } from "framer-motion";
 import { ChevronDown, ShieldCheck, Star } from "lucide-react";
-import { testimonials } from "@/lib/content";
 import type { StatsList } from "@/lib/site-stats";
 import type { Agent } from "@/lib/agents-data";
+import type { Testimonial } from "@/lib/testimonials-data";
+import type { HomepageContent } from "@/lib/homepage-content";
 import Particles from "@/components/Particles";
 
 const QUOTE_INTERVAL_MS = 4500;
 
-export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
+export default function Hero({
+  stats,
+  ceo,
+  testimonials,
+  content,
+}: {
+  stats: StatsList;
+  ceo: Agent | undefined;
+  testimonials: Testimonial[];
+  content: HomepageContent;
+}) {
   const reduceMotion = useReducedMotion();
   const [quoteIndex, setQuoteIndex] = useState(0);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    if (reduceMotion || testimonials.length === 0) return;
     const timer = window.setInterval(
       () => setQuoteIndex((i) => (i + 1) % testimonials.length),
       QUOTE_INTERVAL_MS
     );
     return () => window.clearInterval(timer);
-  }, [reduceMotion]);
+  }, [reduceMotion, testimonials.length]);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -60,7 +71,7 @@ export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
   });
-  const quote = testimonials[quoteIndex];
+  const quote = testimonials[quoteIndex] ?? null;
 
   return (
     <section className="relative overflow-hidden bg-brand-navy cine-bars">
@@ -99,20 +110,19 @@ export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
         <div>
           <motion.div {...rise(0)} className="glass glass-dark inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-white/85">
             <ShieldCheck size={14} className="text-brand-gold" />
-            RERA-Certified · Trusted Since 2005
+            {content.heroBadge}
           </motion.div>
           <motion.h1
             {...rise(0.1)}
             className="mt-6 max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
           >
-            The best way to find your dream home.
+            {content.heroHeadline}
           </motion.h1>
           <motion.p
             {...rise(0.18)}
             className="mt-5 max-w-xl text-lg leading-relaxed text-white/75"
           >
-            We help you get the best deal — a RERA-certified brokerage guiding you through buying,
-            selling, leasing and property management across the UAE.
+            {content.heroSubheadline}
           </motion.p>
 
           <motion.div {...rise(0.26)} className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -132,13 +142,15 @@ export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
 
           <motion.div {...rise(0.34)} className="mt-8 flex items-center gap-3">
             <div className="flex -space-x-3">
-              <Image
-                src={ceo.photo}
-                alt={ceo.name}
-                width={36}
-                height={36}
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-brand-navy transition-transform duration-300 hover:scale-110"
-              />
+              {ceo && (
+                <Image
+                  src={ceo.photo}
+                  alt={ceo.name}
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 rounded-full object-cover ring-2 ring-brand-navy transition-transform duration-300 hover:scale-110"
+                />
+              )}
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-[11px] font-semibold text-white ring-2 ring-brand-navy">
                 +11
               </div>
@@ -176,6 +188,7 @@ export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
             </dl>
           </motion.div>
 
+          {quote && (
           <motion.div
             initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -219,6 +232,7 @@ export default function Hero({ stats, ceo }: { stats: StatsList; ceo: Agent }) {
               ))}
             </div>
           </motion.div>
+          )}
         </div>
       </div>
 

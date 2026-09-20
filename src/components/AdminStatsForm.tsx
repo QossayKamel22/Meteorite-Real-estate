@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, CheckCircle2, Trophy, Smile, Users, type LucideIcon } from "lucide-react";
+import { Building2, CheckCircle2, Eye, EyeOff, Trophy, Smile, Users, type LucideIcon } from "lucide-react";
 import type { StatKey } from "@/lib/site-stats";
 
-type Field = { key: StatKey; label: string; value: number };
+type Field = { key: StatKey; label: string; value: number; visible: boolean };
 
 const ICONS: Record<StatKey, LucideIcon> = {
   propertiesSubmitted: Building2,
@@ -16,16 +16,23 @@ const ICONS: Record<StatKey, LucideIcon> = {
 
 export default function AdminStatsForm({ fields }: { fields: Field[] }) {
   const router = useRouter();
-  const initial = useMemo(
+  const initialValues = useMemo(
     () => Object.fromEntries(fields.map((f) => [f.key, f.value])) as Record<StatKey, number>,
     [fields]
   );
-  const [values, setValues] = useState<Record<StatKey, number>>(initial);
+  const initialVisibility = useMemo(
+    () => Object.fromEntries(fields.map((f) => [f.key, f.visible])) as Record<StatKey, boolean>,
+    [fields]
+  );
+  const [values, setValues] = useState<Record<StatKey, number>>(initialValues);
+  const [visibility, setVisibility] = useState<Record<StatKey, boolean>>(initialVisibility);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
 
-  const isDirty = fields.some((f) => values[f.key] !== initial[f.key]);
+  const isDirty = fields.some(
+    (f) => values[f.key] !== initialValues[f.key] || visibility[f.key] !== initialVisibility[f.key]
+  );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +43,7 @@ export default function AdminStatsForm({ fields }: { fields: Field[] }) {
       const res = await fetch("/api/admin/stats", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, visibility }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -54,7 +61,8 @@ export default function AdminStatsForm({ fields }: { fields: Field[] }) {
   }
 
   function handleReset() {
-    setValues(initial);
+    setValues(initialValues);
+    setVisibility(initialVisibility);
     setError("");
   }
 
@@ -63,21 +71,35 @@ export default function AdminStatsForm({ fields }: { fields: Field[] }) {
       <div className="grid gap-4 sm:grid-cols-2">
         {fields.map((field) => {
           const Icon = ICONS[field.key];
-          const changed = values[field.key] !== initial[field.key];
+          const changed =
+            values[field.key] !== initialValues[field.key] ||
+            visibility[field.key] !== initialVisibility[field.key];
+          const isVisible = visibility[field.key];
           return (
             <div
               key={field.key}
               className={`rounded-2xl border p-5 transition-colors ${
                 changed ? "border-brand-gold/50 bg-brand-gold/5" : "border-brand-line bg-surface"
-              }`}
+              } ${!isVisible ? "opacity-60" : ""}`}
             >
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                  <Icon size={15} strokeWidth={1.75} />
-                </span>
-                <label htmlFor={field.key} className="text-sm font-medium text-brand-ink/70">
-                  {field.label}
-                </label>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                    <Icon size={15} strokeWidth={1.75} />
+                  </span>
+                  <label htmlFor={field.key} className="text-sm font-medium text-brand-ink/70">
+                    {field.label}
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setVisibility((v) => ({ ...v, [field.key]: !v[field.key] }))}
+                  aria-label={isVisible ? `Hide ${field.label}` : `Show ${field.label}`}
+                  title={isVisible ? "Hide from public site" : "Show on public site"}
+                  className="flex h-7 w-7 flex-none items-center justify-center rounded-full text-brand-ink/40 hover:bg-brand-paper hover:text-heading"
+                >
+                  {isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
               </div>
               <div className="mt-3 flex items-baseline gap-2">
                 <input
@@ -95,11 +117,12 @@ export default function AdminStatsForm({ fields }: { fields: Field[] }) {
                 />
                 <span className="text-lg font-semibold text-brand-ink/40">+</span>
               </div>
-              {changed && (
+              {values[field.key] !== initialValues[field.key] && (
                 <p className="mt-1.5 text-xs text-brand-ink/45">
-                  Was {initial[field.key].toLocaleString()}
+                  Was {initialValues[field.key].toLocaleString()}
                 </p>
               )}
+              {!isVisible && <p className="mt-1.5 text-xs font-semibold text-brand-ink/40">Hidden</p>}
             </div>
           );
         })}

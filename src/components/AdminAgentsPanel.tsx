@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Agent, AgentInput } from "@/lib/agents-data";
 import ImageUploadField from "@/components/ImageUploadField";
 
@@ -17,6 +17,7 @@ type FormState = {
   bio: string;
   background: string;
   credentials: string;
+  visible: boolean;
 };
 
 const EMPTY_FORM: FormState = {
@@ -29,6 +30,7 @@ const EMPTY_FORM: FormState = {
   bio: "",
   background: "",
   credentials: "",
+  visible: true,
 };
 
 function agentToForm(agent: Agent): FormState {
@@ -42,6 +44,7 @@ function agentToForm(agent: Agent): FormState {
     bio: agent.bio ?? "",
     background: agent.background ?? "",
     credentials: agent.credentials?.join("\n") ?? "",
+    visible: agent.visible !== false,
   };
 }
 
@@ -55,6 +58,7 @@ function formToPayload(form: FormState): AgentInput {
     profileUrl: form.profileUrl.trim() || undefined,
     bio: form.bio.trim() || undefined,
     background: form.background.trim() || undefined,
+    visible: form.visible,
     credentials: form.credentials
       .split("\n")
       .map((c) => c.trim())
@@ -193,6 +197,16 @@ function AgentForm({
         </div>
       </details>
 
+      <label className="flex items-center gap-2 pt-1 text-sm font-medium text-brand-ink/70">
+        <input
+          type="checkbox"
+          checked={form.visible}
+          onChange={(e) => setForm((f) => ({ ...f, visible: e.target.checked }))}
+          className="h-4 w-4 rounded border-brand-line accent-brand-gold"
+        />
+        Visible on the public site
+      </label>
+
       {error && <p className="text-sm font-medium text-red-600">{error}</p>}
 
       <div className="flex items-center gap-3 pt-1">
@@ -220,6 +234,7 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function handleAdd(form: FormState): Promise<string | null> {
     const res = await fetch("/api/admin/agents", {
@@ -254,11 +269,38 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
     setDeletingId(null);
   }
 
+  async function handleMove(id: string, direction: "up" | "down") {
+    setBusyId(id);
+    await fetch(`/api/admin/agents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ move: direction }),
+    });
+    router.refresh();
+    setBusyId(null);
+  }
+
+  async function handleToggleVisible(agent: Agent) {
+    setBusyId(agent.id);
+    await fetch(`/api/admin/agents/${agent.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visible: !(agent.visible !== false) }),
+    });
+    router.refresh();
+    setBusyId(null);
+  }
+
   return (
     <div>
       <ul className="space-y-3">
-        {agents.map((agent) => (
-          <li key={agent.id} className="rounded-2xl border border-brand-line bg-surface p-4">
+        {agents.map((agent, i) => {
+          const visible = agent.visible !== false;
+          return (
+          <li
+            key={agent.id}
+            className={`rounded-2xl border border-brand-line bg-surface p-4 ${!visible ? "opacity-55" : ""}`}
+          >
             {editingId === agent.id ? (
               <AgentForm
                 initial={agentToForm(agent)}
@@ -268,6 +310,26 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
               />
             ) : (
               <div className="flex items-center gap-4">
+                <div className="flex flex-none flex-col">
+                  <button
+                    type="button"
+                    onClick={() => handleMove(agent.id, "up")}
+                    disabled={busyId === agent.id || i === 0}
+                    aria-label={`Move ${agent.name} up`}
+                    className="flex h-5 w-5 items-center justify-center text-brand-ink/40 hover:text-heading disabled:opacity-20"
+                  >
+                    <ChevronUp size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMove(agent.id, "down")}
+                    disabled={busyId === agent.id || i === agents.length - 1}
+                    aria-label={`Move ${agent.name} down`}
+                    className="flex h-5 w-5 items-center justify-center text-brand-ink/40 hover:text-heading disabled:opacity-20"
+                  >
+                    <ChevronDown size={14} />
+                  </button>
+                </div>
                 <div className="relative h-12 w-12 flex-none overflow-hidden rounded-full bg-brand-paper">
                   <Image src={agent.photo} alt={agent.name} fill className="object-cover" sizes="48px" />
                 </div>
@@ -275,8 +337,19 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
                   <p className="truncate text-sm font-semibold text-heading">{agent.name}</p>
                   <p className="truncate text-xs text-brand-ink/55">
                     {agent.title} · {agent.email}
+                    {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleVisible(agent)}
+                  disabled={busyId === agent.id}
+                  aria-label={visible ? `Hide ${agent.name}` : `Show ${agent.name}`}
+                  title={visible ? "Hide from public site" : "Show on public site"}
+                  className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-brand-ink/50 hover:bg-brand-paper hover:text-heading disabled:opacity-50"
+                >
+                  {visible ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
                 <button
                   type="button"
                   onClick={() => setEditingId(agent.id)}
@@ -297,7 +370,8 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
               </div>
             )}
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       {adding ? (

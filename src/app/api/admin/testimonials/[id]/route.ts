@@ -1,30 +1,22 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
-import { updateAgent, deleteAgent, moveAgent, type AgentInput } from "@/lib/agents-data";
+import {
+  updateTestimonial,
+  deleteTestimonial,
+  moveTestimonial,
+  type TestimonialInput,
+} from "@/lib/testimonials-data";
 
-function parseAgentPatch(body: Record<string, unknown>): Partial<AgentInput> | string {
+function parseTestimonialPatch(body: Record<string, unknown>): Partial<TestimonialInput> | string {
   if (typeof body.name === "string" && !body.name.trim()) return "Name cannot be empty.";
-  if (typeof body.title === "string" && !body.title.trim()) return "Title cannot be empty.";
-  if (typeof body.photo === "string" && !body.photo.trim()) return "Photo URL cannot be empty.";
-  if (typeof body.email === "string" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())) {
-    return "A valid email is required.";
-  }
+  if (typeof body.role === "string" && !body.role.trim()) return "Role cannot be empty.";
+  if (typeof body.quote === "string" && !body.quote.trim()) return "Quote cannot be empty.";
 
-  const patch: Partial<AgentInput> = {};
+  const patch: Partial<TestimonialInput> = {};
   if (typeof body.name === "string") patch.name = body.name.trim();
-  if (typeof body.title === "string") patch.title = body.title.trim();
-  if (typeof body.photo === "string") patch.photo = body.photo.trim();
-  if (typeof body.email === "string") patch.email = body.email.trim();
-  if (typeof body.phone === "string") patch.phone = body.phone.trim() || undefined;
-  if (typeof body.profileUrl === "string") patch.profileUrl = body.profileUrl.trim() || undefined;
-  if (typeof body.bio === "string") patch.bio = body.bio.trim() || undefined;
-  if (typeof body.background === "string") patch.background = body.background.trim() || undefined;
-  if (Array.isArray(body.credentials)) {
-    patch.credentials = body.credentials.filter(
-      (c): c is string => typeof c === "string" && c.trim().length > 0
-    );
-  }
+  if (typeof body.role === "string") patch.role = body.role.trim();
+  if (typeof body.quote === "string") patch.quote = body.quote.trim();
   if (typeof body.visible === "boolean") patch.visible = body.visible;
   return patch;
 }
@@ -45,15 +37,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const parsed = parseAgentPatch(body);
+  const parsed = parseTestimonialPatch(body);
   if (typeof parsed === "string") {
     return NextResponse.json({ error: parsed }, { status: 400 });
   }
 
-  await updateAgent(id, parsed);
+  await updateTestimonial(id, parsed);
 
   revalidatePath("/");
-  revalidatePath("/about-us");
 
   return NextResponse.json({ ok: true });
 }
@@ -78,10 +69,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "move must be 'up' or 'down'." }, { status: 400 });
   }
 
-  await moveAgent(id, body.move);
+  await moveTestimonial(id, body.move);
 
   revalidatePath("/");
-  revalidatePath("/about-us");
 
   return NextResponse.json({ ok: true });
 }
@@ -95,10 +85,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   }
 
   const { id } = await params;
-  await deleteAgent(id);
+  await deleteTestimonial(id);
 
   revalidatePath("/");
-  revalidatePath("/about-us");
 
   return NextResponse.json({ ok: true });
 }

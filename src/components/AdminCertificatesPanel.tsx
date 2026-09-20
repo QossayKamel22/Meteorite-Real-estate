@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Certificate, CertificateInput } from "@/lib/certificates-data";
 import ImageUploadField from "@/components/ImageUploadField";
 
@@ -15,6 +15,7 @@ type FormState = {
   registrationDate: string;
   expiryDate: string;
   activities: string;
+  visible: boolean;
 };
 
 const EMPTY_FORM: FormState = {
@@ -25,6 +26,7 @@ const EMPTY_FORM: FormState = {
   registrationDate: "",
   expiryDate: "",
   activities: "",
+  visible: true,
 };
 
 function certToForm(cert: Certificate): FormState {
@@ -36,6 +38,7 @@ function certToForm(cert: Certificate): FormState {
     registrationDate: cert.registrationDate ?? "",
     expiryDate: cert.expiryDate ?? "",
     activities: cert.activities?.join("\n") ?? "",
+    visible: cert.visible !== false,
   };
 }
 
@@ -47,6 +50,7 @@ function formToPayload(form: FormState): CertificateInput {
     licenseNo: form.licenseNo.trim() || undefined,
     registrationDate: form.registrationDate.trim() || undefined,
     expiryDate: form.expiryDate.trim() || undefined,
+    visible: form.visible,
     activities: form.activities
       .split("\n")
       .map((a) => a.trim())
@@ -159,6 +163,16 @@ function CertificateForm({
         </div>
       </div>
 
+      <label className="flex items-center gap-2 pt-1 text-sm font-medium text-brand-ink/70">
+        <input
+          type="checkbox"
+          checked={form.visible}
+          onChange={(e) => setForm((f) => ({ ...f, visible: e.target.checked }))}
+          className="h-4 w-4 rounded border-brand-line accent-brand-gold"
+        />
+        Visible on the public site
+      </label>
+
       {error && <p className="text-sm font-medium text-red-600">{error}</p>}
 
       <div className="flex items-center gap-3 pt-1">
@@ -186,6 +200,7 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function handleAdd(form: FormState): Promise<string | null> {
     const res = await fetch("/api/admin/certificates", {
@@ -220,11 +235,38 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
     setDeletingId(null);
   }
 
+  async function handleMove(id: string, direction: "up" | "down") {
+    setBusyId(id);
+    await fetch(`/api/admin/certificates/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ move: direction }),
+    });
+    router.refresh();
+    setBusyId(null);
+  }
+
+  async function handleToggleVisible(cert: Certificate) {
+    setBusyId(cert.id);
+    await fetch(`/api/admin/certificates/${cert.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visible: !(cert.visible !== false) }),
+    });
+    router.refresh();
+    setBusyId(null);
+  }
+
   return (
     <div>
       <ul className="space-y-3">
-        {certificates.map((cert) => (
-          <li key={cert.id} className="rounded-2xl border border-brand-line bg-surface p-4">
+        {certificates.map((cert, i) => {
+          const visible = cert.visible !== false;
+          return (
+          <li
+            key={cert.id}
+            className={`rounded-2xl border border-brand-line bg-surface p-4 ${!visible ? "opacity-55" : ""}`}
+          >
             {editingId === cert.id ? (
               <CertificateForm
                 initial={certToForm(cert)}
@@ -234,6 +276,26 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
               />
             ) : (
               <div className="flex items-center gap-4">
+                <div className="flex flex-none flex-col">
+                  <button
+                    type="button"
+                    onClick={() => handleMove(cert.id, "up")}
+                    disabled={busyId === cert.id || i === 0}
+                    aria-label={`Move ${cert.title} up`}
+                    className="flex h-5 w-5 items-center justify-center text-brand-ink/40 hover:text-heading disabled:opacity-20"
+                  >
+                    <ChevronUp size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleMove(cert.id, "down")}
+                    disabled={busyId === cert.id || i === certificates.length - 1}
+                    aria-label={`Move ${cert.title} down`}
+                    className="flex h-5 w-5 items-center justify-center text-brand-ink/40 hover:text-heading disabled:opacity-20"
+                  >
+                    <ChevronDown size={14} />
+                  </button>
+                </div>
                 <div className="relative h-12 w-16 flex-none overflow-hidden rounded-lg bg-brand-paper">
                   <Image src={cert.image} alt={cert.title} fill className="object-cover" sizes="64px" />
                 </div>
@@ -241,8 +303,19 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
                   <p className="truncate text-sm font-semibold text-heading">{cert.title}</p>
                   <p className="truncate text-xs text-brand-ink/55">
                     {cert.licenseNo ? `License #${cert.licenseNo}` : cert.issuer ?? "—"}
+                    {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                   </p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleToggleVisible(cert)}
+                  disabled={busyId === cert.id}
+                  aria-label={visible ? `Hide ${cert.title}` : `Show ${cert.title}`}
+                  title={visible ? "Hide from public site" : "Show on public site"}
+                  className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-brand-ink/50 hover:bg-brand-paper hover:text-heading disabled:opacity-50"
+                >
+                  {visible ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
                 <button
                   type="button"
                   onClick={() => setEditingId(cert.id)}
@@ -263,7 +336,8 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
               </div>
             )}
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       {adding ? (

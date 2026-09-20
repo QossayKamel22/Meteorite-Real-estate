@@ -76,25 +76,8 @@ export const stats = [
   { value: 250, label: "Happy Customers" },
 ];
 
-export const testimonials = [
-  {
-    name: "Saif",
-    role: "Customer",
-    quote:
-      "Saad is very professional, knowledgeable and helpful… i would highly recommend working with him.",
-  },
-  {
-    name: "Issa Haddad",
-    role: "Customer",
-    quote: "Very Professional team with high expertise and ethics. All the Best Meteorite",
-  },
-  {
-    name: "Ahmed Alsuwaidi",
-    role: "Customer",
-    quote:
-      "I deal with this company this very professional so, they helped me to find the best option in the market specially saad. Thanks a lot Mr. Saad to find my dream home.",
-  },
-];
+// Testimonials moved to src/lib/testimonials-data.ts (Firestore-backed,
+// admin-editable). See SEED_TESTIMONIALS there for the original verified values.
 
 // Agent roster and CEO bio moved to src/lib/agents-data.ts (Firestore-backed,
 // admin-editable). See SEED_AGENTS there for the original verified values.

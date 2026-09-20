@@ -70,9 +70,9 @@ function StatCard({
 
 export default async function AdminOverviewPage() {
   const [fields, agents, certificates, users] = await Promise.all([
-    getStatsList(),
-    getAgents(),
-    getCertificates(),
+    getStatsList({ includeHidden: true }),
+    getAgents({ includeHidden: true }),
+    getCertificates({ includeHidden: true }),
     listUsers(),
   ]);
 

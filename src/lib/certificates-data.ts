@@ -14,6 +14,8 @@ export type Certificate = {
   expiryDate?: string;
   activities?: string[];
   order: number;
+  /** Defaults to true when absent (existing docs predate this field). */
+  visible?: boolean;
 };
 
 export type CertificateInput = Omit<Certificate, "id" | "order">;
@@ -66,6 +68,7 @@ const CERTIFICATE_FIELDS = [
   "expiryDate",
   "activities",
   "order",
+  "visible",
 ] as const;
 
 function toPlainCertificate(id: string, data: FirebaseFirestore.DocumentData): Certificate {
@@ -76,10 +79,13 @@ function toPlainCertificate(id: string, data: FirebaseFirestore.DocumentData): C
   return cert as Certificate;
 }
 
-export async function getCertificates(): Promise<Certificate[]> {
+/** By default, only certificates visible on the public site are returned — pass
+ *  includeHidden for the admin panel, which needs to see (and un-hide) everything. */
+export async function getCertificates(opts?: { includeHidden?: boolean }): Promise<Certificate[]> {
   await seedIfEmpty();
   const snap = await CERTS_COL.orderBy("order", "asc").get();
-  return snap.docs.map((doc) => toPlainCertificate(doc.id, doc.data()));
+  const all = snap.docs.map((doc) => toPlainCertificate(doc.id, doc.data()));
+  return opts?.includeHidden ? all : all.filter((c) => c.visible !== false);
 }
 
 export async function addCertificate(data: CertificateInput): Promise<string> {
@@ -97,4 +103,20 @@ export async function updateCertificate(
 
 export async function deleteCertificate(id: string): Promise<void> {
   await CERTS_COL.doc(id).delete();
+}
+
+/** Swaps this certificate's `order` with its neighbor above/below (no-op at the ends). */
+export async function moveCertificate(id: string, direction: "up" | "down"): Promise<void> {
+  const snap = await CERTS_COL.orderBy("order", "asc").get();
+  const docs = snap.docs;
+  const idx = docs.findIndex((d) => d.id === id);
+  const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+  if (idx === -1 || swapIdx < 0 || swapIdx >= docs.length) return;
+
+  const a = docs[idx];
+  const b = docs[swapIdx];
+  await adminDb.runTransaction(async (tx) => {
+    tx.update(a.ref, { order: b.data().order });
+    tx.update(b.ref, { order: a.data().order });
+  });
 }

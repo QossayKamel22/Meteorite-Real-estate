@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Award, BadgeCheck, MapPin, ShieldCheck } from "lucide-react";
 import { company, credentials } from "@/lib/content";
+import { getTestimonials } from "@/lib/testimonials-data";
 import Reveal from "@/components/Reveal";
 import StatsSection from "@/components/StatsSection";
 import CeoSection from "@/components/CeoSection";
@@ -16,7 +17,8 @@ export const metadata: Metadata = {
 
 const credentialIcons = [ShieldCheck, Award, BadgeCheck];
 
-export default function AboutUsPage() {
+export default async function AboutUsPage() {
+  const testimonials = await getTestimonials();
   return (
     <div>
       <section className="relative overflow-hidden bg-brand-navy py-20 sm:py-28">
@@ -93,7 +95,7 @@ export default function AboutUsPage() {
 
       <CeoSection />
       <AgentsSection variant="about" />
-      <TestimonialsSection />
+      <TestimonialsSection testimonials={testimonials} />
       <ContactCta />
     </div>
   );

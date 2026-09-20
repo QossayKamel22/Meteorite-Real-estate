@@ -27,12 +27,14 @@ function parseAgentInput(body: Record<string, unknown>): AgentInput | string {
   const credentials = Array.isArray(body.credentials)
     ? body.credentials.filter((c): c is string => typeof c === "string" && c.trim().length > 0)
     : undefined;
+  const visible = typeof body.visible === "boolean" ? body.visible : true;
 
   return {
     name,
     title,
     photo,
     email,
+    visible,
     ...(phone ? { phone } : {}),
     ...(profileUrl ? { profileUrl } : {}),
     ...(bio ? { bio } : {}),
@@ -45,7 +47,7 @@ export async function GET() {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
-  return NextResponse.json(await getAgents());
+  return NextResponse.json(await getAgents({ includeHidden: true }));
 }
 
 export async function POST(request: Request) {

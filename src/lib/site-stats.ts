@@ -12,6 +12,7 @@ export const STAT_FIELDS = [
 
 export type StatKey = (typeof STAT_FIELDS)[number]["key"];
 export type SiteStats = Record<StatKey, number>;
+export type StatVisibility = Partial<Record<StatKey, boolean>>;
 
 /**
  * Original values as scraped from the live site — used only to seed
@@ -24,23 +25,43 @@ const DEFAULTS: SiteStats = {
   happyCustomers: 250,
 };
 
-/** Reads editable homepage stats from Firestore (stats/homepage). */
-export async function getStats(): Promise<SiteStats> {
+type StatsDoc = Partial<SiteStats> & { visibility?: StatVisibility };
+
+async function getStatsDoc(): Promise<StatsDoc> {
   const snap = await STATS_DOC.get();
   if (!snap.exists) {
     await STATS_DOC.set(DEFAULTS);
     return DEFAULTS;
   }
-  return { ...DEFAULTS, ...(snap.data() as Partial<SiteStats>) };
+  return snap.data() as StatsDoc;
 }
 
-export async function getStatsList() {
-  const stats = await getStats();
-  return STAT_FIELDS.map((f) => ({ ...f, value: stats[f.key] }));
+/** Reads editable homepage stats from Firestore (stats/homepage). */
+export async function getStats(): Promise<SiteStats> {
+  const doc = await getStatsDoc();
+  return { ...DEFAULTS, ...doc };
+}
+
+/** By default, only stat fields marked visible are returned — pass
+ *  includeHidden for the admin panel, which needs to see (and un-hide) everything. */
+export async function getStatsList(opts?: { includeHidden?: boolean }) {
+  const doc = await getStatsDoc();
+  const stats = { ...DEFAULTS, ...doc };
+  const visibility = doc.visibility ?? {};
+  const all = STAT_FIELDS.map((f) => ({
+    ...f,
+    value: stats[f.key],
+    visible: visibility[f.key] !== false,
+  }));
+  return opts?.includeHidden ? all : all.filter((f) => f.visible);
 }
 
 export type StatsList = Awaited<ReturnType<typeof getStatsList>>;
 
 export async function updateStats(next: SiteStats): Promise<void> {
-  await STATS_DOC.set(next);
+  await STATS_DOC.set(next, { merge: true });
+}
+
+export async function updateStatsVisibility(next: StatVisibility): Promise<void> {
+  await STATS_DOC.set({ visibility: next }, { merge: true });
 }

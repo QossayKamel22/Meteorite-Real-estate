@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
-import { STAT_FIELDS, getStats, updateStats, type SiteStats } from "@/lib/site-stats";
+import {
+  STAT_FIELDS,
+  getStats,
+  updateStats,
+  updateStatsVisibility,
+  type SiteStats,
+  type StatVisibility,
+} from "@/lib/site-stats";
 
 export async function GET() {
   if (!(await requireAdmin())) {
@@ -39,6 +46,15 @@ export async function PUT(request: Request) {
   }
 
   await updateStats(next);
+
+  if (body.visibility && typeof body.visibility === "object") {
+    const rawVisibility = body.visibility as Record<string, unknown>;
+    const nextVisibility: StatVisibility = {};
+    for (const { key } of STAT_FIELDS) {
+      if (typeof rawVisibility[key] === "boolean") nextVisibility[key] = rawVisibility[key];
+    }
+    await updateStatsVisibility(nextVisibility);
+  }
 
   revalidatePath("/");
   revalidatePath("/about-us");
