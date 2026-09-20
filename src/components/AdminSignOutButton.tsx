@@ -22,7 +22,7 @@ export default function AdminSignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={loading}
-      className="inline-flex items-center gap-1.5 rounded-full border border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 transition-colors hover:bg-brand-paper disabled:opacity-60"
+      className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white/80 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-60"
     >
       <LogOut size={14} />
       Sign out

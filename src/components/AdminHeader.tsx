@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Moon, ShieldCheck, Sun } from "lucide-react";
+import AdminSignOutButton from "@/components/AdminSignOutButton";
 
 export default function AdminHeader() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -34,14 +35,23 @@ export default function AdminHeader() {
           </span>
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setTheme(isDark ? "light" : "dark")}
-          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-          className="flex h-9 w-9 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="hidden text-sm font-medium text-white/70 transition-colors hover:text-white sm:block"
+          >
+            View site
+          </Link>
+          <button
+            type="button"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          <AdminSignOutButton />
+        </div>
       </div>
     </header>
   );

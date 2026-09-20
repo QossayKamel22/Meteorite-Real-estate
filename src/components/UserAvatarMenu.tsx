@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { useAuth, type AuthUser } from "@/lib/auth-context";
 
 // Apple-style pastel avatar palette — picked deterministically per user.
@@ -55,7 +56,7 @@ function Avatar({ user, size = 36 }: { user: AuthUser; size?: number }) {
 }
 
 export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "desktop" | "mobile" }) {
-  const { user, loading, signOut } = useAuth();
+  const { user, role, loading, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -101,6 +102,15 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
           <p className="truncate text-sm font-semibold text-heading">{user.name ?? user.email}</p>
           {user.name && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
         </div>
+        {role === "admin" && (
+          <Link
+            href="/admin"
+            className="flex flex-none items-center gap-1 rounded-full bg-brand-gold/15 px-3 py-1.5 text-xs font-semibold text-brand-gold"
+          >
+            <ShieldCheck size={12} />
+            Admin
+          </Link>
+        )}
         <button
           type="button"
           onClick={() => signOut()}
@@ -145,6 +155,16 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
           >
             Saved properties
           </Link>
+          {role === "admin" && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-brand-gold hover:bg-brand-gold/10"
+            >
+              <ShieldCheck size={14} />
+              Admin dashboard
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => {

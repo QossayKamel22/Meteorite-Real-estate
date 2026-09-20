@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
+import AdminSidebar from "@/components/AdminSidebar";
 import { getSessionUser } from "@/lib/session";
 
 // Defense-in-depth: proxy.ts already blocks unauthenticated/non-admin
@@ -13,7 +14,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="flex min-h-full flex-col bg-brand-paper">
       <AdminHeader />
-      <main className="flex-1">{children}</main>
+      <div className="flex flex-1 flex-col lg:flex-row">
+        <AdminSidebar />
+        <main className="min-w-0 flex-1">{children}</main>
+      </div>
     </div>
   );
 }
