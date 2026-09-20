@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { hasTrustedOrigin, requireAdmin } from "@/lib/admin-auth";
+import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { STAT_FIELDS, getStats, updateStats, type SiteStats } from "@/lib/site-stats";
 
 export async function GET() {

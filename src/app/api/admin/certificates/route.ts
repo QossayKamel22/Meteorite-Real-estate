@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { hasTrustedOrigin, requireAdmin } from "@/lib/admin-auth";
+import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { getCertificates, addCertificate, type CertificateInput } from "@/lib/certificates-data";
 
 function parseCertificateInput(body: Record<string, unknown>): CertificateInput | string {

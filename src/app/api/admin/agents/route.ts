@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { hasTrustedOrigin, requireAdmin } from "@/lib/admin-auth";
+import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { getAgents, addAgent, type AgentInput } from "@/lib/agents-data";
 
 function parseAgentInput(body: Record<string, unknown>): AgentInput | string {

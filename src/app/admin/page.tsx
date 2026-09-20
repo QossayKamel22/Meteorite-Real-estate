@@ -1,21 +1,26 @@
 import type { Metadata } from "next";
-import { BarChart3, Clock, IdCard, ShieldCheck } from "lucide-react";
+import { BarChart3, Clock, IdCard, ShieldCheck, Users } from "lucide-react";
 import { getStatsList } from "@/lib/site-stats";
 import { getAgents } from "@/lib/agents-data";
 import { getCertificates } from "@/lib/certificates-data";
+import { listUsers } from "@/lib/users-data";
+import { getSessionUser } from "@/lib/session";
 import AdminStatsForm from "@/components/AdminStatsForm";
 import AdminAgentsPanel from "@/components/AdminAgentsPanel";
 import AdminCertificatesPanel from "@/components/AdminCertificatesPanel";
+import AdminUsersPanel from "@/components/AdminUsersPanel";
 import AdminSignOutButton from "@/components/AdminSignOutButton";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [fields, agents, certificates] = await Promise.all([
+  const [fields, agents, certificates, users, session] = await Promise.all([
     getStatsList(),
     getAgents(),
     getCertificates(),
+    listUsers(),
+    getSessionUser(),
   ]);
 
   return (
@@ -77,9 +82,25 @@ export default async function AdminDashboardPage() {
         </div>
       </section>
 
+      <section className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+            <Users size={16} strokeWidth={1.75} />
+          </span>
+          <h2 className="text-lg font-semibold text-heading">Users</h2>
+        </div>
+        <p className="mt-3 text-sm leading-relaxed text-brand-ink/60">
+          Everyone who has signed in with Google. Grant or revoke admin access, or disable an
+          account entirely.
+        </p>
+        <div className="mt-6">
+          <AdminUsersPanel users={users} currentUid={session?.uid ?? ""} />
+        </div>
+      </section>
+
       <p className="mt-6 flex items-center gap-1.5 text-xs text-brand-ink/40">
         <Clock size={13} />
-        Signed in as administrator — this session expires automatically after 8 hours.
+        Signed in via Google — admin access is controlled from the Users section above.
       </p>
     </div>
   );

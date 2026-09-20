@@ -3,15 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AdminSignOutButton() {
   const router = useRouter();
+  const { signOut } = useAuth();
   const [loading, setLoading] = useState(false);
 
   async function handleSignOut() {
     setLoading(true);
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
+    await signOut();
+    router.push("/login");
     router.refresh();
   }
 

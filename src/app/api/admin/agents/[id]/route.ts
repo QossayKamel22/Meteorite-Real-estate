@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { hasTrustedOrigin, requireAdmin } from "@/lib/admin-auth";
+import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { updateAgent, deleteAgent, type AgentInput } from "@/lib/agents-data";
 
 function parseAgentPatch(body: Record<string, unknown>): Partial<AgentInput> | string {

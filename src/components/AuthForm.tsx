@@ -44,7 +44,14 @@ export default function AuthForm({ mode }: { mode: Mode }) {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
-    if (user) router.push("/");
+    if (!user) return;
+    // Read the target from the URL directly (rather than useSearchParams) so
+    // this client component doesn't force the login page into dynamic
+    // rendering just to read one query param.
+    const params = new URLSearchParams(window.location.search);
+    const redirectTo = params.get("redirect");
+    const isSafeLocalPath = Boolean(redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//"));
+    router.push(isSafeLocalPath ? (redirectTo as string) : "/");
   }, [user, router]);
 
   async function handleGoogle() {

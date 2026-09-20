@@ -16,8 +16,11 @@ export type AuthUser = {
   photoURL: string | null;
 };
 
+export type Role = "admin" | "user";
+
 type AuthContextValue = {
   user: AuthUser | null;
+  role: Role | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -36,8 +39,30 @@ function mapUser(user: User | null): AuthUser | null {
   };
 }
 
+/**
+ * Exchanges the client's Firebase ID token for a server-side session cookie
+ * (see /api/auth/session) and provisions the Firestore user profile. This is
+ * what determines admin access — there is no separate admin login.
+ */
+async function syncServerSession(firebaseUser: User): Promise<Role | null> {
+  try {
+    const idToken = await firebaseUser.getIdToken();
+    const res = await fetch("/api/auth/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.role === "admin" ? "admin" : "user";
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [role, setRole] = useState<Role | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,6 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(mapUser(firebaseUser));
+      if (firebaseUser) {
+        syncServerSession(firebaseUser).then(setRole);
+      } else {
+        setRole(null);
+      }
       setLoading(false);
     });
     return unsubscribe;
@@ -75,12 +105,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     setError(null);
+    try {
+      await fetch("/api/auth/session", { method: "DELETE" });
+    } catch {
+      // best-effort — still sign out of the client SDK below
+    }
     await firebaseSignOut(auth);
+    setRole(null);
   };
 
   const value = useMemo(
-    () => ({ user, loading, signInWithGoogle, signOut, error }),
-    [user, loading, error]
+    () => ({ user, role, loading, signInWithGoogle, signOut, error }),
+    [user, role, loading, error]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

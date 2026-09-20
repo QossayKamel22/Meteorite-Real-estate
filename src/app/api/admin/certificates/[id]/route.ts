@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { hasTrustedOrigin, requireAdmin } from "@/lib/admin-auth";
+import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { updateCertificate, deleteCertificate, type CertificateInput } from "@/lib/certificates-data";
 
 function parseCertificatePatch(body: Record<string, unknown>): Partial<CertificateInput> | string {
