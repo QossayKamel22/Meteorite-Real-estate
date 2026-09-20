@@ -1,6 +1,7 @@
 import "server-only";
-import { FieldValue } from "firebase-admin/firestore";
-import { adminDb, adminAuth } from "@/lib/firebase-admin";
+import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
+import { getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
+import { authApiKey, authServiceAccount } from "@/lib/edge-auth-config";
 
 export type Role = "admin" | "user";
 
@@ -18,27 +19,27 @@ export type AppUser = {
 
 const COLLECTION = "users";
 
-type Timestamped = { toDate?: () => Date };
+function auth() {
+  return getFirebaseAuth({ serviceAccount: authServiceAccount, apiKey: authApiKey });
+}
 
-function toPlainUser(uid: string, data: FirebaseFirestore.DocumentData): AppUser {
-  const createdAt = data.createdAt as Timestamped | undefined;
-  const lastLoginAt = data.lastLoginAt as Timestamped | undefined;
+function toPlainUser(uid: string, data: Record<string, unknown>): AppUser {
   return {
     uid,
-    name: data.name ?? null,
-    email: data.email ?? null,
-    photoURL: data.photoURL ?? null,
+    name: (data.name as string) ?? null,
+    email: (data.email as string) ?? null,
+    photoURL: (data.photoURL as string) ?? null,
     role: data.role === "admin" ? "admin" : "user",
-    provider: data.provider ?? "unknown",
+    provider: (data.provider as string) ?? "unknown",
     disabled: data.disabled === true,
-    createdAt: createdAt?.toDate ? createdAt.toDate().toISOString() : null,
-    lastLoginAt: lastLoginAt?.toDate ? lastLoginAt.toDate().toISOString() : null,
+    createdAt: (data.createdAt as string) ?? null,
+    lastLoginAt: (data.lastLoginAt as string) ?? null,
   };
 }
 
 /**
  * Called right after a client verifies its Firebase ID token against our
- * server (see /api/auth/session). Creates the user's Firestore profile on
+ * server (see /api/auth/provision). Creates the user's Firestore profile on
  * first sign-in, or refreshes name/photo/lastLoginAt on subsequent ones.
  *
  * The very first person to sign in with the email in INITIAL_ADMIN_EMAIL is
@@ -53,72 +54,68 @@ export async function upsertUserOnSignIn(params: {
   photoURL: string | null;
   provider: string;
 }): Promise<AppUser> {
-  const ref = adminDb.collection(COLLECTION).doc(params.uid);
-  const snap = await ref.get();
+  const existing = await getDoc(COLLECTION, params.uid);
 
   const bootstrapEmail = process.env.INITIAL_ADMIN_EMAIL?.toLowerCase().trim();
   const isBootstrapAdmin = Boolean(
     bootstrapEmail && params.email && params.email.toLowerCase() === bootstrapEmail
   );
+  const now = new Date().toISOString();
 
-  if (!snap.exists) {
+  if (!existing) {
     const role: Role = isBootstrapAdmin ? "admin" : "user";
-    await ref.set({
+    await setDocMerge(COLLECTION, params.uid, {
       name: params.name,
       email: params.email,
       photoURL: params.photoURL,
       provider: params.provider,
       role,
       disabled: false,
-      createdAt: FieldValue.serverTimestamp(),
-      lastLoginAt: FieldValue.serverTimestamp(),
+      createdAt: now,
+      lastLoginAt: now,
     });
     if (role === "admin") {
-      await adminAuth.setCustomUserClaims(params.uid, { admin: true });
+      await auth().setCustomUserClaims(params.uid, { admin: true });
     }
   } else {
-    const existing = snap.data() ?? {};
-    const shouldBeAdmin = existing.role === "admin" || isBootstrapAdmin;
-    await ref.set(
-      {
-        name: params.name,
-        email: params.email,
-        photoURL: params.photoURL,
-        lastLoginAt: FieldValue.serverTimestamp(),
-        ...(shouldBeAdmin && existing.role !== "admin" ? { role: "admin" as Role } : {}),
-      },
-      { merge: true }
-    );
+    const shouldBeAdmin = existing.data.role === "admin" || isBootstrapAdmin;
+    await setDocMerge(COLLECTION, params.uid, {
+      name: params.name,
+      email: params.email,
+      photoURL: params.photoURL,
+      lastLoginAt: now,
+      ...(shouldBeAdmin && existing.data.role !== "admin" ? { role: "admin" as Role } : {}),
+    });
     if (shouldBeAdmin) {
-      const authUser = await adminAuth.getUser(params.uid);
-      if (authUser.customClaims?.admin !== true) {
-        await adminAuth.setCustomUserClaims(params.uid, { admin: true });
+      const authUser = await auth().getUser(params.uid);
+      if (!authUser?.customClaims?.admin) {
+        await auth().setCustomUserClaims(params.uid, { admin: true });
       }
     }
   }
 
-  const fresh = await ref.get();
-  return toPlainUser(params.uid, fresh.data()!);
+  const fresh = await getDoc(COLLECTION, params.uid);
+  return toPlainUser(params.uid, fresh!.data);
 }
 
 export async function listUsers(): Promise<AppUser[]> {
-  const snap = await adminDb.collection(COLLECTION).orderBy("createdAt", "desc").get();
-  return snap.docs.map((d) => toPlainUser(d.id, d.data()));
+  const docs = await listCollection(COLLECTION, { orderBy: "createdAt", direction: "DESCENDING" });
+  return docs.map((d) => toPlainUser(d.id, d.data));
 }
 
 /** Grants or revokes admin access. Keeps the Firestore role and the Auth custom claim in sync. */
 export async function setUserRole(uid: string, role: Role): Promise<void> {
-  await adminDb.collection(COLLECTION).doc(uid).set({ role }, { merge: true });
-  await adminAuth.setCustomUserClaims(uid, role === "admin" ? { admin: true } : {});
+  await setDocMerge(COLLECTION, uid, { role });
+  await auth().setCustomUserClaims(uid, role === "admin" ? { admin: true } : null);
 }
 
-/** Disables/re-enables a user's ability to sign in, without deleting their data. */
+/**
+ * Disables/re-enables a user's ability to sign in, without deleting their
+ * data. Google's own token-refresh endpoint refuses to renew a disabled
+ * user's session, so this takes effect within that session's current token
+ * lifetime (up to ~1 hour) rather than instantly revoking it.
+ */
 export async function setUserDisabled(uid: string, disabled: boolean): Promise<void> {
-  await adminDb.collection(COLLECTION).doc(uid).set({ disabled }, { merge: true });
-  await adminAuth.updateUser(uid, { disabled });
-  if (disabled) {
-    // Also invalidates any existing session cookie immediately (verifySessionCookie
-    // is called with checkRevoked=true), not just future sign-in attempts.
-    await adminAuth.revokeRefreshTokens(uid);
-  }
+  await setDocMerge(COLLECTION, uid, { disabled });
+  await auth().updateUser(uid, { disabled });
 }

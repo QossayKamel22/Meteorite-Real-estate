@@ -1,8 +1,7 @@
 import "server-only";
-import { adminDb } from "@/lib/firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+import { addDoc, commitWrites, countCollection, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 
-const CERTS_COL = adminDb.collection("certificates");
+const COLLECTION = "certificates";
 
 export type Certificate = {
   id: string;
@@ -37,86 +36,78 @@ const SEED_CERTIFICATES: CertificateInput[] = [
   },
 ];
 
-const SEED_MARKER = adminDb.collection("_meta").doc("certificatesSeeded");
+const SEED_MARKER_COLLECTION = "_meta";
+const SEED_MARKER_ID = "certificatesSeeded";
 
 /**
- * Seeds once, guarded by a transaction on a sentinel doc so concurrent
- * calls (e.g. multiple pages building in parallel) can't both pass the
- * "is it empty" check and double-insert the seed data.
+ * Seeds once, guarded by a `requireAbsent` precondition on a sentinel doc
+ * within the same atomic commit, so concurrent calls (e.g. multiple pages
+ * building in parallel) can't both pass the "is it empty" check and
+ * double-insert the seed data.
  */
 async function seedIfEmpty(): Promise<void> {
-  await adminDb.runTransaction(async (tx) => {
-    const marker = await tx.get(SEED_MARKER);
-    if (marker.exists) return;
-    tx.set(SEED_MARKER, { seededAt: FieldValue.serverTimestamp() });
-    SEED_CERTIFICATES.forEach((cert, i) => {
-      tx.set(CERTS_COL.doc(), { ...cert, order: i });
-    });
-  });
+  const marker = await getDoc(SEED_MARKER_COLLECTION, SEED_MARKER_ID);
+  if (marker) return;
+
+  await commitWrites([
+    { collection: SEED_MARKER_COLLECTION, id: SEED_MARKER_ID, data: { seededAt: new Date().toISOString() }, requireAbsent: true },
+    ...SEED_CERTIFICATES.map((cert, i) => ({
+      collection: COLLECTION,
+      id: crypto.randomUUID(),
+      data: { ...cert, order: i },
+      requireAbsent: true,
+    })),
+  ]);
 }
 
-/** Fields that make up the public Certificate shape — excludes internal
- *  bookkeeping fields like `updatedAt` (a Firestore Timestamp instance),
- *  which can't cross the Server->Client Component boundary as a class
- *  instance. */
-const CERTIFICATE_FIELDS = [
-  "title",
-  "image",
-  "issuer",
-  "licenseNo",
-  "registrationDate",
-  "expiryDate",
-  "activities",
-  "order",
-  "visible",
-] as const;
-
-function toPlainCertificate(id: string, data: FirebaseFirestore.DocumentData): Certificate {
-  const cert = { id } as Record<string, unknown>;
-  for (const key of CERTIFICATE_FIELDS) {
-    if (data[key] !== undefined) cert[key] = data[key];
-  }
-  return cert as Certificate;
+function toCertificate(id: string, data: Record<string, unknown>): Certificate {
+  return {
+    id,
+    title: data.title as string,
+    image: data.image as string,
+    order: (data.order as number) ?? 0,
+    issuer: data.issuer as string | undefined,
+    licenseNo: data.licenseNo as string | undefined,
+    registrationDate: data.registrationDate as string | undefined,
+    expiryDate: data.expiryDate as string | undefined,
+    activities: data.activities as string[] | undefined,
+    visible: data.visible as boolean | undefined,
+  };
 }
 
 /** By default, only certificates visible on the public site are returned — pass
  *  includeHidden for the admin panel, which needs to see (and un-hide) everything. */
 export async function getCertificates(opts?: { includeHidden?: boolean }): Promise<Certificate[]> {
   await seedIfEmpty();
-  const snap = await CERTS_COL.orderBy("order", "asc").get();
-  const all = snap.docs.map((doc) => toPlainCertificate(doc.id, doc.data()));
+  const docs = await listCollection(COLLECTION, { orderBy: "order" });
+  const all = docs.map((d) => toCertificate(d.id, d.data));
   return opts?.includeHidden ? all : all.filter((c) => c.visible !== false);
 }
 
 export async function addCertificate(data: CertificateInput): Promise<string> {
-  const countSnap = await CERTS_COL.get();
-  const ref = await CERTS_COL.add({ ...data, order: countSnap.size });
-  return ref.id;
+  const order = await countCollection(COLLECTION);
+  return addDoc(COLLECTION, { ...data, order });
 }
 
-export async function updateCertificate(
-  id: string,
-  data: Partial<CertificateInput>
-): Promise<void> {
-  await CERTS_COL.doc(id).update({ ...data, updatedAt: FieldValue.serverTimestamp() });
+export async function updateCertificate(id: string, data: Partial<CertificateInput>): Promise<void> {
+  await setDocMerge(COLLECTION, id, { ...data, updatedAt: new Date().toISOString() });
 }
 
 export async function deleteCertificate(id: string): Promise<void> {
-  await CERTS_COL.doc(id).delete();
+  await deleteDoc(COLLECTION, id);
 }
 
 /** Swaps this certificate's `order` with its neighbor above/below (no-op at the ends). */
 export async function moveCertificate(id: string, direction: "up" | "down"): Promise<void> {
-  const snap = await CERTS_COL.orderBy("order", "asc").get();
-  const docs = snap.docs;
+  const docs = await listCollection(COLLECTION, { orderBy: "order" });
   const idx = docs.findIndex((d) => d.id === id);
   const swapIdx = direction === "up" ? idx - 1 : idx + 1;
   if (idx === -1 || swapIdx < 0 || swapIdx >= docs.length) return;
 
   const a = docs[idx];
   const b = docs[swapIdx];
-  await adminDb.runTransaction(async (tx) => {
-    tx.update(a.ref, { order: b.data().order });
-    tx.update(b.ref, { order: a.data().order });
-  });
+  await commitWrites([
+    { collection: COLLECTION, id: a.id, data: { ...a.data, order: b.data.order } },
+    { collection: COLLECTION, id: b.id, data: { ...b.data, order: a.data.order } },
+  ]);
 }

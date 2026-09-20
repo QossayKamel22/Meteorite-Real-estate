@@ -1,7 +1,8 @@
 import "server-only";
-import { adminDb } from "@/lib/firebase-admin";
+import { getDoc, setDocMerge } from "@/lib/firestore-rest";
 
-const STATS_DOC = adminDb.collection("stats").doc("homepage");
+const COLLECTION = "stats";
+const DOC_ID = "homepage";
 
 export const STAT_FIELDS = [
   { key: "propertiesSubmitted", label: "Properties Submitted" },
@@ -28,12 +29,12 @@ const DEFAULTS: SiteStats = {
 type StatsDoc = Partial<SiteStats> & { visibility?: StatVisibility };
 
 async function getStatsDoc(): Promise<StatsDoc> {
-  const snap = await STATS_DOC.get();
-  if (!snap.exists) {
-    await STATS_DOC.set(DEFAULTS);
+  const doc = await getDoc(COLLECTION, DOC_ID);
+  if (!doc) {
+    await setDocMerge(COLLECTION, DOC_ID, DEFAULTS);
     return DEFAULTS;
   }
-  return snap.data() as StatsDoc;
+  return doc.data as StatsDoc;
 }
 
 /** Reads editable homepage stats from Firestore (stats/homepage). */
@@ -59,9 +60,9 @@ export async function getStatsList(opts?: { includeHidden?: boolean }) {
 export type StatsList = Awaited<ReturnType<typeof getStatsList>>;
 
 export async function updateStats(next: SiteStats): Promise<void> {
-  await STATS_DOC.set(next, { merge: true });
+  await setDocMerge(COLLECTION, DOC_ID, next);
 }
 
 export async function updateStatsVisibility(next: StatVisibility): Promise<void> {
-  await STATS_DOC.set({ visibility: next }, { merge: true });
+  await setDocMerge(COLLECTION, DOC_ID, { visibility: next });
 }

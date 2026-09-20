@@ -69,14 +69,17 @@ function mapAuthErrorCode(code: string | undefined): string {
 }
 
 /**
- * Exchanges the client's Firebase ID token for a server-side session cookie
- * (see /api/auth/session) and provisions the Firestore user profile. This is
- * what determines admin access — there is no separate admin login.
+ * Two steps, both required: /api/login is intercepted by the edge proxy
+ * (next-firebase-auth-edge) and sets the actual session cookie from the ID
+ * token; /api/auth/provision independently re-verifies that same token and
+ * provisions/refreshes the Firestore user profile. This is what determines
+ * admin access — there is no separate admin login.
  */
 async function syncServerSession(firebaseUser: User, forceRefreshToken = false): Promise<Role | null> {
   try {
     const idToken = await firebaseUser.getIdToken(forceRefreshToken);
-    const res = await fetch("/api/auth/session", {
+    await fetch("/api/login", { headers: { Authorization: `Bearer ${idToken}` } });
+    const res = await fetch("/api/auth/provision", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken }),
@@ -198,7 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     setActionLoading(true);
     try {
-      await fetch("/api/auth/session", { method: "DELETE" });
+      await fetch("/api/logout");
     } catch {
       // best-effort — still sign out of the client SDK below
     }

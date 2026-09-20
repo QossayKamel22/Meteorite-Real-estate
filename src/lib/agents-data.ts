@@ -1,8 +1,7 @@
 import "server-only";
-import { adminDb } from "@/lib/firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+import { addDoc, commitWrites, countCollection, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 
-const AGENTS_COL = adminDb.collection("agents");
+const COLLECTION = "agents";
 
 export type Agent = {
   id: string;
@@ -69,84 +68,80 @@ const SEED_AGENTS: AgentInput[] = [
   },
 ];
 
-const SEED_MARKER = adminDb.collection("_meta").doc("agentsSeeded");
+const SEED_MARKER_COLLECTION = "_meta";
+const SEED_MARKER_ID = "agentsSeeded";
 
 /**
- * Seeds once, guarded by a transaction on a sentinel doc so concurrent
- * calls (e.g. multiple pages building in parallel) can't both pass the
- * "is it empty" check and double-insert the seed data.
+ * Seeds once, guarded by a `requireAbsent` precondition on a sentinel doc
+ * within the same atomic commit, so concurrent calls (e.g. multiple pages
+ * building in parallel) can't both pass the "is it empty" check and
+ * double-insert the seed data.
  */
 async function seedIfEmpty(): Promise<void> {
-  await adminDb.runTransaction(async (tx) => {
-    const marker = await tx.get(SEED_MARKER);
-    if (marker.exists) return;
-    tx.set(SEED_MARKER, { seededAt: FieldValue.serverTimestamp() });
-    SEED_AGENTS.forEach((agent, i) => {
-      tx.set(AGENTS_COL.doc(), { ...agent, order: i });
-    });
-  });
+  const marker = await getDoc(SEED_MARKER_COLLECTION, SEED_MARKER_ID);
+  if (marker) return;
+
+  await commitWrites([
+    { collection: SEED_MARKER_COLLECTION, id: SEED_MARKER_ID, data: { seededAt: new Date().toISOString() }, requireAbsent: true },
+    ...SEED_AGENTS.map((agent, i) => ({
+      collection: COLLECTION,
+      id: crypto.randomUUID(),
+      data: { ...agent, order: i },
+      requireAbsent: true,
+    })),
+  ]);
 }
 
-/** Fields that make up the public Agent shape — excludes internal bookkeeping
- *  fields like `updatedAt` (a Firestore Timestamp instance), which can't
- *  cross the Server->Client Component boundary as a class instance. */
-const AGENT_FIELDS = [
-  "name",
-  "title",
-  "photo",
-  "email",
-  "phone",
-  "profileUrl",
-  "order",
-  "visible",
-  "bio",
-  "background",
-  "credentials",
-] as const;
-
-function toPlainAgent(id: string, data: FirebaseFirestore.DocumentData): Agent {
-  const agent = { id } as Record<string, unknown>;
-  for (const key of AGENT_FIELDS) {
-    if (data[key] !== undefined) agent[key] = data[key];
-  }
-  return agent as Agent;
+function toAgent(id: string, data: Record<string, unknown>): Agent {
+  return {
+    id,
+    name: data.name as string,
+    title: data.title as string,
+    photo: data.photo as string,
+    email: data.email as string,
+    order: (data.order as number) ?? 0,
+    phone: data.phone as string | undefined,
+    profileUrl: data.profileUrl as string | undefined,
+    visible: data.visible as boolean | undefined,
+    bio: data.bio as string | undefined,
+    background: data.background as string | undefined,
+    credentials: data.credentials as string[] | undefined,
+  };
 }
 
 /** By default, only agents visible on the public site are returned — pass
  *  includeHidden for the admin panel, which needs to see (and un-hide) everything. */
 export async function getAgents(opts?: { includeHidden?: boolean }): Promise<Agent[]> {
   await seedIfEmpty();
-  const snap = await AGENTS_COL.orderBy("order", "asc").get();
-  const all = snap.docs.map((doc) => toPlainAgent(doc.id, doc.data()));
+  const docs = await listCollection(COLLECTION, { orderBy: "order" });
+  const all = docs.map((d) => toAgent(d.id, d.data));
   return opts?.includeHidden ? all : all.filter((a) => a.visible !== false);
 }
 
 export async function addAgent(data: AgentInput): Promise<string> {
-  const countSnap = await AGENTS_COL.get();
-  const ref = await AGENTS_COL.add({ ...data, order: countSnap.size });
-  return ref.id;
+  const order = await countCollection(COLLECTION);
+  return addDoc(COLLECTION, { ...data, order });
 }
 
 export async function updateAgent(id: string, data: Partial<AgentInput>): Promise<void> {
-  await AGENTS_COL.doc(id).update({ ...data, updatedAt: FieldValue.serverTimestamp() });
+  await setDocMerge(COLLECTION, id, { ...data, updatedAt: new Date().toISOString() });
 }
 
 export async function deleteAgent(id: string): Promise<void> {
-  await AGENTS_COL.doc(id).delete();
+  await deleteDoc(COLLECTION, id);
 }
 
 /** Swaps this agent's `order` with its neighbor above/below (no-op at the ends). */
 export async function moveAgent(id: string, direction: "up" | "down"): Promise<void> {
-  const snap = await AGENTS_COL.orderBy("order", "asc").get();
-  const docs = snap.docs;
+  const docs = await listCollection(COLLECTION, { orderBy: "order" });
   const idx = docs.findIndex((d) => d.id === id);
   const swapIdx = direction === "up" ? idx - 1 : idx + 1;
   if (idx === -1 || swapIdx < 0 || swapIdx >= docs.length) return;
 
   const a = docs[idx];
   const b = docs[swapIdx];
-  await adminDb.runTransaction(async (tx) => {
-    tx.update(a.ref, { order: b.data().order });
-    tx.update(b.ref, { order: a.data().order });
-  });
+  await commitWrites([
+    { collection: COLLECTION, id: a.id, data: { ...a.data, order: b.data.order } },
+    { collection: COLLECTION, id: b.id, data: { ...b.data, order: a.data.order } },
+  ]);
 }

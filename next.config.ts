@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -69,3 +70,8 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Gives `next dev` access to Cloudflare bindings (none currently declared
+// beyond what OpenNext needs internally) so local dev matches the deployed
+// Worker environment. No-op in production.
+initOpenNextCloudflareForDev();

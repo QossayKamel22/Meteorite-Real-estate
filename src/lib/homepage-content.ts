@@ -1,7 +1,8 @@
 import "server-only";
-import { adminDb } from "@/lib/firebase-admin";
+import { getDoc, setDocMerge } from "@/lib/firestore-rest";
 
-const DOC = adminDb.collection("settings").doc("homepage");
+const COLLECTION = "settings";
+const DOC_ID = "homepage";
 
 export type HomepageContent = {
   heroBadge: string;
@@ -21,14 +22,14 @@ const DEFAULTS: HomepageContent = {
 };
 
 export async function getHomepageContent(): Promise<HomepageContent> {
-  const snap = await DOC.get();
-  if (!snap.exists) {
-    await DOC.set(DEFAULTS);
+  const doc = await getDoc(COLLECTION, DOC_ID);
+  if (!doc) {
+    await setDocMerge(COLLECTION, DOC_ID, DEFAULTS);
     return DEFAULTS;
   }
-  return { ...DEFAULTS, ...(snap.data() as Partial<HomepageContent>) };
+  return { ...DEFAULTS, ...(doc.data as Partial<HomepageContent>) };
 }
 
 export async function updateHomepageContent(patch: Partial<HomepageContent>): Promise<void> {
-  await DOC.set(patch, { merge: true });
+  await setDocMerge(COLLECTION, DOC_ID, patch);
 }

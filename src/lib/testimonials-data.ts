@@ -1,8 +1,7 @@
 import "server-only";
-import { adminDb } from "@/lib/firebase-admin";
-import { FieldValue } from "firebase-admin/firestore";
+import { addDoc, commitWrites, countCollection, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 
-const TESTIMONIALS_COL = adminDb.collection("testimonials");
+const COLLECTION = "testimonials";
 
 export type Testimonial = {
   id: string;
@@ -40,64 +39,68 @@ const SEED_TESTIMONIALS: TestimonialInput[] = [
   },
 ];
 
-const SEED_MARKER = adminDb.collection("_meta").doc("testimonialsSeeded");
+const SEED_MARKER_COLLECTION = "_meta";
+const SEED_MARKER_ID = "testimonialsSeeded";
 
 async function seedIfEmpty(): Promise<void> {
-  await adminDb.runTransaction(async (tx) => {
-    const marker = await tx.get(SEED_MARKER);
-    if (marker.exists) return;
-    tx.set(SEED_MARKER, { seededAt: FieldValue.serverTimestamp() });
-    SEED_TESTIMONIALS.forEach((t, i) => {
-      tx.set(TESTIMONIALS_COL.doc(), { ...t, order: i });
-    });
-  });
+  const marker = await getDoc(SEED_MARKER_COLLECTION, SEED_MARKER_ID);
+  if (marker) return;
+
+  await commitWrites([
+    { collection: SEED_MARKER_COLLECTION, id: SEED_MARKER_ID, data: { seededAt: new Date().toISOString() }, requireAbsent: true },
+    ...SEED_TESTIMONIALS.map((t, i) => ({
+      collection: COLLECTION,
+      id: crypto.randomUUID(),
+      data: { ...t, order: i },
+      requireAbsent: true,
+    })),
+  ]);
 }
 
-const TESTIMONIAL_FIELDS = ["name", "role", "quote", "order", "visible"] as const;
-
-function toPlainTestimonial(id: string, data: FirebaseFirestore.DocumentData): Testimonial {
-  const t = { id } as Record<string, unknown>;
-  for (const key of TESTIMONIAL_FIELDS) {
-    if (data[key] !== undefined) t[key] = data[key];
-  }
-  return t as Testimonial;
+function toTestimonial(id: string, data: Record<string, unknown>): Testimonial {
+  return {
+    id,
+    name: data.name as string,
+    role: data.role as string,
+    quote: data.quote as string,
+    order: (data.order as number) ?? 0,
+    visible: data.visible as boolean | undefined,
+  };
 }
 
 /** By default, only visible testimonials are returned — pass includeHidden
  *  for the admin panel, which needs to see (and un-hide) everything. */
 export async function getTestimonials(opts?: { includeHidden?: boolean }): Promise<Testimonial[]> {
   await seedIfEmpty();
-  const snap = await TESTIMONIALS_COL.orderBy("order", "asc").get();
-  const all = snap.docs.map((doc) => toPlainTestimonial(doc.id, doc.data()));
+  const docs = await listCollection(COLLECTION, { orderBy: "order" });
+  const all = docs.map((d) => toTestimonial(d.id, d.data));
   return opts?.includeHidden ? all : all.filter((t) => t.visible !== false);
 }
 
 export async function addTestimonial(data: TestimonialInput): Promise<string> {
-  const countSnap = await TESTIMONIALS_COL.get();
-  const ref = await TESTIMONIALS_COL.add({ ...data, order: countSnap.size });
-  return ref.id;
+  const order = await countCollection(COLLECTION);
+  return addDoc(COLLECTION, { ...data, order });
 }
 
 export async function updateTestimonial(id: string, data: Partial<TestimonialInput>): Promise<void> {
-  await TESTIMONIALS_COL.doc(id).update({ ...data, updatedAt: FieldValue.serverTimestamp() });
+  await setDocMerge(COLLECTION, id, { ...data, updatedAt: new Date().toISOString() });
 }
 
 export async function deleteTestimonial(id: string): Promise<void> {
-  await TESTIMONIALS_COL.doc(id).delete();
+  await deleteDoc(COLLECTION, id);
 }
 
 /** Swaps this testimonial's `order` with its neighbor above/below (no-op at the ends). */
 export async function moveTestimonial(id: string, direction: "up" | "down"): Promise<void> {
-  const snap = await TESTIMONIALS_COL.orderBy("order", "asc").get();
-  const docs = snap.docs;
+  const docs = await listCollection(COLLECTION, { orderBy: "order" });
   const idx = docs.findIndex((d) => d.id === id);
   const swapIdx = direction === "up" ? idx - 1 : idx + 1;
   if (idx === -1 || swapIdx < 0 || swapIdx >= docs.length) return;
 
   const a = docs[idx];
   const b = docs[swapIdx];
-  await adminDb.runTransaction(async (tx) => {
-    tx.update(a.ref, { order: b.data().order });
-    tx.update(b.ref, { order: a.data().order });
-  });
+  await commitWrites([
+    { collection: COLLECTION, id: a.id, data: { ...a.data, order: b.data.order } },
+    { collection: COLLECTION, id: b.id, data: { ...b.data, order: a.data.order } },
+  ]);
 }
