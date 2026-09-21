@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, Camera, ExternalLink, Home, PlayCircle, Store, Warehouse } from "lucide-react";
-import { company, externalListings, socialLinks } from "@/lib/content";
+import { Building2, ExternalLink, Home, PlayCircle, Store, Warehouse } from "lucide-react";
+import { company, externalListings } from "@/lib/content";
 import { getMediaPosts } from "@/lib/media-posts-data";
 import Reveal from "@/components/Reveal";
+import SocialShortcuts from "@/components/SocialShortcuts";
 
 export const metadata: Metadata = { title: "Media" };
 
@@ -117,29 +118,34 @@ export default async function MediaPage() {
           ))}
         </div>
 
-        <Reveal delay={0.24}>
-          <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-brand-line bg-brand-paper p-8 text-center sm:flex-row sm:justify-between sm:text-left">
-            <div className="flex items-center gap-4">
-              <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                <Camera size={20} strokeWidth={1.75} />
-              </span>
-              <div>
-                <p className="font-semibold text-heading">More video content on Instagram</p>
-                <p className="text-sm text-brand-ink/60">@meteorite.real.estate.dubai</p>
-              </div>
-            </div>
-            <a
-              href={socialLinks.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="whitespace-nowrap rounded-full bg-brand-navy px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.03] hover:bg-brand-navy-light"
-            >
-              Follow us
-            </a>
-          </div>
-        </Reveal>
+      </section>
 
-        <p className="mt-6 text-center text-xs text-brand-ink/45">
+      <section className="relative overflow-hidden bg-brand-navy py-20">
+        <div className="glow-field" />
+        <div className="grain-overlay" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <div className="text-center">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
+                Stay Connected
+              </p>
+              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                Follow Meteorite everywhere
+              </h2>
+              <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/60">
+                New listings, walkthroughs, and updates — pick your platform.
+              </p>
+            </div>
+          </Reveal>
+
+          <div className="mt-10">
+            <SocialShortcuts />
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <p className="text-center text-xs text-brand-ink/45">
           Looking for something specific?{" "}
           <Link href="/contact-us" className="font-medium text-heading hover:text-brand-gold">
             Contact us
