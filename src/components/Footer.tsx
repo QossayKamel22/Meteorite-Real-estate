@@ -8,6 +8,7 @@ const footerLinks = [
   { label: "For Sale", href: "/for-sale" },
   { label: "For Rent", href: "/for-rent" },
   { label: "Contact", href: "/contact-us" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 export default function Footer() {

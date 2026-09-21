@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { CreditCard, ShieldCheck, Lock } from "lucide-react";
+import { ShieldCheck, Lock } from "lucide-react";
 import { company, paymentTiers } from "@/lib/content";
 import { getStatsList } from "@/lib/site-stats";
 import StatCounter, { type StatIconKey } from "@/components/StatCounter";
 import Reveal from "@/components/Reveal";
+import AnimatedSecureLock from "@/components/AnimatedSecureLock";
+import PaymentTierSelector from "@/components/PaymentTierSelector";
 
 export const metadata: Metadata = { title: "Payment" };
 
@@ -19,9 +21,7 @@ export default async function PaymentPage() {
         <div className="grain-overlay" />
         <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <Reveal>
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold">
-              <CreditCard size={26} strokeWidth={1.75} />
-            </div>
+            <AnimatedSecureLock />
             <p className="mt-5 text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
               Secure Payment
             </p>
@@ -34,30 +34,9 @@ export default async function PaymentPage() {
             </p>
           </Reveal>
 
-          <div className="mt-10 grid gap-5 sm:grid-cols-3">
-            {paymentTiers.map((tier, i) => (
-              <Reveal key={tier.amount} delay={i * 0.08}>
-                <a
-                  href={tier.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glass glass-dark shimmer-border group flex flex-col items-center rounded-2xl p-7 transition-transform duration-300 hover:-translate-y-1.5"
-                >
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/50">
-                    AED
-                  </p>
-                  <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
-                    {tier.amount.toLocaleString()}
-                  </p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-brand-gold px-4 py-2 text-xs font-semibold text-brand-navy transition-transform group-hover:scale-105">
-                    Pay now <span aria-hidden="true">→</span>
-                  </span>
-                </a>
-              </Reveal>
-            ))}
-          </div>
+          <PaymentTierSelector tiers={paymentTiers.map((t) => ({ amount: t.amount, url: t.url }))} />
 
-          <Reveal delay={0.3}>
+          <Reveal delay={0.5}>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-white/45">
               <span className="inline-flex items-center gap-1.5">
                 <Lock size={14} /> Processed securely by Stripe
