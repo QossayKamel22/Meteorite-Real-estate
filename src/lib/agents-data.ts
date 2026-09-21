@@ -34,7 +34,6 @@ const SEED_AGENTS: AgentInput[] = [
     photo: "/brand/saad-abdullah-soboh.jpg",
     email: "s.soboh@meteoriterealestate.com",
     phone: "+971 50 110 2242",
-    profileUrl: "https://meteoriterealestate.com/agents/saad-abdullah-soboh/",
     bio: "Welcome to our boutique real estate firm, where our CEO and Founder personally oversee every aspect of our services. With a customer-focused approach, we take pride in delivering exceptional property management services for leasing and selling tailored solutions to your unique needs.",
     background:
       "Over 17 years in banking — mortgage, valuations, escrow law, business development, credit administration, and comprehensive business banking services — brought to Meteorite's real estate brokerage, leasing, sales, valuation and negotiation practice.",
@@ -50,7 +49,6 @@ const SEED_AGENTS: AgentInput[] = [
     photo: "/brand/agent-mohd-amin-hattab.png",
     email: "Mohd.Hattab@meteoriterealestate.com",
     phone: "+971 52 699 7631",
-    profileUrl: "https://meteoriterealestate.com/agents/mohd-amin-mohammad-hattab/",
   },
   {
     name: "Meher Samir M Zamily",
@@ -58,7 +56,6 @@ const SEED_AGENTS: AgentInput[] = [
     photo: "/brand/agent-meher-samir.png",
     email: "info@meteoriterealestate.com",
     phone: "+971 50 659 9176",
-    profileUrl: "https://meteoriterealestate.com/agents/meher-samir/",
   },
   {
     name: "Qossay Kamel",

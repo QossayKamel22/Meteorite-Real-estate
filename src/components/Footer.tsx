@@ -5,8 +5,8 @@ import { company, socialLinks } from "@/lib/content";
 const footerLinks = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about-us" },
-  { label: "Blog", href: "https://meteoriterealestate.com/blog/" },
-  { label: "Privacy Policy", href: "https://meteoriterealestate.com/privacy" },
+  { label: "For Sale", href: "/for-sale" },
+  { label: "For Rent", href: "/for-rent" },
   { label: "Contact", href: "/contact-us" },
 ];
 
