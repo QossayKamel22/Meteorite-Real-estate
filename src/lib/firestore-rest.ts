@@ -222,13 +222,18 @@ export async function batchGetDocs(
 
 export async function listCollection(
   collection: string,
-  opts?: { orderBy?: string; direction?: "ASCENDING" | "DESCENDING" }
+  opts?: { orderBy?: string; direction?: "ASCENDING" | "DESCENDING"; limit?: number }
 ): Promise<FsDoc[]> {
   const base = `${FIRESTORE_HOST}/${basePath()}/${collection}`;
   const params = new URLSearchParams();
   if (opts?.orderBy) {
     params.set("orderBy", `${opts.orderBy} ${opts.direction === "DESCENDING" ? "desc" : "asc"}`);
   }
+  // Documents here can carry sizeable base64 image fields — an unbounded
+  // collection fetches (and holds in memory) every document, every time,
+  // regardless of how many are actually rendered. `limit` stops paging once
+  // enough documents are in hand instead of always pulling the whole thing.
+  if (opts?.limit) params.set("pageSize", String(opts.limit));
 
   const docs: FsDoc[] = [];
   let pageToken: string | undefined;
@@ -242,6 +247,7 @@ export async function listCollection(
       nextPageToken?: string;
     };
     for (const raw of data.documents ?? []) docs.push(parseDoc(raw));
+    if (opts?.limit && docs.length >= opts.limit) return docs.slice(0, opts.limit);
     if (!data.nextPageToken) break;
     pageToken = data.nextPageToken;
   }

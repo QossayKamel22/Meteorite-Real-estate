@@ -51,10 +51,23 @@ function toMediaPost(id: string, data: Record<string, unknown>): MediaPost {
   };
 }
 
+// Posts can carry sizeable base64 image/video-poster fields. The public site
+// only ever needs the most recent handful, so this caps how many documents
+// (and their embedded image data) are fetched from Firestore and held in
+// memory per request — otherwise the page's payload (and the Firestore read
+// itself) grows without bound as more posts pile up over time.
+const PUBLIC_FETCH_LIMIT = 60;
+
 /** By default, only visible posts are returned, newest first — pass
  *  includeHidden for the admin panel, which needs to see (and un-hide) everything. */
 export async function getMediaPosts(opts?: { includeHidden?: boolean }): Promise<MediaPost[]> {
-  const docs = await listCollection(COLLECTION, { orderBy: "createdAt", direction: "DESCENDING" });
+  const docs = await listCollection(COLLECTION, {
+    orderBy: "createdAt",
+    direction: "DESCENDING",
+    // The admin panel needs the true full list to manage/un-hide everything;
+    // the public site only ever renders recent posts, so it's capped.
+    limit: opts?.includeHidden ? undefined : PUBLIC_FETCH_LIMIT,
+  });
   const all = docs.map((d) => toMediaPost(d.id, d.data));
   return opts?.includeHidden ? all : all.filter((p) => p.visible !== false);
 }

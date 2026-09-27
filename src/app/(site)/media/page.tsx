@@ -80,6 +80,12 @@ function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: n
   );
 }
 
+// Each of these posts can carry a sizeable base64 image/poster — capping how
+// many render on one page keeps the page's payload bounded no matter how
+// much content piles up in the admin panel over time.
+const MAX_PODCASTS_PER_SECTION = 8;
+const MAX_REGULAR_POSTS = 12;
+
 function groupPodcastsBySection(podcasts: MediaPost[]): { name: string; posts: MediaPost[] }[] {
   const groups: { name: string; posts: MediaPost[] }[] = [];
   const index = new Map<string, number>();
@@ -89,7 +95,8 @@ function groupPodcastsBySection(podcasts: MediaPost[]): { name: string; posts: M
       index.set(name, groups.length);
       groups.push({ name, posts: [] });
     }
-    groups[index.get(name)!].posts.push(post);
+    const group = groups[index.get(name)!];
+    if (group.posts.length < MAX_PODCASTS_PER_SECTION) group.posts.push(post);
   }
   return groups;
 }
@@ -99,7 +106,7 @@ export default async function MediaPage() {
   const podcasts = allPosts.filter((p) => p.kind === "podcast");
   const nonPodcasts = allPosts.filter((p) => p.kind !== "podcast");
   const pinnedPosts = nonPodcasts.filter((p) => p.pinned);
-  const posts = nonPodcasts.filter((p) => !p.pinned);
+  const posts = nonPodcasts.filter((p) => !p.pinned).slice(0, MAX_REGULAR_POSTS);
   const podcastGroups = groupPodcastsBySection(podcasts);
 
   return (
