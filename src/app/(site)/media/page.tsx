@@ -31,7 +31,7 @@ function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: n
   return (
     <Reveal delay={delay}>
       <article
-        className={`glass shimmer-border group relative flex h-full flex-col overflow-hidden rounded-2xl transition-transform duration-300 hover:-translate-y-1.5 ${
+        className={`glass shimmer-border group relative flex h-full flex-col overflow-hidden rounded-3xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
           featured ? "ring-1 ring-brand-gold/40" : ""
         }`}
       >
@@ -98,6 +98,13 @@ function groupPodcastsBySection(podcasts: MediaPost[]): { name: string; posts: M
     const group = groups[index.get(name)!];
     if (group.posts.length < MAX_PODCASTS_PER_SECTION) group.posts.push(post);
   }
+  // Pinned episodes surface first within their section — pinning a podcast
+  // is deliberately a different signal from pinning a post: it reorders
+  // episodes to the front of their own section rather than moving them into
+  // the site-wide "Pinned highlights" grid.
+  for (const group of groups) {
+    group.posts.sort((a, b) => Number(b.pinned) - Number(a.pinned));
+  }
   return groups;
 }
 
@@ -138,34 +145,43 @@ export default async function MediaPage() {
       </section>
 
       {podcastGroups.length > 0 && (
-        <section className="relative overflow-hidden bg-brand-teal py-16 sm:py-20">
-          <div className="glow-field-teal" />
+        <section className="relative overflow-hidden bg-brand-podcast py-20 sm:py-24">
+          <div className="glow-field-podcast" />
           <div className="grain-overlay" />
           <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3">
               <Reveal>
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-teal-soft/20 text-brand-teal-soft ring-1 ring-brand-teal-soft/30">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-podcast-accent/15 text-brand-podcast-accent ring-1 ring-brand-podcast-accent/30">
                   <Headphones size={20} strokeWidth={1.75} />
                 </span>
               </Reveal>
               <SectionHeading kicker="Podcasts" title="Listen & watch our episodes" theme="light" />
             </div>
             <Reveal delay={0.2}>
-              <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65">
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/60">
                 Straight from our Instagram, Facebook and X accounts — playable right here.
               </p>
             </Reveal>
 
             {podcastGroups.map((group, gi) => (
-              <div key={group.name} className={gi === 0 ? "mt-10" : "mt-14"}>
+              <div key={group.name} className={gi === 0 ? "mt-12" : "mt-16"}>
                 {(podcastGroups.length > 1 || group.name !== "Podcasts") && (
                   <SectionHeading as="h3" title={group.name} theme="light" />
                 )}
                 <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${gi === 0 && podcastGroups.length === 1 ? "" : "mt-5"}`}>
                   {group.posts.map((post, i) => (
                     <Reveal key={post.id} delay={i * 0.06}>
-                      <div className="glass-teal group overflow-hidden rounded-3xl p-4 transition-transform duration-300 hover:-translate-y-1.5">
-                        {post.title && <h3 className="mb-3 text-sm font-semibold text-white">{post.title}</h3>}
+                      <div
+                        className={`glass-podcast group relative overflow-hidden rounded-3xl p-4 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
+                          post.pinned ? "ring-1 ring-brand-podcast-accent/50" : ""
+                        }`}
+                      >
+                        {post.pinned && (
+                          <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-podcast-accent backdrop-blur">
+                            <Pin size={10} /> Featured episode
+                          </span>
+                        )}
+                        {post.title && <h3 className="mb-3 pr-24 text-sm font-semibold text-white">{post.title}</h3>}
                         {post.video ? (
                           <MediaVideo
                             url={post.video}
@@ -188,7 +204,7 @@ export default async function MediaPage() {
       )}
 
       {pinnedPosts.length > 0 && (
-        <section className={`mx-auto max-w-6xl px-4 ${podcasts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
           <SectionHeading kicker="Featured" title="Pinned highlights" />
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {pinnedPosts.map((post, i) => (
@@ -199,8 +215,9 @@ export default async function MediaPage() {
       )}
 
       {posts.length > 0 && (
-        <section className={`mx-auto max-w-6xl px-4 ${podcasts.length > 0 || pinnedPosts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
+          {(pinnedPosts.length > 0 || podcasts.length > 0) && <SectionHeading kicker="More" title="Latest posts" />}
+          <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 ${(pinnedPosts.length > 0 || podcasts.length > 0) ? "mt-6" : ""}`}>
             {posts.map((post, i) => (
               <PostCard key={post.id} post={post} delay={i * 0.06} />
             ))}
@@ -208,11 +225,7 @@ export default async function MediaPage() {
         </section>
       )}
 
-      <section
-        className={`mx-auto max-w-6xl px-4 ${
-          posts.length > 0 || podcasts.length > 0 || pinnedPosts.length > 0 ? "pb-16" : "py-16"
-        } sm:px-6 lg:px-8`}
-      >
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
         <SectionHeading as="h3" title="Property video tours" />
         <Reveal delay={0.2}>
           <p className="mt-1 text-sm text-brand-ink/60">
