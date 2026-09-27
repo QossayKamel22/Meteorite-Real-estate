@@ -40,9 +40,9 @@ export default async function AboutUsPage() {
                 return (
                   <div
                     key={item}
-                    className="glass glass-dark shimmer-border flex items-center gap-3 rounded-2xl p-5 text-left"
+                    className="glass glass-dark shimmer-border flex items-center gap-3 rounded-3xl p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
                   >
-                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                    <span className="flex h-10 w-10 flex-none items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20">
                       <Icon size={16} strokeWidth={1.75} />
                     </span>
                     <span className="text-sm leading-relaxed text-white/80">{item}</span>
@@ -56,11 +56,11 @@ export default async function AboutUsPage() {
 
       <StatsSection />
 
-      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
         <Reveal>
-          <div className="glass shimmer-border rounded-3xl p-8 sm:p-10">
+          <div className="glass shimmer-border rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl sm:p-10">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20">
                 <MapPin size={18} strokeWidth={1.75} />
               </span>
               <h2 className="text-lg font-semibold text-heading">Registration Details</h2>

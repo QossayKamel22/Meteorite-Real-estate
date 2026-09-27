@@ -17,7 +17,7 @@ export default function PropertyCard({ property, delay = 0 }: { property: Proper
 
   return (
     <Reveal delay={delay}>
-      <article className="glass shimmer-border group flex h-full flex-col overflow-hidden rounded-2xl">
+      <article className="glass shimmer-border group flex h-full flex-col overflow-hidden rounded-3xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
           <Image
             src={property.image}
@@ -54,7 +54,7 @@ export default function PropertyCard({ property, delay = 0 }: { property: Proper
             href={`https://wa.me/${company.phoneE164.replace("+", "")}?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center justify-center rounded-full bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-navy-light"
+            className="mt-5 inline-flex items-center justify-center rounded-full bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.03] hover:bg-brand-navy-light"
           >
             Ask about this property
           </a>
