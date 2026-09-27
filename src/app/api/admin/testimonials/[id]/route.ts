@@ -18,6 +18,14 @@ function parseTestimonialPatch(body: Record<string, unknown>): Partial<Testimoni
   if (typeof body.role === "string") patch.role = body.role.trim();
   if (typeof body.quote === "string") patch.quote = body.quote.trim();
   if (typeof body.visible === "boolean") patch.visible = body.visible;
+  if (body.source === "google" || body.source === "direct") patch.source = body.source;
+  if (body.rating !== undefined) {
+    const ratingNum = typeof body.rating === "number" ? body.rating : Number(body.rating);
+    if (!Number.isFinite(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      return "Rating must be between 1 and 5.";
+    }
+    patch.rating = ratingNum;
+  }
   return patch;
 }
 

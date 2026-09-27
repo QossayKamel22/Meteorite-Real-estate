@@ -13,8 +13,14 @@ function parseTestimonialInput(body: Record<string, unknown>): TestimonialInput 
   if (!quote) return "Quote is required.";
 
   const visible = typeof body.visible === "boolean" ? body.visible : true;
+  const source = body.source === "google" ? "google" : "direct";
+  const ratingNum = typeof body.rating === "number" ? body.rating : Number(body.rating);
+  if (body.rating !== undefined && (!Number.isFinite(ratingNum) || ratingNum < 1 || ratingNum > 5)) {
+    return "Rating must be between 1 and 5.";
+  }
+  const rating = Number.isFinite(ratingNum) && ratingNum >= 1 && ratingNum <= 5 ? ratingNum : 5;
 
-  return { name, role, quote, visible };
+  return { name, role, quote, visible, source, rating };
 }
 
 export async function GET() {

@@ -9,6 +9,10 @@ export type Testimonial = {
   role: string;
   quote: string;
   order: number;
+  /** Where this feedback came from. Defaults to "direct" when absent (existing docs predate this field). */
+  source?: "google" | "direct";
+  /** 1–5. Defaults to 5 when absent. */
+  rating?: number;
   /** Defaults to true when absent (existing docs predate this field). */
   visible?: boolean;
 };
@@ -64,6 +68,8 @@ function toTestimonial(id: string, data: Record<string, unknown>): Testimonial {
     role: data.role as string,
     quote: data.quote as string,
     order: (data.order as number) ?? 0,
+    source: data.source === "google" ? "google" : data.source === "direct" ? "direct" : undefined,
+    rating: typeof data.rating === "number" ? data.rating : undefined,
     visible: data.visible as boolean | undefined,
   };
 }

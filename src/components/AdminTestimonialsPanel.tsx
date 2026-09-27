@@ -2,15 +2,29 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import type { Testimonial, TestimonialInput } from "@/lib/testimonials-data";
 
-type FormState = { name: string; role: string; quote: string; visible: boolean };
+type FormState = {
+  name: string;
+  role: string;
+  quote: string;
+  visible: boolean;
+  source: "google" | "direct";
+  rating: number;
+};
 
-const EMPTY_FORM: FormState = { name: "", role: "", quote: "", visible: true };
+const EMPTY_FORM: FormState = { name: "", role: "", quote: "", visible: true, source: "google", rating: 5 };
 
 function testimonialToForm(t: Testimonial): FormState {
-  return { name: t.name, role: t.role, quote: t.quote, visible: t.visible !== false };
+  return {
+    name: t.name,
+    role: t.role,
+    quote: t.quote,
+    visible: t.visible !== false,
+    source: t.source ?? "direct",
+    rating: t.rating ?? 5,
+  };
 }
 
 function formToPayload(form: FormState): TestimonialInput {
@@ -19,6 +33,8 @@ function formToPayload(form: FormState): TestimonialInput {
     role: form.role.trim(),
     quote: form.quote.trim(),
     visible: form.visible,
+    source: form.source,
+    rating: form.rating,
   };
 }
 
@@ -81,6 +97,33 @@ function TestimonialForm({
             rows={3}
             className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
           />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-brand-ink/60">Source</label>
+          <select
+            value={form.source}
+            onChange={(e) => set("source", e.target.value as FormState["source"])}
+            className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
+          >
+            <option value="google">Google review</option>
+            <option value="direct">Direct feedback</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-brand-ink/60">Rating</label>
+          <div className="mt-1.5 flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => set("rating", n)}
+                aria-label={`${n} star${n === 1 ? "" : "s"}`}
+                className="text-brand-gold"
+              >
+                <Star size={20} fill={n <= form.rating ? "currentColor" : "none"} strokeWidth={1.5} />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -222,7 +265,11 @@ export default function AdminTestimonialsPanel({ testimonials }: { testimonials:
                       {t.name} <span className="font-normal text-brand-ink/50">— {t.role}</span>
                       {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                     </p>
-                    <p className="truncate text-xs text-brand-ink/55">{t.quote}</p>
+                    <p className="truncate text-xs text-brand-ink/55">
+                      {"★".repeat(t.rating ?? 5)}
+                      {"☆".repeat(5 - (t.rating ?? 5))} · {t.source === "google" ? "Google" : "Direct"} ·{" "}
+                      {t.quote}
+                    </p>
                   </div>
                   <button
                     type="button"
