@@ -130,44 +130,55 @@ export default async function MediaPage() {
         </div>
       </section>
 
-      {podcastGroups.map((group, gi) => (
-        <section
-          key={group.name}
-          className={`mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 ${gi === 0 ? "pt-16" : "pt-4"} pb-16`}
-        >
-          <div className="flex items-center gap-3">
-            <Reveal>
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
-                <Headphones size={18} strokeWidth={1.75} />
-              </span>
-            </Reveal>
-            <div>
-              <SectionHeading as="h3" title={group.name} />
-              {gi === 0 && (
-                <Reveal delay={0.2}>
-                  <p className="text-sm text-brand-ink/60">
-                    Straight from our Instagram, Facebook and X accounts.
-                  </p>
-                </Reveal>
-              )}
-            </div>
-          </div>
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {group.posts.map((post, i) => (
-              <Reveal key={post.id} delay={i * 0.06}>
-                <div className="glass shimmer-border overflow-hidden rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1">
-                  {post.title && <h3 className="mb-3 text-sm font-semibold text-heading">{post.title}</h3>}
-                  {post.video ? (
-                    <MediaVideo url={post.video} poster={post.image} />
-                  ) : post.url && post.platform ? (
-                    <SocialEmbed platform={post.platform} url={post.url} />
-                  ) : null}
-                </div>
+      {podcastGroups.length > 0 && (
+        <section className="relative overflow-hidden bg-brand-teal py-16 sm:py-20">
+          <div className="glow-field-teal" />
+          <div className="grain-overlay" />
+          <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3">
+              <Reveal>
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-teal-soft/20 text-brand-teal-soft ring-1 ring-brand-teal-soft/30">
+                  <Headphones size={20} strokeWidth={1.75} />
+                </span>
               </Reveal>
+              <SectionHeading kicker="Podcasts" title="Listen & watch our episodes" theme="light" />
+            </div>
+            <Reveal delay={0.2}>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/65">
+                Straight from our Instagram, Facebook and X accounts — playable right here.
+              </p>
+            </Reveal>
+
+            {podcastGroups.map((group, gi) => (
+              <div key={group.name} className={gi === 0 ? "mt-10" : "mt-14"}>
+                {(podcastGroups.length > 1 || group.name !== "Podcasts") && (
+                  <SectionHeading as="h3" title={group.name} theme="light" />
+                )}
+                <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${gi === 0 && podcastGroups.length === 1 ? "" : "mt-5"}`}>
+                  {group.posts.map((post, i) => (
+                    <Reveal key={post.id} delay={i * 0.06}>
+                      <div className="glass-teal group overflow-hidden rounded-3xl p-4 transition-transform duration-300 hover:-translate-y-1.5">
+                        {post.title && <h3 className="mb-3 text-sm font-semibold text-white">{post.title}</h3>}
+                        {post.video ? (
+                          <MediaVideo
+                            url={post.video}
+                            poster={post.image}
+                            fallbackHref={post.url}
+                            fallbackLabel={post.platform ? `Watch on ${PLATFORM_LABEL[post.platform]}` : "Watch episode"}
+                          />
+                        ) : post.url && post.platform ? (
+                          <SocialEmbed platform={post.platform} url={post.url} />
+                        ) : null}
+                        {post.body && <p className="mt-3 text-sm leading-relaxed text-white/70">{post.body}</p>}
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </section>
-      ))}
+      )}
 
       {pinnedPosts.length > 0 && (
         <section className={`mx-auto max-w-6xl px-4 ${podcasts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>

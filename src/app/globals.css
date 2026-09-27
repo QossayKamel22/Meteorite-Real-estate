@@ -17,6 +17,13 @@
   --brand-gold: #dbcc3b;
   --brand-gold-soft: #e9dd7a;
 
+  /* A distinct accent for the Podcasts section — a deep teal, not the usual
+     navy/gold pair, so podcast content reads as its own section at a glance.
+     Deliberately not a purple/pink gradient (see the Liquid Glass note below). */
+  --brand-teal: #0d5c58;
+  --brand-teal-light: #12847d;
+  --brand-teal-soft: #5fe0d0;
+
   /* Semantic tokens — these DO flip between light/dark */
   --brand-ink: #10131f;
   --brand-paper: #faf9f6;
@@ -55,6 +62,9 @@
   --color-brand-navy-light: var(--brand-navy-light);
   --color-brand-gold: var(--brand-gold);
   --color-brand-gold-soft: var(--brand-gold-soft);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-teal-light: var(--brand-teal-light);
+  --color-brand-teal-soft: var(--brand-teal-soft);
   --color-brand-ink: var(--brand-ink);
   --color-brand-paper: var(--brand-paper);
   --color-brand-line: var(--brand-line);
@@ -132,6 +142,55 @@ body {
   background: var(--glass-nav-bg);
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
+}
+
+/* Teal-tinted Liquid Glass variant — used only for the Podcasts section so
+   it reads as its own distinct area against the navy/gold rest of the site. */
+.glass-teal {
+  background: linear-gradient(180deg, rgba(15, 118, 110, 0.14), rgba(15, 118, 110, 0.05));
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(95, 224, 208, 0.28);
+  box-shadow:
+    0 1px 1px rgba(13, 92, 88, 0.05),
+    0 12px 32px -12px rgba(13, 92, 88, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.glow-field-teal {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glow-field-teal::before,
+.glow-field-teal::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(60px);
+  opacity: 0.55;
+}
+
+.glow-field-teal::before {
+  width: 26rem;
+  height: 26rem;
+  top: -7rem;
+  left: -5rem;
+  background: radial-gradient(circle, var(--brand-teal-soft), transparent 70%);
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+
+.glow-field-teal::after {
+  width: 22rem;
+  height: 22rem;
+  bottom: -9rem;
+  right: -4rem;
+  background: radial-gradient(circle, var(--brand-teal-light), transparent 70%);
+  opacity: 0.4;
+  animation: drift-b 26s ease-in-out infinite alternate;
 }
 
 .glow-field {
@@ -370,6 +429,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .glow-field::before,
   .glow-field::after,
+  .glow-field-teal::before,
+  .glow-field-teal::after,
   .shimmer-border::after,
   .ken-burns,
   .particle,
