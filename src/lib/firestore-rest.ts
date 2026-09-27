@@ -58,46 +58,59 @@ async function getSigningKey(): Promise<CryptoKey> {
 }
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
+// Dedupes concurrent token fetches within one isolate (e.g. several requests
+// hitting a cold worker at once) so they share one JWT sign + OAuth round
+// trip instead of each redoing that CPU/network work independently.
+let inFlightToken: Promise<string> | null = null;
 
 /** Signs a short-lived JWT with the service account key and exchanges it for a Google OAuth2 access token. */
 async function getAccessToken(): Promise<string> {
   if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) return cachedToken.token;
+  if (inFlightToken) return inFlightToken;
 
-  const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-  if (!clientEmail) throw new Error("FIREBASE_ADMIN_CLIENT_EMAIL is not set.");
+  inFlightToken = (async () => {
+    const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+    if (!clientEmail) throw new Error("FIREBASE_ADMIN_CLIENT_EMAIL is not set.");
 
-  const now = Math.floor(Date.now() / 1000);
-  const header = { alg: "RS256", typ: "JWT" };
-  const claims = {
-    iss: clientEmail,
-    scope: "https://www.googleapis.com/auth/datastore",
-    aud: "https://oauth2.googleapis.com/token",
-    iat: now,
-    exp: now + 3600,
-  };
-  const unsigned = `${base64url(JSON.stringify(header))}.${base64url(JSON.stringify(claims))}`;
-  const key = await getSigningKey();
-  const signature = await crypto.subtle.sign(
-    "RSASSA-PKCS1-v1_5",
-    key,
-    new TextEncoder().encode(unsigned)
-  );
-  const jwt = `${unsigned}.${base64url(signature)}`;
+    const now = Math.floor(Date.now() / 1000);
+    const header = { alg: "RS256", typ: "JWT" };
+    const claims = {
+      iss: clientEmail,
+      scope: "https://www.googleapis.com/auth/datastore",
+      aud: "https://oauth2.googleapis.com/token",
+      iat: now,
+      exp: now + 3600,
+    };
+    const unsigned = `${base64url(JSON.stringify(header))}.${base64url(JSON.stringify(claims))}`;
+    const key = await getSigningKey();
+    const signature = await crypto.subtle.sign(
+      "RSASSA-PKCS1-v1_5",
+      key,
+      new TextEncoder().encode(unsigned)
+    );
+    const jwt = `${unsigned}.${base64url(signature)}`;
 
-  const res = await fetch("https://oauth2.googleapis.com/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      assertion: jwt,
-    }),
-  });
-  if (!res.ok) {
-    throw new Error(`Failed to obtain a Google access token (${res.status}).`);
+    const res = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        assertion: jwt,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to obtain a Google access token (${res.status}).`);
+    }
+    const data = (await res.json()) as { access_token: string; expires_in: number };
+    cachedToken = { token: data.access_token, expiresAt: Date.now() + data.expires_in * 1000 };
+    return cachedToken.token;
+  })();
+
+  try {
+    return await inFlightToken;
+  } finally {
+    inFlightToken = null;
   }
-  const data = (await res.json()) as { access_token: string; expires_in: number };
-  cachedToken = { token: data.access_token, expiresAt: Date.now() + data.expires_in * 1000 };
-  return cachedToken.token;
 }
 
 async function fsFetch(url: string, init?: RequestInit): Promise<Response> {
@@ -182,6 +195,31 @@ export async function getDoc(collection: string, id: string): Promise<FsDoc | nu
   return parseDoc(await res.json());
 }
 
+/**
+ * Reads several documents (possibly across collections) in a single request
+ * via Firestore's `:batchGet`, instead of one `getDoc` round trip each —
+ * missing documents come back as `null` at their original index.
+ */
+export async function batchGetDocs(
+  refs: { collection: string; id: string }[]
+): Promise<(FsDoc | null)[]> {
+  if (refs.length === 0) return [];
+  const documents = refs.map((r) => `${basePath()}/${r.collection}/${r.id}`);
+  const res = await fsFetch(`${FIRESTORE_HOST}/${basePath()}:batchGet`, {
+    method: "POST",
+    body: JSON.stringify({ documents }),
+  });
+  if (!res.ok) throw new Error(`Firestore batchGetDocs failed: ${res.status} ${await res.text()}`);
+  const results = (await res.json()) as { found?: { name: string; fields?: Record<string, FsValue> }; missing?: string }[];
+
+  const byName = new Map<string, FsDoc | null>();
+  for (const r of results) {
+    if (r.found) byName.set(r.found.name, parseDoc(r.found));
+    else if (r.missing) byName.set(r.missing, null);
+  }
+  return documents.map((name) => byName.get(name) ?? null);
+}
+
 export async function listCollection(
   collection: string,
   opts?: { orderBy?: string; direction?: "ASCENDING" | "DESCENDING" }
@@ -250,6 +288,36 @@ export async function deleteDoc(collection: string, id: string): Promise<void> {
   });
   if (!res.ok && res.status !== 404) {
     throw new Error(`Firestore deleteDoc(${collection}/${id}) failed: ${res.status}`);
+  }
+}
+
+/**
+ * Atomically increments numeric fields across one or more documents in a
+ * single `:commit` call. Uses Firestore's `updateTransforms` alongside an
+ * empty `update`/`updateMask`, so no plain fields are overwritten — only the
+ * transforms apply — and the document (or any missing field) is created if
+ * it doesn't exist yet.
+ */
+export async function incrementFieldsMulti(
+  writes: { collection: string; id: string; deltas: Record<string, number> }[]
+): Promise<void> {
+  if (writes.length === 0) return;
+  const body = {
+    writes: writes.map(({ collection, id, deltas }) => ({
+      update: { name: `${basePath()}/${collection}/${id}` },
+      updateMask: { fieldPaths: [] },
+      updateTransforms: Object.entries(deltas).map(([fieldPath, delta]) => ({
+        fieldPath,
+        increment: { integerValue: String(delta) },
+      })),
+    })),
+  };
+  const res = await fsFetch(`${FIRESTORE_HOST}/${basePath()}:commit`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    throw new Error(`Firestore incrementFieldsMulti failed: ${res.status} ${await res.text()}`);
   }
 }
 

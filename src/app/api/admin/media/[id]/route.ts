@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
-import { updateMediaPost, deleteMediaPost, type MediaPostInput } from "@/lib/media-posts-data";
+import {
+  updateMediaPost,
+  deleteMediaPost,
+  countPinnedPosts,
+  MAX_PINNED_POSTS,
+  type MediaPostInput,
+} from "@/lib/media-posts-data";
 
 const PLATFORMS = ["instagram", "facebook", "twitter", "youtube", "other"];
 
@@ -14,6 +20,17 @@ function parseMediaPatch(body: Record<string, unknown>): Partial<MediaPostInput>
   }
   if (typeof body.body === "string") patch.body = body.body.trim() || undefined;
   if (typeof body.image === "string") patch.image = body.image.trim() || undefined;
+  if (typeof body.video === "string") {
+    if (body.video.trim()) {
+      try {
+        new URL(body.video.trim());
+      } catch {
+        return "Please enter a valid video link.";
+      }
+    }
+    patch.video = body.video.trim() || undefined;
+  }
+  if (typeof body.section === "string") patch.section = body.section.trim() || undefined;
   if (typeof body.url === "string") {
     if (body.url.trim()) {
       try {
@@ -28,6 +45,7 @@ function parseMediaPatch(body: Record<string, unknown>): Partial<MediaPostInput>
     patch.platform = body.platform as MediaPostInput["platform"];
   }
   if (typeof body.visible === "boolean") patch.visible = body.visible;
+  if (typeof body.pinned === "boolean") patch.pinned = body.pinned;
 
   return patch;
 }
@@ -51,6 +69,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const parsed = parseMediaPatch(body);
   if (typeof parsed === "string") {
     return NextResponse.json({ error: parsed }, { status: 400 });
+  }
+
+  if (parsed.pinned) {
+    const pinnedCount = await countPinnedPosts(id);
+    if (pinnedCount >= MAX_PINNED_POSTS) {
+      return NextResponse.json(
+        { error: `You can only pin up to ${MAX_PINNED_POSTS} posts. Unpin another post first.` },
+        { status: 400 }
+      );
+    }
   }
 
   await updateMediaPost(id, parsed);

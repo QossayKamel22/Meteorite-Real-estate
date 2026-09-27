@@ -3,6 +3,7 @@ import { Award, BadgeCheck, MapPin, ShieldCheck } from "lucide-react";
 import { company, credentials } from "@/lib/content";
 import { getTestimonials } from "@/lib/testimonials-data";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 import StatsSection from "@/components/StatsSection";
 import CeoSection from "@/components/CeoSection";
 import AgentsSection from "@/components/AgentsSection";
@@ -25,13 +26,8 @@ export default async function AboutUsPage() {
         <div className="glow-field" />
         <div className="grain-overlay" />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              About Us
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              {company.name}
-            </h1>
+          <SectionHeading kicker="About Us" title={company.name} as="h1" align="center" theme="light" />
+          <Reveal delay={0.25}>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-white/70">
               {company.legalTagline}
             </p>

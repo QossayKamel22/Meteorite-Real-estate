@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { getAgents } from "@/lib/agents-data";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export default async function CeoSection() {
   const agents = await getAgents();
@@ -27,13 +28,9 @@ export default async function CeoSection() {
           </div>
         </Reveal>
 
-        <Reveal delay={0.12}>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-            Leadership
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
-            {ceo.name}
-          </h2>
+        <div>
+          <SectionHeading kicker="Leadership" title={ceo.name} />
+          <Reveal delay={0.3}>
           <p className="mt-1 text-base font-medium text-brand-ink/60">{ceo.title}</p>
 
           {ceo.bio && (
@@ -69,7 +66,8 @@ export default async function CeoSection() {
               <span aria-hidden="true">→</span>
             </a>
           )}
-        </Reveal>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

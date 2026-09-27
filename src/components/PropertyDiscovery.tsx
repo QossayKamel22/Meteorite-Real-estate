@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Building2, Home, Store, Warehouse } from "lucide-react";
 import { externalListings } from "@/lib/content";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 const categories = [
   { label: "Apartments & Studios", icon: Building2, forSale: `${externalListings.bayutForSale}&category=apartment`, forRent: `${externalListings.bayutForRent}&category=apartment` },
@@ -13,20 +14,17 @@ const categories = [
 export default function PropertyDiscovery() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-      <Reveal>
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div className="max-w-xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              Live Inventory
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
-              Explore our current listings
-            </h2>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="max-w-xl">
+          <SectionHeading kicker="Live Inventory" title="Explore our current listings" />
+          <Reveal delay={0.2}>
             <p className="mt-3 text-base leading-relaxed text-brand-ink/60">
               Our full, continuously-updated portfolio is hosted on Bayut, our verified listing
               partner — browse by category below or view our complete agency profile.
             </p>
-          </div>
+          </Reveal>
+        </div>
+        <Reveal delay={0.15}>
           <a
             href={externalListings.bayutCompanyForSale}
             target="_blank"
@@ -35,8 +33,8 @@ export default function PropertyDiscovery() {
           >
             View full agency profile
           </a>
-        </div>
-      </Reveal>
+        </Reveal>
+      </div>
 
       <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {categories.map((cat, i) => (

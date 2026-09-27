@@ -4,6 +4,7 @@ import { company } from "@/lib/content";
 import { getStats } from "@/lib/site-stats";
 import { getAgents, type Agent } from "@/lib/agents-data";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 function AgentCard({
   agent,
@@ -94,26 +95,28 @@ export default async function AgentsSection({ variant = "home" }: { variant?: "h
       <div className="glow-field" />
       <div className="grain-overlay" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Reveal>
-          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-                {isAbout ? "Leadership & Team" : "Our Team"}
-              </p>
-              <h2 className="mt-3 max-w-xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                {isAbout ? "The people behind every deal" : "Meet the agents behind Meteorite"}
-              </h2>
+        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <SectionHeading
+              kicker={isAbout ? "Leadership & Team" : "Our Team"}
+              title={isAbout ? "The people behind every deal" : "Meet the agents behind Meteorite"}
+              theme="light"
+              titleClassName="max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl"
+            />
+            <Reveal delay={0.2}>
               <p className="mt-3 max-w-xl text-base leading-relaxed text-white/60">
                 {agentCount}+ licensed professionals support our clients across Dubai — meet the
                 {" "}{agents.length} team members with public profiles today.
               </p>
-            </div>
+            </Reveal>
+          </div>
+          <Reveal delay={0.15}>
             <div className="glass glass-dark flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-white/80">
               <BadgeCheck size={16} className="text-brand-gold" />
               RERA Verified Brokerage
             </div>
-          </div>
-        </Reveal>
+          </Reveal>
+        </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {agents.map((agent, i) => (

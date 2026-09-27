@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { company } from "@/lib/content";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -47,7 +48,6 @@ const sections = [
     body: [
       "Firebase (Google) provides authentication and the database that powers this site. Your account and saved-property data are stored on Google Cloud infrastructure under Firebase's own data protection terms.",
       "Cloudflare hosts and serves this website.",
-      "Stripe processes payments made through the Payment page. We never see or store your card details — Stripe handles that directly and is PCI-DSS certified.",
       "We do not sell your data to anyone, and we don't share it with third parties for their own marketing purposes.",
     ],
   },
@@ -104,12 +104,16 @@ export default function PrivacyPolicyPage() {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold">
               <Scale size={26} strokeWidth={1.75} />
             </div>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              Privacy Policy
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Your data, plainly explained
-            </h1>
+          </Reveal>
+          <SectionHeading
+            kicker="Privacy Policy"
+            title="Your data, plainly explained"
+            as="h1"
+            align="center"
+            theme="light"
+            className="mt-5"
+          />
+          <Reveal delay={0.25}>
             <p className="mt-4 text-base leading-relaxed text-white/65">
               No legal jargon for its own sake — here&apos;s exactly what {company.name} collects,
               why, and how it&apos;s protected.

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, ExternalLink, Home, PlayCircle, Store, Warehouse } from "lucide-react";
+import { Building2, ExternalLink, Headphones, Home, Pin, PlayCircle, Store, Warehouse } from "lucide-react";
 import { company, externalListings } from "@/lib/content";
-import { getMediaPosts } from "@/lib/media-posts-data";
+import { getMediaPosts, type MediaPost } from "@/lib/media-posts-data";
 import Reveal from "@/components/Reveal";
 import SocialShortcuts from "@/components/SocialShortcuts";
+import SocialEmbed from "@/components/SocialEmbed";
+import SectionHeading from "@/components/SectionHeading";
+import MediaVideo from "@/components/MediaVideo";
 
 export const metadata: Metadata = { title: "Media" };
 
@@ -24,8 +27,80 @@ const PLATFORM_LABEL: Record<string, string> = {
   other: "Social",
 };
 
+function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: number; featured?: boolean }) {
+  return (
+    <Reveal delay={delay}>
+      <article
+        className={`glass shimmer-border group relative flex h-full flex-col overflow-hidden rounded-2xl transition-transform duration-300 hover:-translate-y-1.5 ${
+          featured ? "ring-1 ring-brand-gold/40" : ""
+        }`}
+      >
+        {featured && (
+          <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-brand-navy/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-gold backdrop-blur">
+            <Pin size={10} /> Pinned
+          </span>
+        )}
+        {post.video ? (
+          <MediaVideo url={post.video} poster={post.image} />
+        ) : (
+          post.image && (
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
+              <Image
+                src={post.image}
+                alt={post.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(min-width: 1024px) 33vw, 50vw"
+              />
+              {post.kind === "social" && post.platform && (
+                <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
+                  {PLATFORM_LABEL[post.platform]}
+                </span>
+              )}
+            </div>
+          )
+        )}
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="text-base font-semibold text-heading">{post.title}</h3>
+          {post.body && <p className="mt-2 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
+          {post.kind === "social" && post.url && (
+            <a
+              href={post.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-gold hover:underline"
+            >
+              View on {post.platform ? PLATFORM_LABEL[post.platform] : "social media"}
+              <ExternalLink size={13} />
+            </a>
+          )}
+        </div>
+      </article>
+    </Reveal>
+  );
+}
+
+function groupPodcastsBySection(podcasts: MediaPost[]): { name: string; posts: MediaPost[] }[] {
+  const groups: { name: string; posts: MediaPost[] }[] = [];
+  const index = new Map<string, number>();
+  for (const post of podcasts) {
+    const name = post.section?.trim() || "Podcasts";
+    if (!index.has(name)) {
+      index.set(name, groups.length);
+      groups.push({ name, posts: [] });
+    }
+    groups[index.get(name)!].posts.push(post);
+  }
+  return groups;
+}
+
 export default async function MediaPage() {
-  const posts = await getMediaPosts();
+  const allPosts = await getMediaPosts();
+  const podcasts = allPosts.filter((p) => p.kind === "podcast");
+  const nonPodcasts = allPosts.filter((p) => p.kind !== "podcast");
+  const pinnedPosts = nonPodcasts.filter((p) => p.pinned);
+  const posts = nonPodcasts.filter((p) => !p.pinned);
+  const podcastGroups = groupPodcastsBySection(podcasts);
 
   return (
     <div>
@@ -37,12 +112,16 @@ export default async function MediaPage() {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold">
               <PlayCircle size={26} strokeWidth={1.75} />
             </div>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              Media
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              News, updates &amp; social
-            </h1>
+          </Reveal>
+          <SectionHeading
+            kicker="Media"
+            title="News, updates & social"
+            as="h1"
+            align="center"
+            theme="light"
+            className="mt-5"
+          />
+          <Reveal delay={0.25}>
             <p className="mt-4 text-base leading-relaxed text-white/65">
               The latest from our team, plus video tours hosted alongside full listing details on
               our verified Bayut portfolio.
@@ -51,47 +130,73 @@ export default async function MediaPage() {
         </div>
       </section>
 
-      {posts.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post, i) => (
+      {podcastGroups.map((group, gi) => (
+        <section
+          key={group.name}
+          className={`mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 ${gi === 0 ? "pt-16" : "pt-4"} pb-16`}
+        >
+          <div className="flex items-center gap-3">
+            <Reveal>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                <Headphones size={18} strokeWidth={1.75} />
+              </span>
+            </Reveal>
+            <div>
+              <SectionHeading as="h3" title={group.name} />
+              {gi === 0 && (
+                <Reveal delay={0.2}>
+                  <p className="text-sm text-brand-ink/60">
+                    Straight from our Instagram, Facebook and X accounts.
+                  </p>
+                </Reveal>
+              )}
+            </div>
+          </div>
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {group.posts.map((post, i) => (
               <Reveal key={post.id} delay={i * 0.06}>
-                <article className="glass shimmer-border flex h-full flex-col overflow-hidden rounded-2xl">
-                  {post.image && (
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
-                      <Image src={post.image} alt={post.title} fill className="object-cover" sizes="(min-width: 1024px) 33vw, 50vw" />
-                      {post.kind === "social" && post.platform && (
-                        <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
-                          {PLATFORM_LABEL[post.platform]}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <div className="flex flex-1 flex-col p-5">
-                    <h3 className="text-base font-semibold text-heading">{post.title}</h3>
-                    {post.body && <p className="mt-2 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
-                    {post.kind === "social" && post.url && (
-                      <a
-                        href={post.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-gold hover:underline"
-                      >
-                        View on {post.platform ? PLATFORM_LABEL[post.platform] : "social media"}
-                        <ExternalLink size={13} />
-                      </a>
-                    )}
-                  </div>
-                </article>
+                <div className="glass shimmer-border overflow-hidden rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1">
+                  {post.title && <h3 className="mb-3 text-sm font-semibold text-heading">{post.title}</h3>}
+                  {post.video ? (
+                    <MediaVideo url={post.video} poster={post.image} />
+                  ) : post.url && post.platform ? (
+                    <SocialEmbed platform={post.platform} url={post.url} />
+                  ) : null}
+                </div>
               </Reveal>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {pinnedPosts.length > 0 && (
+        <section className={`mx-auto max-w-6xl px-4 ${podcasts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>
+          <SectionHeading kicker="Featured" title="Pinned highlights" />
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {pinnedPosts.map((post, i) => (
+              <PostCard key={post.id} post={post} delay={i * 0.06} featured />
             ))}
           </div>
         </section>
       )}
 
-      <section className={`mx-auto max-w-6xl px-4 ${posts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>
-        <Reveal>
-          <h2 className="text-lg font-semibold text-heading">Property video tours</h2>
+      {posts.length > 0 && (
+        <section className={`mx-auto max-w-6xl px-4 ${podcasts.length > 0 || pinnedPosts.length > 0 ? "pb-16" : "py-16"} sm:px-6 lg:px-8`}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post, i) => (
+              <PostCard key={post.id} post={post} delay={i * 0.06} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section
+        className={`mx-auto max-w-6xl px-4 ${
+          posts.length > 0 || podcasts.length > 0 || pinnedPosts.length > 0 ? "pb-16" : "py-16"
+        } sm:px-6 lg:px-8`}
+      >
+        <SectionHeading as="h3" title="Property video tours" />
+        <Reveal delay={0.2}>
           <p className="mt-1 text-sm text-brand-ink/60">
             Each listing has its own walkthrough video, hosted alongside its full details on our
             verified Bayut portfolio — browse by category to find one.
@@ -124,19 +229,14 @@ export default async function MediaPage() {
         <div className="glow-field" />
         <div className="grain-overlay" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-                Stay Connected
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Follow Meteorite everywhere
-              </h2>
+          <div className="text-center">
+            <SectionHeading kicker="Stay Connected" title="Follow Meteorite everywhere" align="center" theme="light" />
+            <Reveal delay={0.25}>
               <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/60">
                 New listings, walkthroughs, and updates — pick your platform.
               </p>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
 
           <div className="mt-10">
             <SocialShortcuts />

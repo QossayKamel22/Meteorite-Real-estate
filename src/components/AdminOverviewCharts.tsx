@@ -20,14 +20,24 @@ const NAVY = "#0d1031";
 const GOLD = "#dbcc3b";
 const PIE_COLORS = [GOLD, NAVY, "#5E5CE6", "#30D158", "#FF453A"];
 
-export function SignupsChart({ data }: { data: { date: string; count: number }[] }) {
+export function SignupsChart({
+  data,
+  name = "New sign-ins",
+  gradientId = "signupsFill",
+  color = GOLD,
+}: {
+  data: { date: string; count: number }[];
+  name?: string;
+  gradientId?: string;
+  color?: string;
+}) {
   return (
     <ResponsiveContainer width="100%" height={220}>
       <AreaChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
         <defs>
-          <linearGradient id="signupsFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={GOLD} stopOpacity={0.45} />
-            <stop offset="95%" stopColor={GOLD} stopOpacity={0.03} />
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor={color} stopOpacity={0.45} />
+            <stop offset="95%" stopColor={color} stopOpacity={0.03} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-brand-line, #e6e6e6)" />
@@ -37,14 +47,7 @@ export function SignupsChart({ data }: { data: { date: string; count: number }[]
           contentStyle={{ borderRadius: 12, border: "1px solid #e6e6e6", fontSize: 12 }}
           labelStyle={{ fontWeight: 600 }}
         />
-        <Area
-          type="monotone"
-          dataKey="count"
-          name="New sign-ins"
-          stroke={GOLD}
-          strokeWidth={2}
-          fill="url(#signupsFill)"
-        />
+        <Area type="monotone" dataKey="count" name={name} stroke={color} strokeWidth={2} fill={`url(#${gradientId})`} />
       </AreaChart>
     </ResponsiveContainer>
   );

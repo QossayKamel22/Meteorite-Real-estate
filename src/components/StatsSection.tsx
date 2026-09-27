@@ -1,6 +1,7 @@
 import { getStatsList } from "@/lib/site-stats";
 import StatCounter, { type StatIconKey } from "@/components/StatCounter";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 const icons: StatIconKey[] = ["building", "users", "trophy", "smile"];
 
@@ -12,14 +13,11 @@ export default async function StatsSection() {
       <div className="pointer-events-none absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <Reveal>
-          <p className="text-center text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-            Track Record
-          </p>
-          <h2 className="mt-3 text-center text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
-            Numbers built over 20 years
-          </h2>
-        </Reveal>
+        <SectionHeading
+          kicker="Track Record"
+          title="Numbers built over 20 years"
+          align="center"
+        />
 
         <div className="mt-12 grid grid-cols-2 gap-5 lg:grid-cols-4">
           {stats.map((stat, i) => (

@@ -58,7 +58,6 @@ export async function PUT(request: Request) {
 
   revalidatePath("/");
   revalidatePath("/about-us");
-  revalidatePath("/payment");
 
   return NextResponse.json({ ok: true, stats: next });
 }

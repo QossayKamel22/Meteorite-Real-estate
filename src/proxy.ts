@@ -54,5 +54,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|api/admin|.*\\.).*)", "/api/login", "/api/logout"],
+  // api/track-visit is a public, best-effort analytics beacon (guarded by its
+  // own same-origin check, not auth) fired on every single page view — routing
+  // it through the Firebase auth/token-refresh middleware too would needlessly
+  // double that work on every pageview for signed-in users.
+  matcher: ["/((?!_next|api/admin|api/track-visit|.*\\.).*)", "/api/login", "/api/logout"],
 };

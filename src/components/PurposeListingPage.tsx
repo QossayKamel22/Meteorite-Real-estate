@@ -3,6 +3,7 @@ import { externalListings, credentials } from "@/lib/content";
 import { getProperties, type Purpose } from "@/lib/properties-data";
 import Reveal from "@/components/Reveal";
 import PropertyCard from "@/components/PropertyCard";
+import SectionHeading from "@/components/SectionHeading";
 
 export default async function PurposeListingPage({
   purpose,
@@ -26,12 +27,16 @@ export default async function PurposeListingPage({
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold">
               {isForSale ? <Building2 size={26} strokeWidth={1.75} /> : <Home size={26} strokeWidth={1.75} />}
             </div>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              {isForSale ? "For Sale" : "For Rent"}
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Properties {isForSale ? "for sale" : "for rent"}
-            </h1>
+          </Reveal>
+          <SectionHeading
+            kicker={isForSale ? "For Sale" : "For Rent"}
+            title={`Properties ${isForSale ? "for sale" : "for rent"}`}
+            as="h1"
+            align="center"
+            theme="light"
+            className="mt-5"
+          />
+          <Reveal delay={0.25}>
             <p className="mt-4 text-base leading-relaxed text-white/65">
               {properties.length > 0
                 ? `${properties.length} current ${isForSale ? "sale" : "rental"} listing${properties.length === 1 ? "" : "s"} from our own portfolio.`

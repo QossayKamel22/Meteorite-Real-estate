@@ -3,17 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Eye, EyeOff, ExternalLink, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Eye, EyeOff, ExternalLink, Pencil, Pin, PinOff, Plus, Trash2, Video, X } from "lucide-react";
 import type { MediaPlatform, MediaPost, MediaPostInput } from "@/lib/media-posts-data";
+import { MAX_PINNED_POSTS } from "@/lib/media-posts-constants";
 import ImageUploadField from "@/components/ImageUploadField";
 
 type FormState = {
-  kind: "social" | "post";
+  kind: "social" | "post" | "podcast";
   title: string;
   body: string;
   image: string;
+  video: string;
   platform: MediaPlatform;
   url: string;
+  section: string;
+  pinned: boolean;
   visible: boolean;
 };
 
@@ -22,8 +26,11 @@ const EMPTY_FORM: FormState = {
   title: "",
   body: "",
   image: "",
+  video: "",
   platform: "instagram",
   url: "",
+  section: "",
+  pinned: false,
   visible: true,
 };
 
@@ -33,29 +40,37 @@ function postToForm(p: MediaPost): FormState {
     title: p.title,
     body: p.body ?? "",
     image: p.image ?? "",
+    video: p.video ?? "",
     platform: p.platform ?? "instagram",
     url: p.url ?? "",
+    section: p.section ?? "",
+    pinned: p.pinned ?? false,
     visible: p.visible !== false,
   };
 }
 
 function formToPayload(form: FormState): MediaPostInput {
-  if (form.kind === "social") {
+  if (form.kind === "social" || form.kind === "podcast") {
     return {
-      kind: "social",
+      kind: form.kind,
       title: form.title.trim(),
-      url: form.url.trim(),
+      url: form.url.trim() || undefined,
       platform: form.platform,
       body: form.body.trim() || undefined,
       image: form.image.trim() || undefined,
+      video: form.video.trim() || undefined,
+      section: form.kind === "podcast" ? form.section.trim() || undefined : undefined,
+      pinned: form.pinned,
       visible: form.visible,
     } as MediaPostInput;
   }
   return {
     kind: "post",
     title: form.title.trim(),
-    image: form.image.trim(),
+    image: form.image.trim() || undefined,
+    video: form.video.trim() || undefined,
     body: form.body.trim() || undefined,
+    pinned: form.pinned,
     visible: form.visible,
   } as MediaPostInput;
 }
@@ -65,11 +80,15 @@ function MediaForm({
   onCancel,
   onSubmit,
   submitLabel,
+  existingSections,
+  pinnedCount,
 }: {
   initial: FormState;
   onCancel: () => void;
   onSubmit: (form: FormState) => Promise<string | null>;
   submitLabel: string;
+  existingSections: string[];
+  pinnedCount: number;
 }) {
   const [form, setForm] = useState(initial);
   const [saving, setSaving] = useState(false);
@@ -109,6 +128,15 @@ function MediaForm({
         >
           Social media link
         </button>
+        <button
+          type="button"
+          onClick={() => set("kind", "podcast")}
+          className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+            form.kind === "podcast" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/60"
+          }`}
+        >
+          Podcast embed
+        </button>
       </div>
 
       <div>
@@ -121,7 +149,7 @@ function MediaForm({
         />
       </div>
 
-      {form.kind === "social" ? (
+      {form.kind === "social" || form.kind === "podcast" ? (
         <>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
@@ -134,21 +162,63 @@ function MediaForm({
                 <option value="instagram">Instagram</option>
                 <option value="facebook">Facebook</option>
                 <option value="twitter">X / Twitter</option>
-                <option value="youtube">YouTube</option>
-                <option value="other">Other</option>
+                {form.kind === "social" && <option value="youtube">YouTube</option>}
+                {form.kind === "social" && <option value="other">Other</option>}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-brand-ink/60">Link *</label>
+              <label className="block text-xs font-medium text-brand-ink/60">
+                {form.kind === "podcast" ? "Post permalink" : "Link *"}
+              </label>
               <input
-                required
+                required={form.kind === "social"}
                 type="url"
                 value={form.url}
                 onChange={(e) => set("url", e.target.value)}
                 placeholder="https://instagram.com/p/…"
                 className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
               />
+              {form.kind === "podcast" && (
+                <p className="mt-1 text-xs text-brand-ink/45">
+                  Optional if a video link is set below — otherwise it&apos;s embedded inline using the platform&apos;s own widget.
+                </p>
+              )}
             </div>
+          </div>
+          {form.kind === "podcast" && (
+            <div>
+              <label className="block text-xs font-medium text-brand-ink/60">Section</label>
+              <input
+                list="podcast-sections"
+                value={form.section}
+                onChange={(e) => set("section", e.target.value)}
+                placeholder="Podcasts"
+                className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
+              />
+              <datalist id="podcast-sections">
+                {existingSections.map((s) => (
+                  <option key={s} value={s} />
+                ))}
+              </datalist>
+              <p className="mt-1 text-xs text-brand-ink/45">
+                Group episodes into their own section (e.g. &quot;Market Talk&quot;) — leave blank for the default &quot;Podcasts&quot; section.
+              </p>
+            </div>
+          )}
+          <div>
+            <label className="block text-xs font-medium text-brand-ink/60">
+              {form.kind === "podcast" ? "Video link (recommended)" : "Video link (optional)"}
+            </label>
+            <input
+              type="url"
+              value={form.video}
+              onChange={(e) => set("video", e.target.value)}
+              placeholder="https://.../clip.mp4 or a YouTube link"
+              className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
+            />
+            <p className="mt-1 text-xs text-brand-ink/45">
+              A direct video file (.mp4/.webm) or YouTube link — plays inline as a real video.
+            </p>
           </div>
           <ImageUploadField
             label="Preview photo (optional)"
@@ -158,12 +228,24 @@ function MediaForm({
           />
         </>
       ) : (
-        <ImageUploadField label="Photo *" value={form.image} onChange={(dataUrl) => set("image", dataUrl)} shape="wide" maxDimension={1400} />
+        <>
+          <ImageUploadField label="Photo (optional if a video is added)" value={form.image} onChange={(dataUrl) => set("image", dataUrl)} shape="wide" maxDimension={1400} />
+          <div>
+            <label className="block text-xs font-medium text-brand-ink/60">Video link (optional)</label>
+            <input
+              type="url"
+              value={form.video}
+              onChange={(e) => set("video", e.target.value)}
+              placeholder="https://.../clip.mp4 or a YouTube link"
+              className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
+            />
+          </div>
+        </>
       )}
 
       <div>
         <label className="block text-xs font-medium text-brand-ink/60">
-          {form.kind === "social" ? "Caption (optional)" : "Text"}
+          {form.kind === "post" ? "Text" : "Caption (optional)"}
         </label>
         <textarea
           value={form.body}
@@ -181,6 +263,21 @@ function MediaForm({
           className="h-4 w-4 rounded border-brand-line accent-brand-gold"
         />
         Visible on the public site
+      </label>
+
+      <label
+        className={`flex items-center gap-2 text-sm font-medium ${
+          !form.pinned && pinnedCount >= MAX_PINNED_POSTS ? "text-brand-ink/35" : "text-brand-ink/70"
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={form.pinned}
+          disabled={!form.pinned && pinnedCount >= MAX_PINNED_POSTS}
+          onChange={(e) => set("pinned", e.target.checked)}
+          className="h-4 w-4 rounded border-brand-line accent-brand-gold"
+        />
+        Pin to the top ({pinnedCount}/{MAX_PINNED_POSTS} pinned)
       </label>
 
       {error && <p className="text-sm font-medium text-red-600">{error}</p>}
@@ -253,6 +350,24 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
     setBusyId(null);
   }
 
+  async function handleTogglePinned(p: MediaPost): Promise<string | null> {
+    setBusyId(p.id);
+    const res = await fetch(`/api/admin/media/${p.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pinned: !p.pinned }),
+    });
+    const data = await res.json();
+    router.refresh();
+    setBusyId(null);
+    return res.ok ? null : (data.error ?? "Failed to pin.");
+  }
+
+  const existingSections = Array.from(
+    new Set(posts.filter((p) => p.kind === "podcast" && p.section).map((p) => p.section as string))
+  );
+  const totalPinned = posts.filter((p) => p.pinned).length;
+
   return (
     <div>
       <ul className="space-y-3">
@@ -261,7 +376,7 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
           return (
             <li
               key={p.id}
-              className={`rounded-2xl border border-brand-line bg-surface p-4 ${!visible ? "opacity-55" : ""}`}
+              className={`rounded-2xl border p-4 ${p.pinned ? "border-brand-gold/50 bg-brand-gold/5" : "border-brand-line bg-surface"} ${!visible ? "opacity-55" : ""}`}
             >
               {editingId === p.id ? (
                 <MediaForm
@@ -269,6 +384,8 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
                   submitLabel="Save changes"
                   onCancel={() => setEditingId(null)}
                   onSubmit={(form) => handleUpdate(p.id, form)}
+                  existingSections={existingSections}
+                  pinnedCount={totalPinned - (p.pinned ? 1 : 0)}
                 />
               ) : (
                 <div className="flex items-center gap-4">
@@ -277,17 +394,36 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
                       <Image src={p.image} alt={p.title} fill className="object-cover" sizes="56px" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-brand-ink/30">
-                        <ExternalLink size={16} />
+                        {p.video ? <Video size={16} /> : <ExternalLink size={16} />}
                       </div>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-heading">{p.title}</p>
+                    <p className="truncate text-sm font-semibold text-heading">
+                      {p.pinned && <Pin size={12} className="mr-1 inline text-brand-gold" />}
+                      {p.title}
+                    </p>
                     <p className="truncate text-xs text-brand-ink/55">
-                      {p.kind === "social" ? `Social · ${p.platform}` : "Photo post"}
+                      {p.kind === "social" && `Social · ${p.platform}`}
+                      {p.kind === "podcast" && `Podcast · ${p.platform}${p.section ? ` · ${p.section}` : ""}`}
+                      {p.kind === "post" && "Photo post"}
+                      {p.video && " · Video"}
                       {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                     </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const err = await handleTogglePinned(p);
+                      if (err) window.alert(err);
+                    }}
+                    disabled={busyId === p.id || (!p.pinned && totalPinned >= MAX_PINNED_POSTS)}
+                    aria-label={p.pinned ? `Unpin ${p.title}` : `Pin ${p.title}`}
+                    title={!p.pinned && totalPinned >= MAX_PINNED_POSTS ? `Only ${MAX_PINNED_POSTS} posts can be pinned` : undefined}
+                    className="flex h-8 w-8 flex-none items-center justify-center rounded-full text-brand-ink/50 hover:bg-brand-paper hover:text-heading disabled:opacity-30"
+                  >
+                    {p.pinned ? <PinOff size={14} /> : <Pin size={14} />}
+                  </button>
                   {p.url && (
                     <a
                       href={p.url}
@@ -340,7 +476,14 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
               <X size={16} className="text-brand-ink/50" />
             </button>
           </div>
-          <MediaForm initial={EMPTY_FORM} submitLabel="Publish" onCancel={() => setAdding(false)} onSubmit={handleAdd} />
+          <MediaForm
+            initial={EMPTY_FORM}
+            submitLabel="Publish"
+            onCancel={() => setAdding(false)}
+            onSubmit={handleAdd}
+            existingSections={existingSections}
+            pinnedCount={totalPinned}
+          />
         </div>
       ) : (
         <button

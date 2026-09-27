@@ -1,5 +1,8 @@
 import "server-only";
 import { addDoc, deleteDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
+import { MAX_PINNED_POSTS } from "@/lib/media-posts-constants";
+
+export { MAX_PINNED_POSTS };
 
 const COLLECTION = "mediaPosts";
 
@@ -7,13 +10,23 @@ export type MediaPlatform = "instagram" | "facebook" | "twitter" | "youtube" | "
 
 export type MediaPost = {
   id: string;
-  /** "social": a link out to an existing social media post. "post": a native photo + text post hosted here. */
-  kind: "social" | "post";
+  /**
+   * "social": a link out to an existing social media post.
+   * "post": a native photo + text post hosted here.
+   * "podcast": an Instagram/Facebook/X post embedded inline via its official widget (used for podcast episodes).
+   */
+  kind: "social" | "post" | "podcast";
   title: string;
   body?: string;
   image?: string;
+  /** A direct video file URL (.mp4/.webm/.mov) or a YouTube link — rendered as a playable video. */
+  video?: string;
   platform?: MediaPlatform;
   url?: string;
+  /** Free-text grouping label for podcast episodes, so multiple podcast sections can exist (e.g. "Market Talk", "Client Stories"). Defaults to "Podcasts" when absent. */
+  section?: string;
+  /** Pinned posts (max 6, enforced by the admin API) show first, right after the podcast section(s). */
+  pinned?: boolean;
   createdAt: string;
   /** Defaults to true when absent. */
   visible?: boolean;
@@ -24,12 +37,15 @@ export type MediaPostInput = Omit<MediaPost, "id" | "createdAt">;
 function toMediaPost(id: string, data: Record<string, unknown>): MediaPost {
   return {
     id,
-    kind: data.kind === "social" ? "social" : "post",
+    kind: data.kind === "social" || data.kind === "podcast" ? data.kind : "post",
     title: data.title as string,
     body: data.body as string | undefined,
     image: data.image as string | undefined,
+    video: data.video as string | undefined,
     platform: data.platform as MediaPlatform | undefined,
     url: data.url as string | undefined,
+    section: data.section as string | undefined,
+    pinned: data.pinned as boolean | undefined,
     createdAt: (data.createdAt as string) ?? new Date(0).toISOString(),
     visible: data.visible as boolean | undefined,
   };
@@ -41,6 +57,12 @@ export async function getMediaPosts(opts?: { includeHidden?: boolean }): Promise
   const docs = await listCollection(COLLECTION, { orderBy: "createdAt", direction: "DESCENDING" });
   const all = docs.map((d) => toMediaPost(d.id, d.data));
   return opts?.includeHidden ? all : all.filter((p) => p.visible !== false);
+}
+
+/** Counts currently-pinned posts, optionally excluding one id (used when re-saving an already-pinned post). */
+export async function countPinnedPosts(excludeId?: string): Promise<number> {
+  const all = await getMediaPosts({ includeHidden: true });
+  return all.filter((p) => p.pinned && p.id !== excludeId).length;
 }
 
 export async function addMediaPost(data: MediaPostInput): Promise<string> {

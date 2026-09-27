@@ -1,5 +1,6 @@
 import type { Testimonial } from "@/lib/testimonials-data";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export default function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
   if (testimonials.length === 0) return null;
@@ -7,16 +8,9 @@ export default function TestimonialsSection({ testimonials }: { testimonials: Te
   return (
     <section className="relative overflow-hidden bg-brand-paper">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <Reveal>
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              Client Feedback
-            </p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
-              What our clients say
-            </h2>
-          </div>
-        </Reveal>
+        <div className="max-w-2xl">
+          <SectionHeading kicker="Client Feedback" title="What our clients say" />
+        </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (

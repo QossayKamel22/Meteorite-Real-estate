@@ -18,7 +18,7 @@ export default async function AdminStatisticsPage() {
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Homepage Statistics</h1>
           <p className="text-sm text-brand-ink/55">
-            Shown on the Homepage, About Us, and Payment page stat sections.
+            Shown on the Homepage and About Us stat sections.
           </p>
         </div>
       </div>

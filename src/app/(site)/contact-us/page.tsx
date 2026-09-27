@@ -3,6 +3,7 @@ import { Mail, MapPin, MessageCircle, Phone, ShieldCheck } from "lucide-react";
 import { company } from "@/lib/content";
 import ContactForm from "@/components/ContactForm";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -24,13 +25,14 @@ export default function ContactUsPage() {
         <div className="glow-field" />
         <div className="grain-overlay" />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <Reveal>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-              Contact Us
-            </p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              We&apos;d love to hear from you
-            </h1>
+          <SectionHeading
+            kicker="Contact Us"
+            title={<>We&apos;d love to hear from you</>}
+            as="h1"
+            align="center"
+            theme="light"
+          />
+          <Reveal delay={0.25}>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/65">
               Reach our team directly, or send a message below and we&apos;ll get back to you.
             </p>

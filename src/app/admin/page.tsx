@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   BarChart3,
+  Eye,
   IdCard,
   LayoutDashboard,
   ShieldCheck,
+  TrendingUp,
   UserX,
   Users as UsersIcon,
 } from "lucide-react";
@@ -12,6 +14,7 @@ import { getStatsList } from "@/lib/site-stats";
 import { getAgents } from "@/lib/agents-data";
 import { getCertificates } from "@/lib/certificates-data";
 import { listUsers } from "@/lib/users-data";
+import { getAnalyticsSummary } from "@/lib/analytics-data";
 import { BreakdownPie, SignupsChart, StatsBarChart } from "@/components/AdminOverviewCharts";
 
 export const metadata: Metadata = { title: "Overview · Admin" };
@@ -69,11 +72,12 @@ function StatCard({
 }
 
 export default async function AdminOverviewPage() {
-  const [fields, agents, certificates, users] = await Promise.all([
+  const [fields, agents, certificates, users, analytics] = await Promise.all([
     getStatsList({ includeHidden: true }),
     getAgents({ includeHidden: true }),
     getCertificates({ includeHidden: true }),
     listUsers(),
+    getAnalyticsSummary(),
   ]);
 
   const adminCount = users.filter((u) => u.role === "admin").length;
@@ -108,9 +112,34 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard icon={Eye} label="Visits (all time)" value={analytics.totalAllTime} href="/admin" />
+        <StatCard icon={TrendingUp} label="Visits today" value={analytics.totalToday} href="/admin" />
         <StatCard icon={UsersIcon} label="Total users" value={users.length} href="/admin/users" />
-        <StatCard icon={ShieldCheck} label="Admins" value={adminCount} href="/admin/users" />
         <StatCard icon={IdCard} label="Team members" value={agents.length} href="/admin/team" />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        <div className="glass shimmer-border rounded-3xl p-6 sm:p-8 lg:col-span-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
+            Site visits, last {DAYS_WINDOW} days
+          </h2>
+          <div className="mt-4">
+            <SignupsChart data={analytics.last14Days} name="Page views" gradientId="visitsFill" color="#5E5CE6" />
+          </div>
+        </div>
+
+        <div className="glass shimmer-border rounded-3xl p-6 sm:p-8">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
+            Visits by section
+          </h2>
+          <div className="mt-2">
+            <BreakdownPie data={analytics.breakdown} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <StatCard icon={ShieldCheck} label="Admins" value={adminCount} href="/admin/users" />
         <StatCard icon={UserX} label="Disabled accounts" value={disabledCount} href="/admin/users" />
       </div>
 

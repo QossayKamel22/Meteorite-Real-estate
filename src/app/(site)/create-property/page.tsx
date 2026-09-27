@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import { company } from "@/lib/content";
+import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export const metadata: Metadata = { title: "Add Property" };
 
 export default function CreatePropertyPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-24 text-center sm:px-6 lg:px-8">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
-        List With Us
-      </p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
-        Add your property
-      </h1>
+      <SectionHeading kicker="List With Us" title="Add your property" as="h1" align="center" />
+      <Reveal delay={0.2}>
       <p className="mt-5 text-lg leading-relaxed text-brand-ink/70">
         Listing submissions are handled by our agents to ensure every property is verified
         before it goes live. Reach out and our team will list it for you.
@@ -32,6 +30,7 @@ export default function CreatePropertyPage() {
           Email {company.email}
         </a>
       </div>
+      </Reveal>
     </div>
   );
 }

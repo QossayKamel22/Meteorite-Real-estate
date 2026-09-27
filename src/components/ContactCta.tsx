@@ -1,5 +1,6 @@
 import { company } from "@/lib/content";
 import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export default function ContactCta() {
   return (
@@ -10,13 +11,13 @@ export default function ContactCta() {
           <div className="grain-overlay" />
           <div className="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
             <div className="max-w-xl">
-              <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                Ready to find your next home?
-              </h2>
-              <p className="mt-3 text-base leading-relaxed text-white/65">
-                Speak with our team directly — call, WhatsApp, or email and we&apos;ll help you
-                get the best deal.
-              </p>
+              <SectionHeading title="Ready to find your next home?" theme="light" />
+              <Reveal delay={0.2}>
+                <p className="mt-3 text-base leading-relaxed text-white/65">
+                  Speak with our team directly — call, WhatsApp, or email and we&apos;ll help you
+                  get the best deal.
+                </p>
+              </Reveal>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">

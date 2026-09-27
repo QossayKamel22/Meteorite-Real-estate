@@ -3,20 +3,21 @@
 import Link from "next/link";
 import { useFavorites } from "@/lib/favorites-context";
 import { externalListings } from "@/lib/content";
+import Reveal from "@/components/Reveal";
+import SectionHeading from "@/components/SectionHeading";
 
 export default function FavoritesPage() {
   const { favorites, hydrated } = useFavorites();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Saved</p>
-      <h1 className="mt-3 text-4xl font-semibold tracking-tight text-heading sm:text-5xl">
-        Your saved properties
-      </h1>
+      <SectionHeading kicker="Saved" title="Your saved properties" as="h1" />
+      <Reveal delay={0.2}>
       <p className="mt-4 text-base leading-relaxed text-brand-ink/60">
         Saved on this device only — favorites aren&apos;t synced across devices until a real
         account backend is connected.
       </p>
+      </Reveal>
 
       {hydrated && favorites.length === 0 && (
         <div className="mt-10 rounded-2xl border border-dashed border-brand-line p-10 text-center">

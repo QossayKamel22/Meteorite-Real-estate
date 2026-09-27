@@ -3,10 +3,12 @@ import Footer from "@/components/Footer";
 import RouteTransitionOverlay from "@/components/RouteTransitionOverlay";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 import BackToTop from "@/components/BackToTop";
+import VisitTracker from "@/components/VisitTracker";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <VisitTracker />
       <ScrollProgressBar />
       <RouteTransitionOverlay />
       <Header />

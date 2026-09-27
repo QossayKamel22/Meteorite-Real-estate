@@ -59,7 +59,6 @@ export const navLinks = [
   { label: "For Sale", href: "/for-sale" },
   { label: "For Rent", href: "/for-rent" },
   { label: "Media", href: "/media" },
-  { label: "Payment", href: "/payment" },
   { label: "Contact Us", href: "/contact-us" },
 ];
 
@@ -87,18 +86,6 @@ export const credentials = [
   "CPM, CRB, CRV, UREP, CBSL certified professionals",
   `Broker Card #${company.brokerCard} · ORN ${company.orn}`,
 ];
-
-/**
- * Live Stripe payment links from meteoriterealestate.com/payment ("Please
- * choose the Amount"). The origin page shows only these three fixed AED
- * tiers with no labels distinguishing what each is for — we preserve that
- * exactly rather than inventing purposes (e.g. "booking fee") for them.
- */
-export const paymentTiers = [
-  { amount: 5250, url: "https://buy.stripe.com/aEU6qg4Sf1qWcAU3ce" },
-  { amount: 7350, url: "https://buy.stripe.com/cN201S84r0mSeJ29AD" },
-  { amount: 10500, url: "https://buy.stripe.com/00g3e4aczd9EgRabIM" },
-] as const;
 
 export const propertyCategories = [
   { label: "Apartments & Studios", forSaleQuery: "type=Apartment", image: "/brand/hero-dubai-skyline.jpg" },
