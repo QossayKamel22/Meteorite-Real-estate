@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, ExternalLink, Headphones, Home, Pin, PlayCircle, Store, Warehouse } from "lucide-react";
+import {
+  Building2,
+  ExternalLink,
+  Headphones,
+  Home,
+  Image as ImageIcon,
+  Pin,
+  PlayCircle,
+  Share2,
+  Sparkles,
+  Store,
+  Warehouse,
+} from "lucide-react";
 import { company, externalListings } from "@/lib/content";
 import { getMediaPosts, type MediaPost } from "@/lib/media-posts-data";
 import Reveal from "@/components/Reveal";
@@ -62,7 +74,7 @@ function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: n
         )}
         <div className="flex flex-1 flex-col p-5">
           <h3 className="text-base font-semibold text-heading">{post.title}</h3>
-          {post.body && <p className="mt-2 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
+          {post.body && <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
           {post.kind === "social" && post.url && (
             <a
               href={post.url}
@@ -116,6 +128,14 @@ export default async function MediaPage() {
   const posts = nonPodcasts.filter((p) => !p.pinned).slice(0, MAX_REGULAR_POSTS);
   const podcastGroups = groupPodcastsBySection(podcasts);
 
+  const jumpLinks = [
+    podcastGroups.length > 0 && { href: "#podcasts", label: "Podcasts", icon: Headphones },
+    pinnedPosts.length > 0 && { href: "#featured", label: "Featured", icon: Sparkles },
+    posts.length > 0 && { href: "#posts", label: "Posts", icon: ImageIcon },
+    { href: "#tours", label: "Video Tours", icon: PlayCircle },
+    { href: "#follow", label: "Follow Us", icon: Share2 },
+  ].filter(Boolean) as { href: string; label: string; icon: typeof Headphones }[];
+
   return (
     <div>
       <section className="relative overflow-hidden bg-brand-navy py-20 sm:py-24">
@@ -144,8 +164,23 @@ export default async function MediaPage() {
         </div>
       </section>
 
+      <nav className="sticky top-16 z-30 border-b border-brand-line bg-surface/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
+          {jumpLinks.map(({ href, label, icon: Icon }) => (
+            <a
+              key={href}
+              href={href}
+              className="flex flex-none items-center gap-1.5 rounded-full border border-brand-line px-4 py-2 text-xs font-semibold text-brand-ink/65 transition-colors hover:border-brand-gold hover:text-heading"
+            >
+              <Icon size={13} strokeWidth={1.75} />
+              {label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
       {podcastGroups.length > 0 && (
-        <section className="relative overflow-hidden bg-brand-podcast py-20 sm:py-24">
+        <section id="podcasts" className="relative scroll-mt-28 overflow-hidden bg-brand-podcast py-20 sm:py-24">
           <div className="glow-field-podcast" />
           <div className="grain-overlay" />
           <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -204,7 +239,7 @@ export default async function MediaPage() {
       )}
 
       {pinnedPosts.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
+        <section id="featured" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
           <SectionHeading kicker="Featured" title="Pinned highlights" />
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {pinnedPosts.map((post, i) => (
@@ -215,7 +250,7 @@ export default async function MediaPage() {
       )}
 
       {posts.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
+        <section id="posts" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
           {(pinnedPosts.length > 0 || podcasts.length > 0) && <SectionHeading kicker="More" title="Latest posts" />}
           <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 ${(pinnedPosts.length > 0 || podcasts.length > 0) ? "mt-6" : ""}`}>
             {posts.map((post, i) => (
@@ -225,7 +260,7 @@ export default async function MediaPage() {
         </section>
       )}
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
+      <section id="tours" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
         <SectionHeading as="h3" title="Property video tours" />
         <Reveal delay={0.2}>
           <p className="mt-1 text-sm text-brand-ink/60">
@@ -240,14 +275,17 @@ export default async function MediaPage() {
                 href={cat.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="glass shimmer-border group flex h-full flex-col justify-between rounded-2xl p-6 transition-transform duration-300 hover:-translate-y-1"
+                className="glass shimmer-border group flex h-full flex-col justify-between rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-gold/15 text-brand-gold">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20 transition-transform duration-300 group-hover:scale-110">
                   <cat.icon size={20} strokeWidth={1.75} />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-heading">{cat.label}</h3>
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-ink/60 group-hover:text-brand-gold">
-                  Watch tours <span aria-hidden="true">→</span>
+                  Watch tours{" "}
+                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">
+                    →
+                  </span>
                 </span>
               </a>
             </Reveal>
@@ -256,7 +294,7 @@ export default async function MediaPage() {
 
       </section>
 
-      <section className="relative overflow-hidden bg-brand-navy py-20">
+      <section id="follow" className="relative scroll-mt-28 overflow-hidden bg-brand-navy py-20 sm:py-24">
         <div className="glow-field" />
         <div className="grain-overlay" />
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
