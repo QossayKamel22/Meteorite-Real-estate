@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/lib/theme-context";
 import { Moon, ShieldCheck, Sun } from "lucide-react";
 import AdminSignOutButton from "@/components/AdminSignOutButton";
 

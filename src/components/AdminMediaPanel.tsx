@@ -229,7 +229,7 @@ function MediaForm({
         </>
       ) : (
         <>
-          <ImageUploadField label="Photo (optional if a video is added)" value={form.image} onChange={(dataUrl) => set("image", dataUrl)} shape="wide" maxDimension={1400} />
+          <ImageUploadField label="Photo (optional if a video is added)" value={form.image} onChange={(dataUrl) => set("image", dataUrl)} shape="wide" maxDimension={1000} />
           <div>
             <label className="block text-xs font-medium text-brand-ink/60">Video link (optional)</label>
             <input

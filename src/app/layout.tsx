@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
 import AuthLoadingOverlay from "@/components/AuthLoadingOverlay";
+import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme-context";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,6 +32,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {THEME_BOOTSTRAP_SCRIPT}
+        </Script>
         <ThemeProvider>
           <AuthProvider>
             <FavoritesProvider>{children}</FavoritesProvider>

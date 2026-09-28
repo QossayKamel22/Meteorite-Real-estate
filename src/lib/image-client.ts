@@ -4,12 +4,18 @@
  * Resizes and compresses an image file in the browser, returning a base64
  * data URL. Used instead of Firebase Storage (which now requires the paid
  * Blaze plan on new projects) — the result is stored directly as a string
- * field on the Firestore document. Firestore's per-document limit is 1MiB,
- * so images are kept well under that with resizing + JPEG compression.
+ * field on the Firestore document.
+ *
+ * The cap here is much stricter than Firestore's 1MiB document limit: a
+ * ~124KB data URL embedded in a server-streamed React response (e.g. an
+ * agent photo rendered by an async Server Component) was enough to corrupt
+ * the SSR stream on Cloudflare Workers and take the whole homepage down —
+ * everything past that component silently failed to hydrate. Keeping data
+ * URLs well under that threshold avoids the whole class of failure.
  */
 export function resizeAndEncodeImage(
   file: File,
-  { maxDimension = 800, quality = 0.82 }: { maxDimension?: number; quality?: number } = {}
+  { maxDimension = 640, quality = 0.78 }: { maxDimension?: number; quality?: number } = {}
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
@@ -51,8 +57,8 @@ export function resizeAndEncodeImage(
         ctx.drawImage(img, 0, 0, width, height);
 
         const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        if (dataUrl.length > 900_000) {
-          reject(new Error("Image is still too large after compression — try a smaller photo."));
+        if (dataUrl.length > 100_000) {
+          reject(new Error("Image is still too large after compression — try a smaller or simpler photo."));
           return;
         }
         resolve(dataUrl);

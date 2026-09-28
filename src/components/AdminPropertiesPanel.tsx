@@ -130,7 +130,7 @@ function PropertyForm({
           set("image", dataUrl);
         }}
         shape="wide"
-        maxDimension={1200}
+        maxDimension={900}
       />
       {imageError && <p className="text-xs font-medium text-red-600">{imageError}</p>}
 
