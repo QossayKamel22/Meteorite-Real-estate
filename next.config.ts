@@ -30,11 +30,11 @@ const csp = [
   "form-action 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
-  "frame-src 'self' https://www.google.com https://meteorite-real-estate.firebaseapp.com https://accounts.google.com",
+  "frame-src 'self' https://www.google.com https://meteorite-real-estate.firebaseapp.com https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.instagram.com https://www.facebook.com https://staticxx.facebook.com https://platform.twitter.com https://twitter.com https://x.com",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
   `style-src 'self' 'unsafe-inline'`,
-  `script-src 'self' 'unsafe-inline' https://apis.google.com${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://apis.google.com https://www.instagram.com https://connect.facebook.net https://platform.twitter.com${isDev ? " 'unsafe-eval'" : ""}`,
   "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com https://accounts.google.com",
 ].join("; ");
 
