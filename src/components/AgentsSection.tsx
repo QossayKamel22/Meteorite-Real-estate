@@ -33,7 +33,7 @@ function AgentCard({
         <div className="relative">
           <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-brand-gold/50 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
           <div
-            className={`relative overflow-hidden rounded-full ring-1 ring-white/15 ${featured ? "h-32 w-32" : "h-28 w-28"} ${isCeoPhoto ? "bg-white" : ""}`}
+            className={`relative overflow-hidden rounded-full ring-1 ring-white/15 ${featured ? "h-32 w-32" : "h-28 w-28"}`}
           >
             <Image
               src={agent.photo}

@@ -56,7 +56,7 @@ export default async function PhotoCollage() {
                   return (
                   <div
                     key={agent.id}
-                    className={`group relative aspect-square overflow-hidden rounded-2xl shadow-[0_12px_30px_-16px_rgba(13,16,49,0.4)] ${isCeo ? "bg-brand-paper" : ""}`}
+                    className="group relative aspect-square overflow-hidden rounded-2xl shadow-[0_12px_30px_-16px_rgba(13,16,49,0.4)]"
                   >
                     <Image
                       src={agent.photo}
