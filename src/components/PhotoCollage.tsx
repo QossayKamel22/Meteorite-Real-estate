@@ -51,16 +51,18 @@ export default async function PhotoCollage() {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {agents.map((agent) => (
+                {agents.map((agent) => {
+                  const isCeo = agent.name === "Saad Abdullah Soboh";
+                  return (
                   <div
                     key={agent.id}
-                    className="group relative aspect-square overflow-hidden rounded-2xl shadow-[0_12px_30px_-16px_rgba(13,16,49,0.4)]"
+                    className={`group relative aspect-square overflow-hidden rounded-2xl shadow-[0_12px_30px_-16px_rgba(13,16,49,0.4)] ${isCeo ? "bg-brand-paper" : ""}`}
                   >
                     <Image
                       src={agent.photo}
                       alt={agent.name}
                       fill
-                      className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                      className={`transition-transform duration-500 group-hover:scale-110 ${isCeo ? "object-contain" : "object-cover object-top"}`}
                       sizes="(max-width: 1024px) 30vw, 180px"
                     />
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-navy/85 to-transparent px-3 pb-2.5 pt-6">
@@ -70,7 +72,8 @@ export default async function PhotoCollage() {
                       <p className="truncate text-[10px] text-white/60">{agent.title}</p>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               <p className="mt-4 text-center text-xs text-brand-ink/40">

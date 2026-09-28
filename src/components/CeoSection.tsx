@@ -15,13 +15,13 @@ export default async function CeoSection() {
           <div className="relative">
             <div className="absolute -inset-3 -z-10 rounded-[2rem] bg-brand-gold/15" />
             <div className="glass shimmer-border group aspect-square w-full overflow-hidden rounded-[1.75rem] p-1.5">
-              <div className="h-full w-full overflow-hidden rounded-[1.4rem]">
+              <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[1.4rem] bg-brand-paper">
                 <Image
                   src={ceo.photo}
                   alt={`Portrait of ${ceo.name}`}
                   width={640}
                   height={640}
-                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             </div>

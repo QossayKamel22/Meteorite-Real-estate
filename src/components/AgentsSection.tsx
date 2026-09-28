@@ -16,6 +16,7 @@ function AgentCard({
   featured?: boolean;
 }) {
   const isLead = agent.title.toLowerCase().includes("ceo");
+  const isCeoPhoto = agent.name === "Saad Abdullah Soboh";
 
   return (
     <Reveal delay={delay} className={featured ? "sm:col-span-2 lg:col-span-1" : undefined}>
@@ -32,13 +33,13 @@ function AgentCard({
         <div className="relative">
           <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-brand-gold/50 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
           <div
-            className={`relative overflow-hidden rounded-full ring-1 ring-white/15 ${featured ? "h-32 w-32" : "h-28 w-28"}`}
+            className={`relative overflow-hidden rounded-full ring-1 ring-white/15 ${featured ? "h-32 w-32" : "h-28 w-28"} ${isCeoPhoto ? "bg-white" : ""}`}
           >
             <Image
               src={agent.photo}
               alt={`Portrait of ${agent.name}`}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              className={`transition-transform duration-500 group-hover:scale-110 ${isCeoPhoto ? "object-contain" : "object-cover"}`}
               sizes="128px"
             />
           </div>
