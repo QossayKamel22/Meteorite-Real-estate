@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { LayoutTemplate, MessageSquareQuote } from "lucide-react";
+import { LayoutTemplate, MessageSquareQuote, Quote } from "lucide-react";
 import { getHomepageContent } from "@/lib/homepage-content";
+import { getCeoMessage } from "@/lib/ceo-message";
 import { getTestimonials } from "@/lib/testimonials-data";
 import AdminHomepageContentForm from "@/components/AdminHomepageContentForm";
+import AdminCeoMessageForm from "@/components/AdminCeoMessageForm";
 import AdminTestimonialsPanel from "@/components/AdminTestimonialsPanel";
 
 export const metadata: Metadata = { title: "Homepage · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomepagePage() {
-  const [content, testimonials] = await Promise.all([
+  const [content, ceoMessage, testimonials] = await Promise.all([
     getHomepageContent(),
+    getCeoMessage(),
     getTestimonials({ includeHidden: true }),
   ]);
 
@@ -23,7 +26,7 @@ export default async function AdminHomepagePage() {
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Homepage</h1>
           <p className="text-sm text-brand-ink/55">
-            The hero copy and client testimonials shown on the homepage.
+            The hero copy, CEO message and client testimonials shown on the homepage.
           </p>
         </div>
       </div>
@@ -32,6 +35,21 @@ export default async function AdminHomepagePage() {
         <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">Hero section</h2>
         <div className="mt-4">
           <AdminHomepageContentForm content={content} />
+        </div>
+      </div>
+
+      <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-2">
+          <Quote size={16} className="text-brand-gold" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
+            CEO message
+          </h2>
+        </div>
+        <p className="mt-2 text-sm text-brand-ink/55">
+          The signed message shown on the homepage below the leadership section. Up to 200 words.
+        </p>
+        <div className="mt-6">
+          <AdminCeoMessageForm message={ceoMessage} />
         </div>
       </div>
 

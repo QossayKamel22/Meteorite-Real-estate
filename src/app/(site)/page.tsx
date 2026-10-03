@@ -4,6 +4,7 @@ import AboutIntro from "@/components/AboutIntro";
 import PhotoCollage from "@/components/PhotoCollage";
 import PropertyDiscovery from "@/components/PropertyDiscovery";
 import CeoSection from "@/components/CeoSection";
+import CeoMessageSection from "@/components/CeoMessageSection";
 import AgentsSection from "@/components/AgentsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
@@ -29,6 +30,7 @@ export default async function Home() {
       <PhotoCollage />
       <PropertyDiscovery />
       <CeoSection />
+      <CeoMessageSection />
       <AgentsSection />
       <TestimonialsSection testimonials={testimonials} />
       <ContactCta />
