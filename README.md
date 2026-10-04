@@ -197,7 +197,19 @@ npx wrangler deploy --dry-run     # validate config without deploying
 npx wrangler deploy               # deploy for real
 ```
 
-`wrangler.jsonc` defines the Worker (`meteorite-real-estate`), its static-assets binding, and the `nodejs_compat` / `global_fetch_strictly_public` compatibility flags. `open-next.config.ts` uses OpenNext's default in-memory cache — this app has no ISR, so no R2 bucket is needed.
+`wrangler.jsonc` defines the Worker (`meteorite-real-estate`), its static-assets binding, the `nodejs_compat` / `global_fetch_strictly_public` compatibility flags, and a Workers KV namespace (bound twice, as `NEXT_INC_CACHE_KV` and `NEXT_TAG_CACHE_KV`).
+
+#### Page cache & the Free plan's CPU limit
+
+A Worker on the Cloudflare **Free** plan gets roughly **10 ms of CPU per request**, and a React render of even a simple page costs 10–100+ ms. With OpenNext's default (dummy) cache every "static" page was re-rendered — with ~20 Firestore calls on the homepage — on every request, and the Worker intermittently returned `503` (Cloudflare error 1102, "Worker exceeded resource limits"). `open-next.config.ts` therefore:
+
+- stores the prerendered pages in **Workers KV** and serves hits from the middleware layer (*cache interception*), so a visit costs ~2–8 ms and never loads the Next server bundle;
+- uses a KV **tag cache**, so the admin panel's `revalidatePath()` still works: the edited page is re-rendered once on its next visit and re-cached. KV is eventually consistent, so an edit can take up to ~60 s to appear;
+- caches **pages only**, not Next's `fetch` data cache, so a re-render always reads fresh Firestore data.
+
+`npm run deploy` is `opennextjs-cloudflare build && node scripts/strip-segment-data.mjs && opennextjs-cloudflare deploy`. The script drops the build-time `fetch` cache and the unused per-segment prefetch payloads (all `<Link>`s use `prefetch={false}`) from the cache before it is uploaded to KV. Each deploy writes ~17 KV entries (the free KV allowance is 1,000 writes/day). Entries from old builds are never read again; delete them from the namespace occasionally.
+
+Other Free-plan notes: the page-view beacon (`POST /api/track-visit`) is answered in `src/proxy.ts` rather than the route handler, and the Firebase auth middleware only runs for `/admin`, `/api/login` and `/api/logout`. Admin pages and admin APIs still need the full server bundle (100+ ms of CPU), so an admin request can occasionally fail on a cold Worker — retrying works. Don't enable a Cloudflare "Cache Everything" rule on the HTML: the Worker already caches, and an edge copy would hide admin edits.
 
 **One manual step per Firebase project:** any domain you deploy to (including a Cloudflare `*.workers.dev` subdomain) must be added under Firebase Console → Authentication → Settings → Authorized domains, or Google/email sign-in will fail with `auth/unauthorized-domain`. `localhost` and `*.firebaseapp.com`/`*.web.app` are authorized by default; nothing else is.
 
