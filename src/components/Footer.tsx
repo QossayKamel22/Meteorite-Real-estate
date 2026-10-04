@@ -15,8 +15,8 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-brand-navy text-white/85">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div className="md:col-span-2">
+        <div className="grid gap-10 md:grid-cols-[1.3fr_1fr_1.5fr] lg:grid-cols-4">
+          <div className="lg:col-span-2">
             <Image
               src="/brand/logo-transparent.png"
               alt={`${company.name} logo`}
@@ -76,7 +76,7 @@ export default function Footer() {
 
           <div>
             <h3 className="text-sm font-semibold tracking-wide text-white">Contact</h3>
-            <ul className="mt-4 space-y-2.5 text-sm text-white/60">
+            <ul className="mt-4 space-y-2.5 break-words text-sm text-white/60">
               <li>{company.address}</li>
               <li>P.O. Box: {company.poBox}</li>
               <li>

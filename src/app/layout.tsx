@@ -7,6 +7,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
 import AuthLoadingOverlay from "@/components/AuthLoadingOverlay";
 import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme-context";
+import { SITE_URL } from "@/lib/content";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,6 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Meteorite Real Estate",
     template: "%s | Meteorite Real Estate",

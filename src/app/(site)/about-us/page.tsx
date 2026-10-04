@@ -10,11 +10,13 @@ import AgentsSection from "@/components/AgentsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
 import DevelopersAndCertificate from "@/components/DevelopersAndCertificate";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About Us",
   description: company.legalTagline,
-};
+  path: "/about-us",
+});
 
 const credentialIcons = [ShieldCheck, Award, BadgeCheck];
 

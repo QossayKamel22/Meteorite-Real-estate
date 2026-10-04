@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import AdminSidebar from "@/components/AdminSidebar";
 import { getSessionUser } from "@/lib/session";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // Defense-in-depth: proxy.ts already blocks unauthenticated/non-admin
 // requests to /admin/**, but this checks again at the server-component

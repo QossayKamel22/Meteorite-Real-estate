@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import { company } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Add Property" };
+export const metadata: Metadata = pageMetadata({
+  title: "Add Property",
+  description: "List your property with Meteorite Real Estate, a RERA-certified Dubai brokerage.",
+  path: "/create-property",
+  noindex: true,
+});
 
 export default function CreatePropertyPage() {
   return (

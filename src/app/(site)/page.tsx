@@ -12,6 +12,13 @@ import { getStatsList } from "@/lib/site-stats";
 import { getAgents } from "@/lib/agents-data";
 import { getTestimonials } from "@/lib/testimonials-data";
 import { getHomepageContent } from "@/lib/homepage-content";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  description:
+    "Meteorite Real Estate — a RERA-certified Dubai brokerage since 2005. Buy, sell, lease and manage property across the UAE with trusted, transparent advice.",
+  path: "/",
+});
 
 export default async function Home() {
   const [stats, agents, testimonials, content] = await Promise.all([

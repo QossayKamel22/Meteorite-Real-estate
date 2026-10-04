@@ -46,6 +46,16 @@ const nextConfig: NextConfig = {
     // replaced URL entry — not used by the admin UI anymore.
     remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
+  // Old WordPress URLs that were indexed before the move to this site. The
+  // trailing-slash forms (e.g. /media-2/) are matched too.
+  async redirects() {
+    return [
+      { source: "/media-2", destination: "/media", permanent: true },
+      { source: "/privacy", destination: "/privacy-policy", permanent: true },
+      { source: "/blog", destination: "/", permanent: true },
+      { source: "/payment", destination: "/", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

@@ -16,11 +16,13 @@ import {
 import { company } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description: `How ${company.name} collects, uses, and protects your data.`,
-};
+  path: "/privacy-policy",
+});
 
 const EFFECTIVE_DATE = "September 21, 2026";
 

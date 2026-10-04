@@ -4,6 +4,9 @@
  * alter facts here — every field must trace back to the live site.
  */
 
+/** Canonical production origin — used for canonical URLs, Open Graph and the sitemap. */
+export const SITE_URL = "https://meteoriterealestate.com";
+
 export const company = {
   name: "Meteorite Real Estate",
   legalTagline:
@@ -17,7 +20,7 @@ export const company = {
   phoneE164: "+971501102242",
   email: "info@meteoriterealestate.com",
   whatsappUrl: "https://wa.me/+971501102242",
-  copyrightNotice: "© 2020 Meteoriterealestate. All Rights Reserved.",
+  copyrightNotice: `© ${new Date().getFullYear()} Meteorite Real Estate. All Rights Reserved.`,
 };
 
 /**

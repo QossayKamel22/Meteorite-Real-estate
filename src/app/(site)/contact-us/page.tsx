@@ -4,11 +4,13 @@ import { company } from "@/lib/content";
 import ContactForm from "@/components/ContactForm";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact Us",
-  description: `Contact ${company.name} — ${company.phoneDisplay}, ${company.email}`,
-};
+  description: `Contact ${company.name} in Jumeirah 1, Dubai — call ${company.phoneDisplay} or email ${company.email} to buy, sell, rent or manage property.`,
+  path: "/contact-us",
+});
 
 const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(company.address)}&output=embed`;
 

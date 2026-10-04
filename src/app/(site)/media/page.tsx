@@ -21,8 +21,14 @@ import SocialShortcuts from "@/components/SocialShortcuts";
 import SocialEmbed from "@/components/SocialEmbed";
 import SectionHeading from "@/components/SectionHeading";
 import MediaVideo from "@/components/MediaVideo";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Media" };
+export const metadata: Metadata = pageMetadata({
+  title: "Media & Podcasts",
+  description:
+    "Watch and listen to Meteorite Real Estate podcast episodes, market insights and news from our team in Dubai.",
+  path: "/media",
+});
 
 const categories = [
   { label: "Apartments & Studios", icon: Building2, href: externalListings.bayutForSale + "&category=apartment" },
