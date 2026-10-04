@@ -170,7 +170,7 @@ export default function PrivacyPolicyPage() {
                 {company.phoneDisplay}
               </a>
               , or use our{" "}
-              <Link href="/contact-us" className="font-semibold text-heading hover:text-brand-gold">
+              <Link prefetch={false} href="/contact-us" className="font-semibold text-heading hover:text-brand-gold">
                 Contact Us
               </Link>{" "}
               page.

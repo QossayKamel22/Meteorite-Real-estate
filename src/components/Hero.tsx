@@ -126,13 +126,13 @@ export default function Hero({
           </motion.p>
 
           <motion.div {...rise(0.26)} className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Link
+            <Link prefetch={false}
               href="/for-sale"
               className="rounded-full bg-brand-gold px-7 py-3.5 text-center text-[15px] font-semibold text-brand-navy shadow-[0_8px_24px_-8px_rgba(219,204,59,0.6)] transition-transform duration-200 hover:scale-[1.03]"
             >
               Browse properties for sale
             </Link>
-            <Link
+            <Link prefetch={false}
               href="/for-rent"
               className="glass rounded-full px-7 py-3.5 text-center text-[15px] font-semibold text-white transition-transform duration-200 hover:scale-[1.03]"
             >
@@ -156,7 +156,7 @@ export default function Hero({
               </div>
             </div>
             <p className="text-sm text-white/60">
-              Meet the <Link href="/about-us" className="font-semibold text-brand-gold hover:underline">team</Link> behind {stats.find((s) => s.key === "happyCustomers")?.value ?? 250}+ happy customers
+              Meet the <Link prefetch={false} href="/about-us" className="font-semibold text-brand-gold hover:underline">team</Link> behind {stats.find((s) => s.key === "happyCustomers")?.value ?? 250}+ happy customers
             </p>
           </motion.div>
         </div>

@@ -17,7 +17,7 @@ export default function AboutIntro() {
               <p className="mt-5 max-w-2xl text-lg leading-relaxed text-brand-ink/70">
                 {company.legalTagline}
               </p>
-              <Link
+              <Link prefetch={false}
                 href="/about-us"
                 className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold"
               >

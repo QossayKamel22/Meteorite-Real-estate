@@ -94,7 +94,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       </h1>
       <p className="mt-2 text-sm text-brand-ink/60">
         {isLogin ? "New here?" : "Already have an account?"}{" "}
-        <Link
+        <Link prefetch={false}
           href={isLogin ? "/register" : "/login"}
           className="font-semibold text-heading hover:text-brand-gold"
         >
@@ -174,7 +174,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           </div>
           {isLogin && (
             <div className="mt-2 text-right">
-              <Link href="/contact-us" className="text-xs font-medium text-brand-ink/50 hover:text-heading">
+              <Link prefetch={false} href="/contact-us" className="text-xs font-medium text-brand-ink/50 hover:text-heading">
                 Forgot password?
               </Link>
             </div>

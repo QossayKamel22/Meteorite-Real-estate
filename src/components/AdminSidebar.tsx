@@ -32,7 +32,7 @@ export default function AdminSidebar() {
             const active = isActive(pathname, href);
             return (
               <li key={href}>
-                <Link
+                <Link prefetch={false}
                   href={href}
                   className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                     active
@@ -54,7 +54,7 @@ export default function AdminSidebar() {
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
           return (
-            <Link
+            <Link prefetch={false}
               key={href}
               href={href}
               className={`flex flex-none items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors ${

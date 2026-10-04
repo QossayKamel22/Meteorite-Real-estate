@@ -21,7 +21,7 @@ export default function AdminHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-navy">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/admin" className="flex items-center gap-3">
+        <Link prefetch={false} href="/admin" className="flex items-center gap-3">
           <Image
             src="/brand/logo-transparent.png"
             alt="Meteorite Real Estate"
@@ -36,7 +36,7 @@ export default function AdminHeader() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <Link
+          <Link prefetch={false}
             href="/"
             className="hidden text-sm font-medium text-white/70 transition-colors hover:text-white sm:block"
           >

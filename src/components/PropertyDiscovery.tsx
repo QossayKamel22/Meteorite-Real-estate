@@ -74,7 +74,7 @@ export default function PropertyDiscovery() {
       </p>
 
       <div className="mt-4">
-        <Link href="/for-sale" className="text-sm font-semibold text-heading hover:text-brand-gold">
+        <Link prefetch={false} href="/for-sale" className="text-sm font-semibold text-heading hover:text-brand-gold">
           More about buying with Meteorite →
         </Link>
       </div>

@@ -1,22 +1,10 @@
 import "server-only";
 import { batchGetDocs, incrementFieldsMulti } from "@/lib/firestore-rest";
+import { CATEGORY_KEYS, categorize, type CategoryKey } from "@/lib/analytics-categories";
 
 const DAILY_COLLECTION = "analyticsDaily";
 const TOTALS_COLLECTION = "analyticsTotals";
 const TOTALS_DOC = "summary";
-
-const CATEGORY_KEYS = [
-  "home",
-  "aboutUs",
-  "forSale",
-  "forRent",
-  "media",
-  "contactUs",
-  "propertyDetail",
-  "other",
-] as const;
-
-type CategoryKey = (typeof CATEGORY_KEYS)[number];
 
 const CATEGORY_LABELS: Record<CategoryKey, string> = {
   home: "Home",
@@ -28,18 +16,6 @@ const CATEGORY_LABELS: Record<CategoryKey, string> = {
   propertyDetail: "Property Details",
   other: "Other",
 };
-
-function categorize(path: string): CategoryKey {
-  if (path === "/") return "home";
-  if (path.startsWith("/about-us")) return "aboutUs";
-  if (path.startsWith("/for-sale/")) return "propertyDetail";
-  if (path.startsWith("/for-sale")) return "forSale";
-  if (path.startsWith("/for-rent/")) return "propertyDetail";
-  if (path.startsWith("/for-rent")) return "forRent";
-  if (path.startsWith("/media")) return "media";
-  if (path.startsWith("/contact-us")) return "contactUs";
-  return "other";
-}
 
 function todayKey(): string {
   return new Date().toISOString().slice(0, 10);

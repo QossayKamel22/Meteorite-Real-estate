@@ -76,7 +76,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
   if (!user) {
     if (variant === "mobile") {
       return (
-        <Link
+        <Link prefetch={false}
           href="/login"
           className="mt-2 rounded-full bg-brand-navy px-5 py-3 text-center text-base font-medium text-white"
         >
@@ -85,7 +85,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
       );
     }
     return (
-      <Link
+      <Link prefetch={false}
         href="/login"
         className="ml-2 rounded-full bg-brand-navy px-5 py-2.5 text-[15px] font-medium text-white transition-all duration-200 hover:scale-[1.03] hover:bg-brand-navy-light"
       >
@@ -103,7 +103,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
           {user.name && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
         </div>
         {role === "admin" && (
-          <Link
+          <Link prefetch={false}
             href="/admin"
             className="flex flex-none items-center gap-1 rounded-full bg-brand-gold/15 px-3 py-1.5 text-xs font-semibold text-brand-gold"
           >
@@ -148,7 +148,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
               {user.email && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
             </div>
           </div>
-          <Link
+          <Link prefetch={false}
             href="/favorites"
             onClick={() => setOpen(false)}
             className="mt-2 block rounded-lg px-2 py-2 text-sm font-medium text-brand-ink/80 hover:bg-brand-paper"
@@ -156,7 +156,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
             Saved properties
           </Link>
           {role === "admin" && (
-            <Link
+            <Link prefetch={false}
               href="/admin"
               onClick={() => setOpen(false)}
               className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-brand-gold hover:bg-brand-gold/10"

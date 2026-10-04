@@ -23,7 +23,7 @@ export default function FavoritesPage() {
         <div className="mt-10 rounded-2xl border border-dashed border-brand-line p-10 text-center">
           <p className="text-brand-ink/60">You haven&apos;t saved any properties yet.</p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
+            <Link prefetch={false}
               href="/for-sale"
               className="rounded-full bg-brand-navy px-6 py-3 text-sm font-semibold text-white hover:bg-brand-navy-light"
             >

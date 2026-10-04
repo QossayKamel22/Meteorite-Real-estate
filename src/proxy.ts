@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { authMiddleware } from "next-firebase-auth-edge";
+import { handleTrackVisit } from "@/lib/track-visit";
 import {
   authApiKey,
   authCookieName,
@@ -15,6 +15,15 @@ function redirectToLogin(request: NextRequest): NextResponse {
 }
 
 export async function proxy(request: NextRequest) {
+  // Page-view beacon: answered here, in the lightweight middleware layer, so a
+  // cold Worker never has to load the full Next server bundle for it.
+  if (request.nextUrl.pathname === "/api/track-visit") {
+    return request.method === "POST" ? handleTrackVisit(request) : NextResponse.next();
+  }
+
+  // Loaded on demand: evaluating this library is the bulk of a cold start, and the
+  // visit beacon above (the busiest route here) never needs it.
+  const { authMiddleware } = await import("next-firebase-auth-edge");
   return authMiddleware(request, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
@@ -54,9 +63,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // api/track-visit is a public, best-effort analytics beacon (guarded by its
-  // own same-origin check, not auth) fired on every single page view — routing
-  // it through the Firebase auth/token-refresh middleware too would needlessly
-  // double that work on every pageview for signed-in users.
-  matcher: ["/((?!_next|api/admin|api/track-visit|.*\\.).*)", "/api/login", "/api/logout"],
+  // Only the routes that actually need the auth middleware. Public pages never
+  // read the session (admin pages and admin APIs verify it themselves), so
+  // running the Firebase auth middleware on every public request and Link
+  // prefetch was pure per-request CPU on a Worker with a tiny CPU budget.
+  matcher: ["/admin/:path*", "/api/login", "/api/logout", "/api/track-visit"],
 };

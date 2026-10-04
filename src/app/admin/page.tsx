@@ -57,7 +57,7 @@ function StatCard({
   href: string;
 }) {
   return (
-    <Link
+    <Link prefetch={false}
       href={href}
       className="glass shimmer-border rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
@@ -211,7 +211,7 @@ export default async function AdminOverviewPage() {
               <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
                 Homepage statistics
               </h3>
-              <Link href="/admin/statistics" className="text-xs font-semibold text-brand-gold hover:underline">
+              <Link prefetch={false} href="/admin/statistics" className="text-xs font-semibold text-brand-gold hover:underline">
                 Edit
               </Link>
             </div>
@@ -220,7 +220,7 @@ export default async function AdminOverviewPage() {
             </div>
           </div>
 
-          <Link
+          <Link prefetch={false}
             href="/admin/certificates"
             className="glass shimmer-border group flex flex-col justify-between rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl sm:p-8"
           >

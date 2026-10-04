@@ -14,6 +14,12 @@
       "service": "meteorite-real-estate"
     }
   ],
+  // One KV namespace backs both the page cache and its revalidation tags
+  // (key prefixes differ). See open-next.config.ts.
+  "kv_namespaces": [
+    { "binding": "NEXT_INC_CACHE_KV", "id": "0c054b97d6f043c4af41d9c8a26a55b6" },
+    { "binding": "NEXT_TAG_CACHE_KV", "id": "0c054b97d6f043c4af41d9c8a26a55b6" }
+  ],
   "images": {
     "binding": "IMAGES"
   }

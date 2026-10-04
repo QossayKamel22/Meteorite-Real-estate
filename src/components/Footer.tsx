@@ -63,7 +63,7 @@ export default function Footer() {
             <ul className="mt-4 space-y-2.5">
               {footerLinks.map((link) => (
                 <li key={link.label}>
-                  <Link
+                  <Link prefetch={false}
                     href={link.href}
                     className="text-sm text-white/60 transition-colors hover:text-brand-gold"
                   >

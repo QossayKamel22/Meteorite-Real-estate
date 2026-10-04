@@ -22,7 +22,7 @@ export default async function PhotoCollage() {
               Every photo here is our own — the skyline we work in every day, and the people
               you&apos;ll actually speak with. No stock photography, no stand-ins.
             </p>
-            <Link
+            <Link prefetch={false}
               href="/about-us"
               className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold"
             >

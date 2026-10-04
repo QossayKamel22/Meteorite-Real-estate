@@ -26,7 +26,7 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2" aria-label={`${company.name} home`}>
+        <Link prefetch={false} href="/" className="flex items-center gap-2" aria-label={`${company.name} home`}>
           <Image
             src="/brand/logo-transparent.png"
             alt={`${company.name} logo`}
@@ -39,7 +39,7 @@ export default function Header() {
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
           {navLinks.map((link) => (
-            <Link
+            <Link prefetch={false}
               key={link.href}
               href={link.href}
               className="group relative text-[15px] font-medium text-brand-ink/80 transition-colors hover:text-heading"
@@ -51,7 +51,7 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-1 lg:flex">
-          <Link
+          <Link prefetch={false}
             href="/favorites"
             aria-label="Saved properties"
             className="flex h-9 w-9 items-center justify-center rounded-full text-brand-ink/70 transition-colors hover:bg-brand-paper hover:text-heading"
@@ -81,7 +81,7 @@ export default function Header() {
         <div id="mobile-menu" className="glass-nav border-t border-brand-line/70 lg:hidden">
           <nav className="flex flex-col px-4 py-3" aria-label="Mobile">
             {navLinks.map((link) => (
-              <Link
+              <Link prefetch={false}
                 key={link.href}
                 href={link.href}
                 className="rounded-lg px-2 py-3 text-base font-medium text-brand-ink/85 hover:bg-brand-paper"
@@ -90,7 +90,7 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link
+            <Link prefetch={false}
               href="/favorites"
               className="flex items-center gap-2 rounded-lg px-2 py-3 text-base font-medium text-brand-ink/85 hover:bg-brand-paper"
               onClick={() => setOpen(false)}

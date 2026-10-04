@@ -249,9 +249,16 @@ const SEED_PROPERTIES: PropertyInput[] = [
 const SEED_MARKER_COLLECTION = "_meta";
 const SEED_MARKER_ID = "propertiesSeeded";
 
+// Once the seed marker has been seen, never re-check it for the life of this isolate.
+let seedConfirmed = false;
+
 async function seedIfEmpty(): Promise<void> {
+  if (seedConfirmed) return;
   const marker = await getDoc(SEED_MARKER_COLLECTION, SEED_MARKER_ID);
-  if (marker) return;
+  if (marker) {
+    seedConfirmed = true;
+    return;
+  }
 
   await commitWrites([
     { collection: SEED_MARKER_COLLECTION, id: SEED_MARKER_ID, data: { seededAt: new Date().toISOString() }, requireAbsent: true },
