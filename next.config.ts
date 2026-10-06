@@ -71,7 +71,10 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: csp },
           {
             key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            // Deliberately short and host-only while the domain migration can
+            // still be rolled back to the old server; raise it (and consider
+            // includeSubDomains) once the cutover is settled.
+            value: "max-age=86400",
           },
         ],
       },
