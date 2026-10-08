@@ -2,19 +2,22 @@ import type { Metadata } from "next";
 import { LayoutTemplate, MessageSquareQuote, Quote } from "lucide-react";
 import { getHomepageContent } from "@/lib/homepage-content";
 import { getCeoMessage } from "@/lib/ceo-message";
+import { getGoogleReviews } from "@/lib/google-reviews";
 import { getTestimonials } from "@/lib/testimonials-data";
 import AdminHomepageContentForm from "@/components/AdminHomepageContentForm";
 import AdminCeoMessageForm from "@/components/AdminCeoMessageForm";
+import AdminGoogleReviewsForm from "@/components/AdminGoogleReviewsForm";
 import AdminTestimonialsPanel from "@/components/AdminTestimonialsPanel";
 
 export const metadata: Metadata = { title: "Homepage · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomepagePage() {
-  const [content, ceoMessage, testimonials] = await Promise.all([
+  const [content, ceoMessage, testimonials, googleReviews] = await Promise.all([
     getHomepageContent(),
     getCeoMessage(),
     getTestimonials({ includeHidden: true }),
+    getGoogleReviews(),
   ]);
 
   return (
@@ -61,9 +64,22 @@ export default async function AdminHomepagePage() {
           </h2>
         </div>
         <p className="mt-2 text-sm text-brand-ink/55">
-          Shown in the hero rotator and the &quot;What our clients say&quot; section. Don&apos;t
-          invent quotes — only add real client feedback.
+          Shown in the hero rotator and the &quot;What our clients say&quot; section on the homepage,
+          which shows the first 6 (use the arrows to choose which) and reveals the rest with a
+          &quot;See more reviews&quot; button. Long reviews are shortened with a &quot;Read more&quot; button. Don&apos;t invent quotes — only add real client feedback.
         </p>
+
+        <div className="mt-6 rounded-2xl border border-brand-line p-5">
+          <h3 className="text-sm font-semibold text-heading">Google reviews summary</h3>
+          <p className="mt-1 mb-4 text-xs text-brand-ink/50">
+            The rating, review count and link shown above the reviews.
+          </p>
+          <AdminGoogleReviewsForm
+            summary={googleReviews}
+            autoCount={testimonials.filter((t) => t.source === "google" && t.visible !== false).length}
+          />
+        </div>
+
         <div className="mt-6">
           <AdminTestimonialsPanel testimonials={testimonials} />
         </div>

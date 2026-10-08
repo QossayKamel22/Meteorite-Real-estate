@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { Award, BadgeCheck, MapPin, ShieldCheck } from "lucide-react";
 import { company, credentials } from "@/lib/content";
-import { getTestimonials } from "@/lib/testimonials-data";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import StatsSection from "@/components/StatsSection";
 import CeoSection from "@/components/CeoSection";
 import AgentsSection from "@/components/AgentsSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
 import DevelopersAndCertificate from "@/components/DevelopersAndCertificate";
 import { pageMetadata } from "@/lib/seo";
@@ -21,7 +19,6 @@ export const metadata: Metadata = pageMetadata({
 const credentialIcons = [ShieldCheck, Award, BadgeCheck];
 
 export default async function AboutUsPage() {
-  const testimonials = await getTestimonials();
   return (
     <div>
       <section className="relative overflow-hidden bg-brand-navy py-20 sm:py-28">
@@ -93,7 +90,6 @@ export default async function AboutUsPage() {
 
       <CeoSection />
       <AgentsSection variant="about" />
-      <TestimonialsSection testimonials={testimonials} />
       <ContactCta />
     </div>
   );

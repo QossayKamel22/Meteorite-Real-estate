@@ -12,6 +12,7 @@ import { getStatsList } from "@/lib/site-stats";
 import { getAgents } from "@/lib/agents-data";
 import { getTestimonials } from "@/lib/testimonials-data";
 import { getHomepageContent } from "@/lib/homepage-content";
+import { getGoogleReviews } from "@/lib/google-reviews";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -21,11 +22,12 @@ export const metadata = pageMetadata({
 });
 
 export default async function Home() {
-  const [stats, agents, testimonials, content] = await Promise.all([
+  const [stats, agents, testimonials, content, googleReviews] = await Promise.all([
     getStatsList(),
     getAgents(),
     getTestimonials(),
     getHomepageContent(),
+    getGoogleReviews(),
   ]);
   const ceo = agents.find((a) => a.bio) ?? agents[0];
 
@@ -39,7 +41,7 @@ export default async function Home() {
       <CeoSection />
       <CeoMessageSection />
       <AgentsSection />
-      <TestimonialsSection testimonials={testimonials} />
+      <TestimonialsSection testimonials={testimonials} google={googleReviews} />
       <ContactCta />
     </>
   );

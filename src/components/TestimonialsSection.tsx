@@ -1,12 +1,9 @@
-import { Quote, Star } from "lucide-react";
+import { ArrowUpRight, Star } from "lucide-react";
 import type { Testimonial } from "@/lib/testimonials-data";
+import type { GoogleReviewsSummary } from "@/lib/google-reviews-shared";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
-}
+import ReviewsGrid from "@/components/ReviewsGrid";
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -18,27 +15,19 @@ function StarRow({ rating }: { rating: number }) {
   );
 }
 
-/** A small four-dot mark nodding at Google's brand colors, not a reproduction of the Google logo. */
-function GoogleBadge() {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-brand-ink/60 shadow-sm ring-1 ring-black/5">
-      <span className="flex gap-0.5">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#4285F4]" />
-        <span className="h-1.5 w-1.5 rounded-full bg-[#EA4335]" />
-        <span className="h-1.5 w-1.5 rounded-full bg-[#FBBC05]" />
-        <span className="h-1.5 w-1.5 rounded-full bg-[#34A853]" />
-      </span>
-      Google Review
-    </span>
-  );
-}
-
-export default function TestimonialsSection({ testimonials }: { testimonials: Testimonial[] }) {
+export default function TestimonialsSection({
+  testimonials,
+  google,
+}: {
+  testimonials: Testimonial[];
+  google: GoogleReviewsSummary;
+}) {
   if (testimonials.length === 0) return null;
 
   const googleReviews = testimonials.filter((t) => t.source === "google");
-  const ratedPool = googleReviews.length > 0 ? googleReviews : testimonials;
-  const avgRating = ratedPool.reduce((sum, t) => sum + (t.rating ?? 5), 0) / ratedPool.length;
+  // The admin-entered Google total wins; until one is set, count the Google reviews added to the site.
+  const reviewCount = google.count ?? googleReviews.length;
+  const showGoogleSummary = reviewCount > 0;
 
   return (
     <section className="relative overflow-hidden bg-brand-paper py-20 sm:py-24">
@@ -47,50 +36,43 @@ export default function TestimonialsSection({ testimonials }: { testimonials: Te
           <div className="max-w-2xl">
             <SectionHeading kicker="Client Feedback" title="What our clients say" />
           </div>
-          {googleReviews.length > 0 && (
+          {showGoogleSummary && (
             <Reveal delay={0.15}>
-              <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5">
-                <p className="text-2xl font-semibold tracking-tight text-heading">{avgRating.toFixed(1)}</p>
+              <a
+                href={google.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md"
+              >
+                <p className="text-2xl font-semibold tracking-tight text-heading">{google.rating.toFixed(1)}</p>
                 <div>
-                  <StarRow rating={Math.round(avgRating)} />
+                  <StarRow rating={Math.round(google.rating)} />
                   <p className="mt-0.5 text-xs text-brand-ink/50">
-                    From {googleReviews.length} Google review{googleReviews.length === 1 ? "" : "s"}
+                    {reviewCount} Google review{reviewCount === 1 ? "" : "s"}
                   </p>
                 </div>
-              </div>
+              </a>
             </Reveal>
           )}
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <Reveal key={t.id} delay={i * 0.08}>
-              <figure className="glass shimmer-border group relative flex h-full flex-col overflow-hidden rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
-                <Quote
-                  size={64}
-                  strokeWidth={1}
-                  className="pointer-events-none absolute -right-2 -top-2 text-brand-gold/10 transition-transform duration-300 group-hover:scale-110"
-                />
-                <div className="relative flex items-center justify-between gap-2">
-                  <StarRow rating={t.rating ?? 5} />
-                  {t.source === "google" && <GoogleBadge />}
-                </div>
-                <blockquote className="relative mt-4 flex-1 text-[15px] leading-relaxed text-brand-ink/80">
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <figcaption className="relative mt-5 flex items-center gap-3">
-                  <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-navy text-sm font-semibold text-white">
-                    {initials(t.name)}
-                  </span>
-                  <span>
-                    <span className="block text-sm font-semibold text-heading">{t.name}</span>
-                    <span className="block text-xs font-normal text-brand-ink/50">{t.role}</span>
-                  </span>
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
+        <ReviewsGrid testimonials={testimonials} />
+
+        {showGoogleSummary && (
+          <Reveal delay={0.1}>
+            <div className="mt-6 flex justify-center">
+              <a
+                href={google.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light"
+              >
+                Read all {reviewCount} reviews on Google
+                <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </Reveal>
+        )}
       </div>
     </section>
   );
