@@ -48,7 +48,7 @@ export default function TestimonialsSection({
                 <div>
                   <StarRow rating={Math.round(google.rating)} />
                   <p className="mt-0.5 text-xs text-brand-ink/50">
-                    {reviewCount} Google review{reviewCount === 1 ? "" : "s"}
+                    {reviewCount} review{reviewCount === 1 ? "" : "s"}
                   </p>
                 </div>
               </a>
