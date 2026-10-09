@@ -8,6 +8,8 @@
  * which Cloudflare Workers doesn't have).
  */
 
+import { getCfContext, getKv } from "@/lib/cf-runtime";
+
 export const FIRESTORE_HOST = "https://firestore.googleapis.com/v1";
 
 function getProjectId(): string {
@@ -55,6 +57,48 @@ async function getSigningKey(): Promise<CryptoKey> {
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
+const SHARED_TOKEN_KEY = "app/firestore-access-token";
+const SHARED_TOKEN_BINDING = "NEXT_INC_CACHE_KV";
+
+async function readSharedToken(): Promise<{ token: string; expiresAt: number } | null> {
+  try {
+    const v = (await getKv(SHARED_TOKEN_BINDING)?.get(SHARED_TOKEN_KEY, "json")) as
+      | { token?: unknown; expiresAt?: unknown }
+      | null
+      | undefined;
+    if (v && typeof v.token === "string" && typeof v.expiresAt === "number" && v.expiresAt > Date.now() + 120_000) {
+      return { token: v.token, expiresAt: v.expiresAt };
+    }
+  } catch {
+    // KV unavailable (or running outside a Worker) — mint a token the normal way.
+  }
+  return null;
+}
+
+function writeSharedToken(token: { token: string; expiresAt: number }): void {
+  try {
+    const put = getKv(SHARED_TOKEN_BINDING)?.put(SHARED_TOKEN_KEY, JSON.stringify(token), { expirationTtl: 3300 });
+    if (put) getCfContext()?.ctx.waitUntil(put.catch(() => undefined));
+  } catch {
+    // best-effort
+  }
+}
+
+/** Forget the cached token (e.g. Google answered 401 to it) so the next call mints a fresh one. */
+export function invalidateAccessToken(): void {
+  cachedToken = null;
+  // The shared copy may be the stale one; drop it so the next caller mints a fresh token.
+  try {
+    const put = getKv(SHARED_TOKEN_BINDING)?.put(SHARED_TOKEN_KEY, "null", { expirationTtl: 60 });
+    if (put) getCfContext()?.ctx.waitUntil(put.catch(() => undefined));
+  } catch {
+    // best-effort
+  }
+}
+
+/** Upper bound for any single call to Google, so a stalled connection fails fast instead of hanging a request. */
+export const GOOGLE_REQUEST_TIMEOUT_MS = 8000;
+
 /**
  * Signs a short-lived JWT with the service account key and exchanges it for a
  * Google OAuth2 access token. The finished token is cached per isolate, but an
@@ -65,6 +109,17 @@ let cachedToken: { token: string; expiresAt: number } | null = null;
  */
 export async function getAccessToken(): Promise<string> {
   if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) return cachedToken.token;
+
+  // A cold Worker instance would otherwise import the key, sign a JWT and make a
+  // TLS round trip to Google (~70ms of CPU against a ~10ms Free-plan budget) —
+  // and a page full of images can start several instances at once. Instances
+  // share the finished token through KV instead, so that cost is paid about
+  // once an hour for the whole site.
+  const shared = await readSharedToken();
+  if (shared) {
+    cachedToken = shared;
+    return shared.token;
+  }
 
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
   if (!clientEmail) throw new Error("FIREBASE_ADMIN_CLIENT_EMAIL is not set.");
@@ -94,11 +149,13 @@ export async function getAccessToken(): Promise<string> {
       grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
       assertion: jwt,
     }),
+    signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS),
   });
   if (!res.ok) {
     throw new Error(`Failed to obtain a Google access token (${res.status}).`);
   }
   const data = (await res.json()) as { access_token: string; expires_in: number };
   cachedToken = { token: data.access_token, expiresAt: Date.now() + data.expires_in * 1000 };
+  writeSharedToken(cachedToken);
   return cachedToken.token;
 }

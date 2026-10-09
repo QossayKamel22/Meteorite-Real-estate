@@ -1,6 +1,13 @@
 import "server-only";
 import { cache } from "react";
-import { FIRESTORE_HOST, basePath, getAccessToken } from "@/lib/firestore-auth";
+import {
+  FIRESTORE_HOST,
+  GOOGLE_REQUEST_TIMEOUT_MS,
+  basePath,
+  getAccessToken,
+  invalidateAccessToken,
+} from "@/lib/firestore-auth";
+import { resilientFetch } from "@/lib/resilient-fetch";
 
 /**
  * Minimal Firestore REST client using the same service-account credentials
@@ -14,15 +21,11 @@ import { FIRESTORE_HOST, basePath, getAccessToken } from "@/lib/firestore-auth";
  * with an existence precondition, and for swapping two docs' `order`).
  */
 
-async function fsFetch(url: string, init?: RequestInit): Promise<Response> {
-  const token = await getAccessToken();
-  return fetch(url, {
-    ...init,
-    headers: {
-      ...(init?.headers ?? {}),
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
+function fsFetch(url: string, init?: RequestInit): Promise<Response> {
+  return resilientFetch(url, init, {
+    getToken: getAccessToken,
+    invalidateToken: invalidateAccessToken,
+    timeoutMs: GOOGLE_REQUEST_TIMEOUT_MS,
   });
 }
 
