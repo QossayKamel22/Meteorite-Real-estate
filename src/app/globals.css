@@ -461,3 +461,58 @@ body {
     animation: none;
   }
 }
+
+/* --- Featured Projects carousel: the autoplay progress segment fills over the
+   slide's duration, and its animationend advances the slide (so the visible bar
+   and the timer can never drift apart, and pausing is just animation-play-state). */
+@keyframes fp-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.fp-fill {
+  transform-origin: left center;
+  animation-name: fp-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* --- CEO message: slow horizontal drift of the skyline silhouette, and a gold
+   highlight that travels along the card's top edge. */
+@keyframes skyline-drift {
+  from {
+    transform: translateX(-2%);
+  }
+  to {
+    transform: translateX(2%);
+  }
+}
+
+.skyline-drift {
+  animation: skyline-drift 28s ease-in-out infinite alternate;
+}
+
+@keyframes edge-sweep {
+  0% {
+    transform: translateX(-120%);
+  }
+  60%,
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.edge-sweep {
+  animation: edge-sweep 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skyline-drift,
+  .edge-sweep {
+    animation: none;
+  }
+}
