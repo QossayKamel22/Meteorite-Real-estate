@@ -65,7 +65,7 @@ export default function AdminGoogleReviewsForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Google rating (1–5)</label>
+          <label className="block text-xs font-medium text-brand-ink/60">Rating shown next to the Google icon (1–5)</label>
           <input
             type="number"
             min={1}
@@ -77,7 +77,7 @@ export default function AdminGoogleReviewsForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Total Google reviews</label>
+          <label className="block text-xs font-medium text-brand-ink/60">Number of reviews shown next to the Google icon</label>
           <input
             type="number"
             min={0}
@@ -88,8 +88,9 @@ export default function AdminGoogleReviewsForm({
             className={inputClass}
           />
           <p className="mt-1 text-[11px] text-brand-ink/40">
-            The number shown on the homepage. Leave empty to use the {autoCount} Google review
-            {autoCount === 1 ? "" : "s"} added below.
+            Shown beside the Google icon (e.g. &quot;61 reviews&quot;). Leave empty to use the {autoCount}{" "}
+            Google review{autoCount === 1 ? "" : "s"} added below. The &quot;Read all reviews on Google&quot;
+            button never shows a count.
           </p>
         </div>
       </div>

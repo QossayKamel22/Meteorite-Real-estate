@@ -1,24 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
 import {
-  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
   useSpring,
   useTransform,
 } from "framer-motion";
-import { ChevronDown, ShieldCheck, Star } from "lucide-react";
+import { ChevronDown, ShieldCheck } from "lucide-react";
 import type { StatsList } from "@/lib/site-stats";
 import type { Agent } from "@/lib/agents-data";
 import type { Testimonial } from "@/lib/testimonials-data";
 import type { HomepageContent } from "@/lib/homepage-content";
 import Particles from "@/components/Particles";
-
-const QUOTE_INTERVAL_MS = 4500;
+import HeroReviews from "@/components/HeroReviews";
 
 export default function Hero({
   stats,
@@ -32,16 +30,6 @@ export default function Hero({
   content: HomepageContent;
 }) {
   const reduceMotion = useReducedMotion();
-  const [quoteIndex, setQuoteIndex] = useState(0);
-
-  useEffect(() => {
-    if (reduceMotion || testimonials.length === 0) return;
-    const timer = window.setInterval(
-      () => setQuoteIndex((i) => (i + 1) % testimonials.length),
-      QUOTE_INTERVAL_MS
-    );
-    return () => window.clearInterval(timer);
-  }, [reduceMotion, testimonials.length]);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -71,7 +59,6 @@ export default function Hero({
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
   });
-  const quote = testimonials[quoteIndex] ?? null;
 
   return (
     <section className="relative overflow-hidden bg-brand-navy cine-bars">
@@ -145,6 +132,7 @@ export default function Hero({
               {ceo && (
                 <Image
                   src={ceo.photo}
+                  unoptimized={isServedImage(ceo.photo)}
                   alt={ceo.name}
                   width={36}
                   height={36}
@@ -188,51 +176,7 @@ export default function Hero({
             </dl>
           </motion.div>
 
-          {quote && (
-          <motion.div
-            initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className={`glass glass-dark shimmer-border absolute -bottom-8 -left-6 hidden w-[16rem] rounded-2xl p-4 sm:block ${reduceMotion ? "" : "float-y"}`}
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={quote.name}
-                initial={{ opacity: 0, x: reduceMotion ? 0 : 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: reduceMotion ? 0 : -10 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="flex items-center gap-1 text-brand-gold">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
-                  ))}
-                </div>
-                <p className="mt-2 min-h-[2.5rem] text-xs leading-relaxed text-white/80">
-                  &ldquo;{quote.quote.slice(0, 78)}
-                  {quote.quote.length > 78 ? "…" : ""}&rdquo;
-                </p>
-                <p className="mt-2 text-[11px] font-semibold text-white/50">
-                  — {quote.name}, {quote.role}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-
-            <div className="mt-3 flex items-center gap-1.5">
-              {testimonials.map((t, i) => (
-                <button
-                  key={t.name}
-                  type="button"
-                  aria-label={`Show feedback from ${t.name}`}
-                  onClick={() => setQuoteIndex(i)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === quoteIndex ? "w-5 bg-brand-gold" : "w-1.5 bg-white/25"
-                  }`}
-                />
-              ))}
-            </div>
-          </motion.div>
-          )}
+          <HeroReviews testimonials={testimonials} />
         </div>
       </div>
 

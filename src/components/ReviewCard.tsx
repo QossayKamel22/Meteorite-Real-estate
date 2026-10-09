@@ -3,15 +3,12 @@
 import { useId, useState } from "react";
 import { Quote, Star } from "lucide-react";
 import type { Testimonial } from "@/lib/testimonials-data";
+import ReviewAvatar from "@/components/ReviewAvatar";
+import GoogleMark from "@/components/GoogleMark";
 
 // Quotes longer than this are cut to a few lines with a "Read more" toggle, so a
 // 1,000-character review doesn't turn the grid into a wall of text.
 const LONG_QUOTE = 220;
-
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
-}
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -23,16 +20,10 @@ function StarRow({ rating }: { rating: number }) {
   );
 }
 
-/** A small four-dot mark nodding at Google's brand colors, not a reproduction of the Google logo. */
 function GoogleBadge() {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-brand-ink/60 shadow-sm ring-1 ring-black/5">
-      <span className="flex gap-0.5">
-        <span className="h-1.5 w-1.5 rounded-full bg-[#4285F4]" />
-        <span className="h-1.5 w-1.5 rounded-full bg-[#EA4335]" />
-        <span className="h-1.5 w-1.5 rounded-full bg-[#FBBC05]" />
-        <span className="h-1.5 w-1.5 rounded-full bg-[#34A853]" />
-      </span>
+      <GoogleMark />
       Google Review
     </span>
   );
@@ -72,9 +63,7 @@ export default function ReviewCard({ t }: { t: Testimonial }) {
         </button>
       )}
       <figcaption className="relative mt-auto flex items-center gap-3 pt-5">
-        <span className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-brand-navy text-sm font-semibold text-white">
-          {initials(t.name)}
-        </span>
+        <ReviewAvatar name={t.name} size="md" />
         <span>
           <span className="block text-sm font-semibold text-heading">{t.name}</span>
           <span className="block text-xs font-normal text-brand-ink/50">{t.role}</span>

@@ -4,6 +4,7 @@ import type { GoogleReviewsSummary } from "@/lib/google-reviews-shared";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import ReviewsGrid from "@/components/ReviewsGrid";
+import GoogleMark from "@/components/GoogleMark";
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -44,12 +45,22 @@ export default function TestimonialsSection({
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md"
               >
-                <p className="text-2xl font-semibold tracking-tight text-heading">{google.rating.toFixed(1)}</p>
                 <div>
-                  <StarRow rating={Math.round(google.rating)} />
-                  <p className="mt-0.5 text-xs text-brand-ink/50">
-                    {reviewCount} review{reviewCount === 1 ? "" : "s"}
+                  <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink/50">
+                    <GoogleMark />
+                    Google
                   </p>
+                  <div className="mt-1 flex items-center gap-3">
+                    <p className="text-2xl font-semibold leading-none tracking-tight text-heading">
+                      {google.rating.toFixed(1)}
+                    </p>
+                    <div>
+                      <StarRow rating={Math.round(google.rating)} />
+                      <p className="mt-0.5 text-xs text-brand-ink/50">
+                        {reviewCount} review{reviewCount === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </a>
             </Reveal>
@@ -67,7 +78,7 @@ export default function TestimonialsSection({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light"
               >
-                Read all {reviewCount} reviews on Google
+                Read all reviews on Google
                 <ArrowUpRight size={16} />
               </a>
             </div>
