@@ -34,8 +34,9 @@ const csp = [
   "img-src 'self' data: https:",
   "font-src 'self' data:",
   `style-src 'self' 'unsafe-inline'`,
-  `script-src 'self' 'unsafe-inline' https://apis.google.com https://www.instagram.com https://connect.facebook.net https://platform.twitter.com${isDev ? " 'unsafe-eval'" : ""}`,
-  "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com https://accounts.google.com",
+  `script-src 'self' 'unsafe-inline' https://apis.google.com https://static.cloudflareinsights.com https://www.instagram.com https://connect.facebook.net https://platform.twitter.com${isDev ? " 'unsafe-eval'" : ""}`,
+  // cloudflareinsights.com: Cloudflare Web Analytics, which Cloudflare injects automatically on the proxied domain.
+  "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com https://accounts.google.com https://cloudflareinsights.com",
 ].join("; ");
 
 const nextConfig: NextConfig = {
