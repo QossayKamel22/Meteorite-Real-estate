@@ -43,10 +43,10 @@ export default function TestimonialsSection({
                 href={google.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md"
+                className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md dark:bg-white/[0.07] dark:shadow-none dark:ring-white/15 dark:hover:bg-white/[0.1]"
               >
                 <div>
-                  <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink/50">
+                  <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink/65">
                     <GoogleMark />
                     Google
                   </p>
@@ -56,7 +56,7 @@ export default function TestimonialsSection({
                     </p>
                     <div>
                       <StarRow rating={Math.round(google.rating)} />
-                      <p className="mt-0.5 text-xs text-brand-ink/50">
+                      <p className="mt-0.5 text-xs text-brand-ink/65">
                         {reviewCount} review{reviewCount === 1 ? "" : "s"}
                       </p>
                     </div>
@@ -76,7 +76,7 @@ export default function TestimonialsSection({
                 href={google.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light dark:bg-brand-gold dark:text-brand-navy dark:hover:bg-brand-gold-soft"
               >
                 Read all reviews on Google
                 <ArrowUpRight size={16} />

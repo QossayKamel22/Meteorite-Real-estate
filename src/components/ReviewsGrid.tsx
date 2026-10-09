@@ -33,7 +33,7 @@ export default function ReviewsGrid({ testimonials }: { testimonials: Testimonia
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
             aria-controls={gridId}
-            className="inline-flex items-center gap-2 rounded-full border border-brand-line bg-white px-6 py-3 text-[15px] font-semibold text-heading shadow-sm transition-colors hover:border-brand-gold hover:text-brand-gold"
+            className="inline-flex items-center gap-2 rounded-full border border-brand-line bg-white px-6 py-3 text-[15px] font-semibold text-heading shadow-sm transition-colors hover:border-brand-gold hover:text-brand-gold dark:bg-white/[0.07] dark:shadow-none dark:hover:bg-white/[0.1]"
           >
             {expanded ? "Show fewer reviews" : `See more reviews (${hiddenCount})`}
             <ChevronDown size={16} className={`transition-transform ${expanded ? "rotate-180" : ""}`} />

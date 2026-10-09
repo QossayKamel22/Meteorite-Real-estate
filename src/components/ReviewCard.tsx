@@ -22,7 +22,7 @@ function StarRow({ rating }: { rating: number }) {
 
 function GoogleBadge() {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-brand-ink/60 shadow-sm ring-1 ring-black/5">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-brand-ink/60 shadow-sm ring-1 ring-black/5 dark:bg-white/10 dark:text-white/75 dark:shadow-none dark:ring-white/15">
       <GoogleMark />
       Google Review
     </span>
@@ -57,7 +57,7 @@ export default function ReviewCard({ t }: { t: Testimonial }) {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={quoteId}
-          className="relative mt-2 self-start text-sm font-semibold text-brand-gold hover:underline"
+          className="relative mt-2 self-start text-sm font-semibold text-[#8a7b00] hover:underline dark:text-brand-gold"
         >
           {open ? "Show less" : "Read more"}
         </button>
