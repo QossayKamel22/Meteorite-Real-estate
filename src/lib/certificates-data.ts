@@ -1,4 +1,5 @@
 import "server-only";
+import { publicImageSrc } from "@/lib/image-url";
 import { addDoc, commitWrites, countCollection, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 
 const COLLECTION = "certificates";
@@ -88,7 +89,8 @@ export async function getCertificates(opts?: { includeHidden?: boolean }): Promi
   await seedIfEmpty();
   const docs = await listCollection(COLLECTION, { orderBy: "order" });
   const all = docs.map((d) => toCertificate(d.id, d.data));
-  return opts?.includeHidden ? all : all.filter((c) => c.visible !== false);
+  if (opts?.includeHidden) return all; // admin: keep the raw data URL so the edit form round-trips it unchanged
+  return all.filter((c) => c.visible !== false).map((c) => ({ ...c, image: publicImageSrc("certificate", c.id, c.image) }));
 }
 
 export async function addCertificate(data: CertificateInput): Promise<string> {

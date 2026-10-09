@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import { Award, CalendarCheck, FileCheck2, ShieldCheck } from "lucide-react";
 import { developerPartners } from "@/lib/content";
 import { getCertificates } from "@/lib/certificates-data";
@@ -53,6 +54,7 @@ export default async function DevelopersAndCertificate() {
                     <div className="overflow-hidden rounded-2xl">
                       <Image
                         src={certificate.image}
+                        unoptimized={isServedImage(certificate.image)}
                         alt={certificate.title}
                         width={1289}
                         height={907}

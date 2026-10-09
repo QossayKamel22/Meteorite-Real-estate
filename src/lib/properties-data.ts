@@ -1,4 +1,5 @@
 import "server-only";
+import { publicImageSrc } from "@/lib/image-url";
 import { addDoc, commitWrites, countCollection, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 
 const COLLECTION = "properties";
@@ -303,7 +304,8 @@ export async function getProperties(opts?: {
   const docs = await listCollection(COLLECTION, { orderBy: "order" });
   let all = docs.map((d) => toProperty(d.id, d.data));
   if (opts?.purpose) all = all.filter((p) => p.purpose === opts.purpose);
-  return opts?.includeHidden ? all : all.filter((p) => p.visible !== false);
+  if (opts?.includeHidden) return all; // admin: keep the raw data URL so the edit form round-trips it unchanged
+  return all.filter((p) => p.visible !== false).map((p) => ({ ...p, image: publicImageSrc("property", p.id, p.image) }));
 }
 
 export async function getProperty(id: string): Promise<Property | null> {

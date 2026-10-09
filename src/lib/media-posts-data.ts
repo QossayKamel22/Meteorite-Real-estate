@@ -1,4 +1,5 @@
 import "server-only";
+import { publicImageSrc } from "@/lib/image-url";
 import { addDoc, deleteDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 import { MAX_PINNED_POSTS } from "@/lib/media-posts-constants";
 
@@ -69,7 +70,8 @@ export async function getMediaPosts(opts?: { includeHidden?: boolean }): Promise
     limit: opts?.includeHidden ? undefined : PUBLIC_FETCH_LIMIT,
   });
   const all = docs.map((d) => toMediaPost(d.id, d.data));
-  return opts?.includeHidden ? all : all.filter((p) => p.visible !== false);
+  if (opts?.includeHidden) return all; // admin: keep the raw data URL so the edit form round-trips it unchanged
+  return all.filter((p) => p.visible !== false).map((p) => ({ ...p, image: p.image ? publicImageSrc("media", p.id, p.image) : p.image }));
 }
 
 /** Counts currently-pinned posts, optionally excluding one id (used when re-saving an already-pinned post). */

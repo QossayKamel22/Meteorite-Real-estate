@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import { BadgeCheck, Crown, Mail, Phone } from "lucide-react";
 import { company } from "@/lib/content";
 import { getStats } from "@/lib/site-stats";
@@ -37,6 +38,7 @@ function AgentCard({
           >
             <Image
               src={agent.photo}
+              unoptimized={isServedImage(agent.photo)}
               alt={`Portrait of ${agent.name}`}
               fill
               className={`transition-transform duration-500 group-hover:scale-110 ${isCeoPhoto ? "object-contain" : "object-cover"}`}

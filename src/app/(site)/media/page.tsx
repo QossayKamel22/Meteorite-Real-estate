@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
 import {
   Building2,
@@ -65,6 +66,7 @@ function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: n
             <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
               <Image
                 src={post.image}
+                unoptimized={isServedImage(post.image)}
                 alt={post.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"

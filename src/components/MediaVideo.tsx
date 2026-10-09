@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import { PlayCircle } from "lucide-react";
 import { getVideoKind, getYoutubeEmbedUrl, getVimeoEmbedUrl } from "@/lib/video-embed";
 
@@ -68,7 +69,7 @@ export default function MediaVideo({
       className="group relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl bg-brand-navy"
     >
       {poster && (
-        <Image src={poster} alt="" fill sizes="100vw" className="object-cover opacity-50 blur-sm" />
+        <Image src={poster} alt="" fill sizes="100vw" unoptimized={isServedImage(poster)} className="object-cover opacity-50 blur-sm" />
       )}
       <div className="glow-field" />
       <span className="relative flex flex-col items-center gap-2 text-white">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ZoomIn } from "lucide-react";
 
@@ -64,6 +65,7 @@ export default function ImageLightbox({
               <Image
                 src={src}
                 alt={alt}
+                unoptimized={isServedImage(src)}
                 width={1600}
                 height={1200}
                 className="h-auto max-h-[85vh] w-full rounded-2xl object-contain shadow-2xl"

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
 import { company } from "@/lib/content";
 import { getAgents } from "@/lib/agents-data";
@@ -60,6 +61,7 @@ export default async function PhotoCollage() {
                   >
                     <Image
                       src={agent.photo}
+                      unoptimized={isServedImage(agent.photo)}
                       alt={agent.name}
                       fill
                       className={`transition-transform duration-500 group-hover:scale-110 ${isCeo ? "object-contain" : "object-cover object-top"}`}

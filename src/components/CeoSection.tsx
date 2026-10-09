@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import { getAgents } from "@/lib/agents-data";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
@@ -18,6 +19,7 @@ export default async function CeoSection() {
               <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-[1.4rem]">
                 <Image
                   src={ceo.photo}
+                  unoptimized={isServedImage(ceo.photo)}
                   alt={`Portrait of ${ceo.name}`}
                   width={640}
                   height={640}

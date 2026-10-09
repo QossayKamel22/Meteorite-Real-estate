@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { isServedImage } from "@/lib/image-url";
 import { BedDouble, Bath, MapPin, Ruler } from "lucide-react";
 import type { Property } from "@/lib/properties-data";
 import { company } from "@/lib/content";
@@ -21,6 +22,7 @@ export default function PropertyCard({ property, delay = 0 }: { property: Proper
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
           <Image
             src={property.image}
+            unoptimized={isServedImage(property.image)}
             alt={property.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"

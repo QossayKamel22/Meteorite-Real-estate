@@ -1,4 +1,5 @@
 import "server-only";
+import { publicImageSrc } from "@/lib/image-url";
 import { addDoc, commitWrites, countCollection, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 
 const COLLECTION = "agents";
@@ -119,7 +120,9 @@ export async function getAgents(opts?: { includeHidden?: boolean }): Promise<Age
   await seedIfEmpty();
   const docs = await listCollection(COLLECTION, { orderBy: "order" });
   const all = docs.map((d) => toAgent(d.id, d.data));
-  return opts?.includeHidden ? all : all.filter((a) => a.visible !== false);
+  if (opts?.includeHidden) return all; // admin: keep the raw data URL so the edit form round-trips it unchanged
+  // Public pages reference uploaded photos by URL rather than inlining base64 (see image-url.ts).
+  return all.filter((a) => a.visible !== false).map((a) => ({ ...a, photo: publicImageSrc("agent", a.id, a.photo) }));
 }
 
 export async function addAgent(data: AgentInput): Promise<string> {
