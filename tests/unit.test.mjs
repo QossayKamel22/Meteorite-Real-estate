@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 const R=new URL("../src/lib/", import.meta.url).href;
 const { getInitials, getAvatarGradient } = await import(R+"reviews-ui.ts");
-const { parseFeaturedProject, featuredImageSrc, isHttpsUrl, MAX_FACTS } = await import(R+"featured-project-shared.ts");
+const { parseFeaturedProject, isHttpsUrl, MAX_FACTS, MAX_PROJECTS } = await import(R+"featured-project-shared.ts");
 const { resilientFetch } = await import(R+"resilient-fetch.ts");
 const { isGoogleUrl } = await import(R+"google-reviews-shared.ts");
 const { countWords } = await import(R+"ceo-message-shared.ts");
@@ -60,9 +60,8 @@ test("featured: rejects bad input", () => {
 test("featured: image variants", () => {
   assert.equal(parseFeaturedProject({ ...good, image: "https://cdn.example.com/a.jpg" }).ok, true);
   assert.equal(parseFeaturedProject({ ...good, image: "data:image/jpeg;base64,/9j/4AAQ" }).ok, true);
-  assert.equal(featuredImageSrc({ image:"", imageVersion:3 }), null);
-  assert.equal(featuredImageSrc({ image:"https://a.b/c.jpg", imageVersion:3 }), "https://a.b/c.jpg");
-  assert.equal(featuredImageSrc({ image:"data:image/png;base64,AAAA", imageVersion:3 }), "/api/featured-project/image?v=3");
+  assert.equal(parseFeaturedProject({ ...good, image: "" }).value.image, "");
+  assert.equal(MAX_PROJECTS, 12);
 });
 test("url helpers", () => {
   assert.equal(isHttpsUrl("https://a.co"), true); assert.equal(isHttpsUrl("ftp://a.co"), false);
@@ -123,11 +122,11 @@ test("publicImageSrc: data URLs become cacheable URLs, everything else is untouc
   assert.equal(publicImageSrc("agent", "abc", undefined), "");
   assert.equal(publicImageSrc("agent", "../etc/passwd", data), data, "an unsafe id is never put in a URL path");
   assert.equal(publicImageSrc("media", "id1", data).startsWith("/api/img/media/id1?v="), true);
+  assert.equal(publicImageSrc("featured", "p1", data).startsWith("/api/img/featured/p1?v="), true);
 });
 test("image id / served-image helpers", () => {
   assert.ok(SAFE_DOC_ID.test("aB3-_xyz9") && !SAFE_DOC_ID.test("a/b") && !SAFE_DOC_ID.test("") && !SAFE_DOC_ID.test("a".repeat(65)) && !SAFE_DOC_ID.test("a b"));
   assert.equal(isServedImage("/api/img/agent/x?v=1"), true);
-  assert.equal(isServedImage("/api/featured-project/image?v=2"), true);
   assert.equal(isServedImage("/brand/logo.png"), false);
   assert.equal(isServedImage("https://x.com/a.jpg"), false);
   assert.notEqual(shortHash("a"), shortHash("b"));
