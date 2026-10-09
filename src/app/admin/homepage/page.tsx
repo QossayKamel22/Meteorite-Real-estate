@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { LayoutTemplate, MessageSquareQuote, Quote } from "lucide-react";
+import { Building2, LayoutTemplate, MessageSquareQuote, Quote } from "lucide-react";
 import { getHomepageContent } from "@/lib/homepage-content";
 import { getCeoMessage } from "@/lib/ceo-message";
 import { getGoogleReviews } from "@/lib/google-reviews";
+import { getFeaturedProject } from "@/lib/featured-project";
 import { getTestimonials } from "@/lib/testimonials-data";
 import AdminHomepageContentForm from "@/components/AdminHomepageContentForm";
 import AdminCeoMessageForm from "@/components/AdminCeoMessageForm";
 import AdminGoogleReviewsForm from "@/components/AdminGoogleReviewsForm";
+import AdminFeaturedProjectForm from "@/components/AdminFeaturedProjectForm";
 import AdminTestimonialsPanel from "@/components/AdminTestimonialsPanel";
 
 export const metadata: Metadata = { title: "Homepage · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomepagePage() {
-  const [content, ceoMessage, testimonials, googleReviews] = await Promise.all([
+  const [content, ceoMessage, testimonials, googleReviews, featuredProject] = await Promise.all([
     getHomepageContent(),
     getCeoMessage(),
     getTestimonials({ includeHidden: true }),
     getGoogleReviews(),
+    getFeaturedProject(),
   ]);
 
   return (
@@ -29,7 +32,7 @@ export default async function AdminHomepagePage() {
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Homepage</h1>
           <p className="text-sm text-brand-ink/55">
-            The hero copy, CEO message and client testimonials shown on the homepage.
+            The hero copy, CEO message, featured project and client testimonials shown on the homepage.
           </p>
         </div>
       </div>
@@ -58,6 +61,22 @@ export default async function AdminHomepagePage() {
 
       <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
         <div className="flex items-center gap-2">
+          <Building2 size={16} className="text-brand-gold" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
+            Featured project
+          </h2>
+        </div>
+        <p className="mt-2 text-sm text-brand-ink/55">
+          The editorial project panel on the homepage, below the listings. Edit its text, key facts,
+          link and photo, or switch it off entirely.
+        </p>
+        <div className="mt-6">
+          <AdminFeaturedProjectForm project={featuredProject} />
+        </div>
+      </div>
+
+      <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-2">
           <MessageSquareQuote size={16} className="text-brand-gold" />
           <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
             Testimonials
@@ -72,7 +91,7 @@ export default async function AdminHomepagePage() {
         <div className="mt-6 rounded-2xl border border-brand-line p-5">
           <h3 className="text-sm font-semibold text-heading">Google reviews summary</h3>
           <p className="mt-1 mb-4 text-xs text-brand-ink/50">
-            The rating, review count and link shown above the reviews.
+            The rating and review count shown beside the Google icon, and where the &quot;Read all reviews on Google&quot; button goes.
           </p>
           <AdminGoogleReviewsForm
             summary={googleReviews}
