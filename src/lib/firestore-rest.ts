@@ -263,7 +263,7 @@ export async function incrementFieldsMulti(
 }
 
 type WriteSpec =
-  | { collection: string; id: string; data: Record<string, unknown>; requireAbsent?: boolean }
+  | { collection: string; id: string; data: Record<string, unknown>; requireAbsent?: boolean; mergeFields?: string[] }
   | { collection: string; id: string; delete: true };
 
 /**
@@ -280,6 +280,8 @@ export async function commitWrites(writes: WriteSpec[]): Promise<void> {
         ? { delete: name(w.collection, w.id) }
         : {
             update: { name: name(w.collection, w.id), fields: toFsFields(w.data) },
+            // Without a mask the write REPLACES the whole document; mergeFields limits it to the named fields.
+            ...(w.mergeFields ? { updateMask: { fieldPaths: w.mergeFields } } : {}),
             ...(w.requireAbsent ? { currentDocument: { exists: false } } : {}),
           }
     ),

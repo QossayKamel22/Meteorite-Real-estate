@@ -28,9 +28,6 @@ function notFoundFast(): Response {
 export async function proxy(request: NextRequest) {
   // Page-view beacon: answered here, in the lightweight middleware layer, so a
   // cold Worker never has to load the full Next server bundle for it.
-  if (request.nextUrl.pathname === "/api/featured-project/image") {
-    return handleDocImage(request, "featured", "featured-project");
-  }
   const imageMatch = /^\/api\/img\/([a-z]+)\/([^/]+)$/.exec(request.nextUrl.pathname);
   if (imageMatch) {
     const kind = imageMatch[1] as ImageKind;
@@ -92,7 +89,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   // Only the routes that actually need this middleware:
   //  - /admin, /api/login, /api/logout  -> Firebase auth
-  //  - /api/track-visit, /api/featured-project/image, /api/img/*  -> answered here, cheaply
+  //  - /api/track-visit, /api/img/*  -> answered here, cheaply
   //  - everything that is NOT a known page/route of this site -> fast static 404 (see above)
   // Known pages (/, /about-us, ...) never run this code, so they stay as cheap as before.
   matcher: [
@@ -100,7 +97,6 @@ export const config = {
     "/api/login",
     "/api/logout",
     "/api/track-visit",
-    "/api/featured-project/image",
     "/api/img/:path*",
     "/((?!(?:about-us|contact-us|for-sale|for-rent|media|privacy-policy|login|register|favorites|create-property|admin|api|_next)(?:/|$)|robots\\.txt$|sitemap\\.xml$|favicon\\.ico$|icon\\.png$|$).+)",
   ],

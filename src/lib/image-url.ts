@@ -1,9 +1,9 @@
 // Pure helpers (no server-only imports) so they can be unit-tested with Node.
 
 /** Which Firestore document type an uploaded image belongs to. */
-export type ImageKind = "agent" | "certificate" | "media" | "property";
+export type ImageKind = "agent" | "certificate" | "media" | "property" | "featured";
 
-export const IMAGE_KINDS: readonly ImageKind[] = ["agent", "certificate", "media", "property"];
+export const IMAGE_KINDS: readonly ImageKind[] = ["agent", "certificate", "media", "property", "featured"];
 
 /** Firestore document ids are 20-char alphanumerics; accept only that shape before building a path. */
 export const SAFE_DOC_ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -36,5 +36,5 @@ export function publicImageSrc(kind: ImageKind, id: string, value: string | unde
 
 /** True for URLs produced by publicImageSrc — those are already optimised, so next/image should skip its optimiser. */
 export function isServedImage(src: string): boolean {
-  return src.startsWith("/api/img/") || src.startsWith("/api/featured-project/image");
+  return src.startsWith("/api/img/");
 }

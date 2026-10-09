@@ -2,14 +2,14 @@ import { FIRESTORE_HOST, basePath, getAccessToken, GOOGLE_REQUEST_TIMEOUT_MS } f
 import { getCfContext } from "@/lib/cf-runtime";
 import { SAFE_DOC_ID, type ImageKind } from "@/lib/image-url";
 
-type Target = { collection: string; docId?: string; field: string };
+type Target = { collection: string; field: string };
 
-const TARGETS: Record<ImageKind | "featured", Target> = {
+const TARGETS: Record<ImageKind, Target> = {
   agent: { collection: "agents", field: "photo" },
   certificate: { collection: "certificates", field: "image" },
   media: { collection: "mediaPosts", field: "image" },
   property: { collection: "properties", field: "image" },
-  featured: { collection: "settings", docId: "featured-project", field: "image" },
+  featured: { collection: "featuredProjects", field: "image" },
 };
 
 const NOT_FOUND = () => new Response("Not found", { status: 404, headers: { "Cache-Control": "public, max-age=60" } });
@@ -24,13 +24,12 @@ const NOT_FOUND = () => new Response("Not found", { status: 404, headers: { "Cac
  * replacing the image in the admin changes the URL. Responses are also kept in
  * the Cloudflare edge cache, so repeat views never touch Firestore.
  */
-export async function handleDocImage(request: Request, kind: ImageKind | "featured", id: string): Promise<Response> {
+export async function handleDocImage(request: Request, kind: ImageKind, id: string): Promise<Response> {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
   }
   const target = TARGETS[kind];
-  const docId = target.docId ?? id;
-  if (!target || !SAFE_DOC_ID.test(docId)) return NOT_FOUND();
+  if (!target || !SAFE_DOC_ID.test(id)) return NOT_FOUND();
 
   const edgeCache = (globalThis as { caches?: { default?: Cache } }).caches?.default;
   try {
@@ -45,7 +44,7 @@ export async function handleDocImage(request: Request, kind: ImageKind | "featur
 
     const token = await getAccessToken();
     const upstream = await fetch(
-      `${FIRESTORE_HOST}/${basePath()}/${target.collection}/${docId}?mask.fieldPaths=${target.field}`,
+      `${FIRESTORE_HOST}/${basePath()}/${target.collection}/${id}?mask.fieldPaths=${target.field}`,
       { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS) }
     );
     if (upstream.status === 404) return NOT_FOUND();

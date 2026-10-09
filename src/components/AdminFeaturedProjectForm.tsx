@@ -1,37 +1,70 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { CheckCircle2, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
 import {
   FEATURED_LIMITS,
   MAX_FACTS,
   parseFeaturedProject,
   type FeaturedProject,
+  type FeaturedProjectInput,
 } from "@/lib/featured-project-shared";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold";
 const labelClass = "block text-xs font-medium text-brand-ink/60";
 
-type FormState = Omit<FeaturedProject, "imageVersion">;
+type FormState = FeaturedProjectInput;
 
-function toForm(p: FeaturedProject): FormState {
-  const { imageVersion, ...rest } = p;
-  void imageVersion;
-  return { ...rest, facts: p.facts.map((f) => ({ ...f })) };
+export const EMPTY_PROJECT_FORM: FormState = {
+  visible: true,
+  kicker: "Featured Project",
+  name: "",
+  location: "",
+  description: "",
+  facts: [],
+  linkUrl: "https://",
+  linkLabel: "Explore the project",
+  image: "",
+};
+
+export function projectToForm(p: FeaturedProject): FormState {
+  return {
+    visible: p.visible,
+    kicker: p.kicker,
+    name: p.name,
+    location: p.location,
+    description: p.description,
+    facts: p.facts.map((f) => ({ ...f })),
+    linkUrl: p.linkUrl,
+    linkLabel: p.linkLabel,
+    image: p.image,
+  };
 }
 
-export default function AdminFeaturedProjectForm({ project }: { project: FeaturedProject }) {
-  const router = useRouter();
-  const [initial, setInitial] = useState<FormState>(() => toForm(project));
+/**
+ * Add / edit form for one featured project. `projectId` set = editing that
+ * project (PUT); absent = creating a new one (POST). Calls onSaved() when the
+ * server accepts it, so the parent panel can close the form and refresh.
+ */
+export default function AdminFeaturedProjectForm({
+  initial,
+  projectId,
+  onSaved,
+  onCancel,
+}: {
+  initial: FormState;
+  projectId?: string;
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
   const [form, setForm] = useState<FormState>(initial);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [saved, setSaved] = useState(false);
 
-  const isDirty = JSON.stringify(form) !== JSON.stringify(initial);
+  const isNew = !projectId;
+  const isDirty = isNew || JSON.stringify(form) !== JSON.stringify(initial);
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((f) => ({ ...f, [key]: value }));
 
@@ -42,7 +75,6 @@ export default function AdminFeaturedProjectForm({ project }: { project: Feature
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setSaved(false);
 
     // Same rules the server enforces, so mistakes are caught before the round trip.
     const check = parseFeaturedProject(form);
@@ -53,8 +85,8 @@ export default function AdminFeaturedProjectForm({ project }: { project: Feature
 
     setSaving(true);
     try {
-      const res = await fetch("/api/admin/featured-project", {
-        method: "PUT",
+      const res = await fetch(isNew ? "/api/admin/featured-projects" : `/api/admin/featured-projects/${projectId}`, {
+        method: isNew ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(check.value),
       });
@@ -63,12 +95,7 @@ export default function AdminFeaturedProjectForm({ project }: { project: Feature
         setError(data.error ?? "Failed to save.");
         return;
       }
-      const next: FormState = { ...check.value, facts: check.value.facts.map((f) => ({ ...f })) };
-      setInitial(next);
-      setForm(next);
-      setSaved(true);
-      router.refresh();
-      window.setTimeout(() => setSaved(false), 3500);
+      onSaved();
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -77,10 +104,10 @@ export default function AdminFeaturedProjectForm({ project }: { project: Feature
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5">
       <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-brand-line px-4 py-3">
         <span>
-          <span className="block text-sm font-semibold text-heading">Show on the homepage</span>
+          <span className="block text-sm font-semibold text-heading">Show this project on the homepage</span>
           <span className="block text-xs text-brand-ink/50">
             {form.visible ? "Visible to visitors." : "Hidden — visitors won't see this section."}
           </span>
@@ -88,7 +115,7 @@ export default function AdminFeaturedProjectForm({ project }: { project: Feature
         <input
           type="checkbox"
           role="switch"
-          aria-label="Show Featured Project on the homepage"
+          aria-label="Show this project on the homepage"
           checked={form.visible}
           onChange={(e) => set("visible", e.target.checked)}
           className="peer sr-only"
@@ -242,32 +269,18 @@ export default function AdminFeaturedProjectForm({ project }: { project: Feature
       </div>
 
       {error && <p className="text-sm font-medium text-red-600">{error}</p>}
-      {saved && (
-        <p className="flex items-center gap-2 text-sm font-medium text-emerald-600">
-          <CheckCircle2 size={16} /> Saved — the homepage will update within a minute.
-        </p>
-      )}
 
       <div className="flex items-center gap-3">
         <button
           type="submit"
           disabled={saving || !isDirty}
-          className="rounded-full bg-brand-navy px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-full bg-brand-navy px-6 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-brand-navy-light disabled:cursor-not-allowed disabled:opacity-40 dark:bg-brand-gold dark:text-brand-navy dark:hover:bg-brand-gold-soft"
         >
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? "Saving…" : isNew ? "Add project" : "Save changes"}
         </button>
-        {isDirty && !saving && (
-          <button
-            type="button"
-            onClick={() => {
-              setForm(initial);
-              setError("");
-            }}
-            className="text-sm font-medium text-brand-ink/50 hover:text-heading"
-          >
-            Discard changes
-          </button>
-        )}
+        <button type="button" onClick={onCancel} className="text-sm font-medium text-brand-ink/50 hover:text-heading">
+          Cancel
+        </button>
       </div>
     </form>
   );

@@ -4,8 +4,8 @@
 
 export type FeaturedFact = { value: string; label: string };
 
-export type FeaturedProject = {
-  /** Hidden when false — the section is simply not rendered. */
+export type FeaturedProjectInput = {
+  /** Hidden when false — the project is simply not shown on the homepage. */
   visible: boolean;
   kicker: string;
   name: string;
@@ -18,11 +18,13 @@ export type FeaturedProject = {
   linkLabel: string;
   /** "" (none), an https URL, or a data:image/... URL uploaded in the admin. */
   image: string;
-  /** Changes whenever the image does; used to cache-bust the served image. */
-  imageVersion: number;
 };
 
-export type FeaturedProjectInput = Omit<FeaturedProject, "imageVersion">;
+/** A stored project. `order` is its position in the carousel. */
+export type FeaturedProject = FeaturedProjectInput & { id: string; order: number };
+
+/** The most projects the homepage carousel will hold. */
+export const MAX_PROJECTS = 12;
 
 export const FEATURED_LIMITS = {
   kicker: 40,
@@ -46,13 +48,6 @@ export function isHttpsUrl(value: string): boolean {
   } catch {
     return false;
   }
-}
-
-/** The URL the public page should load the image from (never inline base64). */
-export function featuredImageSrc(p: Pick<FeaturedProject, "image" | "imageVersion">): string | null {
-  if (!p.image) return null;
-  if (p.image.startsWith("data:")) return `/api/featured-project/image?v=${p.imageVersion}`;
-  return p.image;
 }
 
 type Result = { ok: true; value: FeaturedProjectInput } | { ok: false; error: string };

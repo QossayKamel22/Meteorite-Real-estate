@@ -14,7 +14,7 @@ import { getAgents } from "@/lib/agents-data";
 import { getTestimonials } from "@/lib/testimonials-data";
 import { getHomepageContent } from "@/lib/homepage-content";
 import { getGoogleReviews } from "@/lib/google-reviews";
-import { getFeaturedProject } from "@/lib/featured-project";
+import { getFeaturedProjects } from "@/lib/featured-projects-data";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -24,13 +24,13 @@ export const metadata = pageMetadata({
 });
 
 export default async function Home() {
-  const [stats, agents, testimonials, content, googleReviews, featuredProject] = await Promise.all([
+  const [stats, agents, testimonials, content, googleReviews, featuredProjects] = await Promise.all([
     getStatsList(),
     getAgents(),
     getTestimonials(),
     getHomepageContent(),
     getGoogleReviews(),
-    getFeaturedProject(),
+    getFeaturedProjects(),
   ]);
   const ceo = agents.find((a) => a.bio) ?? agents[0];
 
@@ -41,7 +41,7 @@ export default async function Home() {
       <AboutIntro />
       <PhotoCollage />
       <PropertyDiscovery />
-      <FeaturedProjectSection project={featuredProject} />
+      <FeaturedProjectSection projects={featuredProjects} />
       <CeoSection />
       <CeoMessageSection />
       <AgentsSection />

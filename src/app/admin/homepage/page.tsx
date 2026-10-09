@@ -3,24 +3,24 @@ import { Building2, LayoutTemplate, MessageSquareQuote, Quote } from "lucide-rea
 import { getHomepageContent } from "@/lib/homepage-content";
 import { getCeoMessage } from "@/lib/ceo-message";
 import { getGoogleReviews } from "@/lib/google-reviews";
-import { getFeaturedProject } from "@/lib/featured-project";
+import { getFeaturedProjects } from "@/lib/featured-projects-data";
 import { getTestimonials } from "@/lib/testimonials-data";
 import AdminHomepageContentForm from "@/components/AdminHomepageContentForm";
 import AdminCeoMessageForm from "@/components/AdminCeoMessageForm";
 import AdminGoogleReviewsForm from "@/components/AdminGoogleReviewsForm";
-import AdminFeaturedProjectForm from "@/components/AdminFeaturedProjectForm";
+import AdminFeaturedProjectsPanel from "@/components/AdminFeaturedProjectsPanel";
 import AdminTestimonialsPanel from "@/components/AdminTestimonialsPanel";
 
 export const metadata: Metadata = { title: "Homepage · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomepagePage() {
-  const [content, ceoMessage, testimonials, googleReviews, featuredProject] = await Promise.all([
+  const [content, ceoMessage, testimonials, googleReviews, featuredProjects] = await Promise.all([
     getHomepageContent(),
     getCeoMessage(),
     getTestimonials({ includeHidden: true }),
     getGoogleReviews(),
-    getFeaturedProject(),
+    getFeaturedProjects({ includeHidden: true }),
   ]);
 
   return (
@@ -63,15 +63,16 @@ export default async function AdminHomepagePage() {
         <div className="flex items-center gap-2">
           <Building2 size={16} className="text-brand-gold" />
           <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
-            Featured project
+            Featured projects
           </h2>
         </div>
         <p className="mt-2 text-sm text-brand-ink/55">
-          The editorial project panel on the homepage, below the listings. Edit its text, key facts,
-          link and photo, or switch it off entirely.
+          The editorial project panel on the homepage, below the listings. Add as many projects as you
+          like — with two or more it becomes a swipeable carousel that advances by itself. The order
+          below is the order on the site.
         </p>
         <div className="mt-6">
-          <AdminFeaturedProjectForm project={featuredProject} />
+          <AdminFeaturedProjectsPanel projects={featuredProjects} />
         </div>
       </div>
 
