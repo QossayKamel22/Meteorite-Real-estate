@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { isServedImage } from "@/lib/image-url";
 import { AnimatePresence, motion } from "framer-motion";
@@ -16,6 +17,12 @@ export default function ImageLightbox({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  // True only in the browser (false while server-rendering and during hydration).
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -42,46 +49,53 @@ export default function ImageLightbox({
         </span>
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-navy/90 p-4 backdrop-blur-md"
-            onClick={() => setOpen(false)}
-            role="dialog"
-            aria-modal="true"
-            aria-label={alt}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.97, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="relative max-h-[85vh] w-full max-w-4xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={src}
-                alt={alt}
-                unoptimized={isServedImage(src)}
-                width={1600}
-                height={1200}
-                className="h-auto max-h-[85vh] w-full rounded-2xl object-contain shadow-2xl"
-              />
-              <button
-                type="button"
+      {/* Rendered into <body>, not in place: an ancestor with a CSS transform, filter or
+          backdrop-filter (the glass cards, a hover lift, a draggable slide) would otherwise
+          become the containing block for this "fixed" overlay and trap it inside the card. */}
+      {isClient &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-brand-navy/90 p-4 backdrop-blur-md"
                 onClick={() => setOpen(false)}
-                aria-label="Close"
-                className="absolute -top-4 -right-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-gold text-brand-navy shadow-lg transition-transform hover:scale-105"
+                role="dialog"
+                aria-modal="true"
+                aria-label={alt}
               >
-                <X size={18} />
-              </button>
-            </motion.div>
-          </motion.div>
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.97, opacity: 0 }}
+                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative max-h-[85vh] w-full max-w-4xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Image
+                    src={src}
+                    alt={alt}
+                    unoptimized={isServedImage(src)}
+                    width={1600}
+                    height={1200}
+                    className="h-auto max-h-[85vh] w-full rounded-2xl object-contain shadow-2xl"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    aria-label="Close"
+                    className="absolute -top-4 -right-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-gold text-brand-navy shadow-lg transition-transform hover:scale-105"
+                  >
+                    <X size={18} />
+                  </button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }
