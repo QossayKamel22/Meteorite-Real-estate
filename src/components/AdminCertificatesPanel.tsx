@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronDown, ChevronUp, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
 import type { Certificate, CertificateInput } from "@/lib/certificates-data";
-import ImageUploadField from "@/components/ImageUploadField";
+import AdminCertificateImagesField from "@/components/AdminCertificateImagesField";
 
 type FormState = {
   title: string;
-  image: string;
+  images: string[];
   issuer: string;
   licenseNo: string;
   registrationDate: string;
@@ -20,7 +20,7 @@ type FormState = {
 
 const EMPTY_FORM: FormState = {
   title: "",
-  image: "",
+  images: [],
   issuer: "",
   licenseNo: "",
   registrationDate: "",
@@ -32,7 +32,7 @@ const EMPTY_FORM: FormState = {
 function certToForm(cert: Certificate): FormState {
   return {
     title: cert.title,
-    image: cert.image,
+    images: cert.images.slice(),
     issuer: cert.issuer ?? "",
     licenseNo: cert.licenseNo ?? "",
     registrationDate: cert.registrationDate ?? "",
@@ -45,7 +45,8 @@ function certToForm(cert: Certificate): FormState {
 function formToPayload(form: FormState): CertificateInput {
   return {
     title: form.title.trim(),
-    image: form.image.trim(),
+    images: form.images,
+    image: form.images[0] ?? "",
     issuer: form.issuer.trim() || undefined,
     licenseNo: form.licenseNo.trim() || undefined,
     registrationDate: form.registrationDate.trim() || undefined,
@@ -73,7 +74,7 @@ function CertificateForm({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  function set<K extends keyof FormState>(key: K, value: string) {
+  function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
@@ -81,8 +82,8 @@ function CertificateForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.image) {
-      setImageError("Please upload an image.");
+    if (form.images.length === 0) {
+      setImageError("Please upload at least one image.");
       return;
     }
     setSaving(true);
@@ -94,15 +95,12 @@ function CertificateForm({
 
   return (
     <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-xl bg-brand-paper p-4">
-      <ImageUploadField
-        label="Certificate image *"
-        value={form.image}
-        onChange={(dataUrl) => {
+      <AdminCertificateImagesField
+        images={form.images}
+        onChange={(images) => {
           setImageError("");
-          set("image", dataUrl);
+          set("images", images);
         }}
-        shape="wide"
-        maxDimension={900}
       />
       {imageError && <p className="text-xs font-medium text-red-600">{imageError}</p>}
 
@@ -297,12 +295,13 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
                   </button>
                 </div>
                 <div className="relative h-12 w-16 flex-none overflow-hidden rounded-lg bg-brand-paper">
-                  <Image src={cert.image} alt={cert.title} fill className="object-cover" sizes="64px" />
+                  <Image src={cert.image} alt={cert.title} fill unoptimized className="object-cover" sizes="64px" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-heading">{cert.title}</p>
                   <p className="truncate text-xs text-brand-ink/55">
                     {cert.licenseNo ? `License #${cert.licenseNo}` : cert.issuer ?? "—"}
+                    {cert.images.length > 1 && <span> · {cert.images.length} images</span>}
                     {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                   </p>
                 </div>

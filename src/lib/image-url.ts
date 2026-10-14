@@ -27,11 +27,12 @@ export function shortHash(input: string): string {
  * the URL can be cached forever. Anything that isn't a data URL (a static
  * /brand/... file or an https link) is returned untouched.
  */
-export function publicImageSrc(kind: ImageKind, id: string, value: string | undefined): string {
+export function publicImageSrc(kind: ImageKind, id: string, value: string | undefined, index?: number): string {
   if (!value) return "";
   if (!value.startsWith("data:image/")) return value;
   if (!SAFE_DOC_ID.test(id)) return value;
-  return `/api/img/${kind}/${id}?v=${shortHash(value)}`;
+  const which = index !== undefined && index > 0 ? `i=${index}&` : "";
+  return `/api/img/${kind}/${id}?${which}v=${shortHash(value)}`;
 }
 
 /** True for URLs produced by publicImageSrc — those are already optimised, so next/image should skip its optimiser. */

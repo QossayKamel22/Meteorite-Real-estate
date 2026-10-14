@@ -1,10 +1,8 @@
-import Image from "next/image";
-import { isServedImage } from "@/lib/image-url";
 import { Award, CalendarCheck, FileCheck2, ShieldCheck } from "lucide-react";
 import { developerPartners } from "@/lib/content";
 import { getCertificates } from "@/lib/certificates-data";
 import Reveal from "@/components/Reveal";
-import ImageLightbox from "@/components/ImageLightbox";
+import CertificateGallery from "@/components/CertificateGallery";
 import LogoMarquee from "@/components/LogoMarquee";
 import SectionHeading from "@/components/SectionHeading";
 
@@ -49,20 +47,7 @@ export default async function DevelopersAndCertificate() {
 
             <div className={`grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center ${i === 0 ? "mt-10" : "mt-16"}`}>
               <Reveal delay={0.1}>
-                <ImageLightbox src={certificate.image} alt={certificate.title}>
-                  <div className="glass shimmer-border group overflow-hidden rounded-3xl bg-white p-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-                    <div className="overflow-hidden rounded-2xl">
-                      <Image
-                        src={certificate.image}
-                        unoptimized={isServedImage(certificate.image)}
-                        alt={certificate.title}
-                        width={1289}
-                        height={907}
-                        className="w-full transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                  </div>
-                </ImageLightbox>
+                <CertificateGallery images={certificate.images} title={certificate.title} />
               </Reveal>
 
               <Reveal delay={0.18}>

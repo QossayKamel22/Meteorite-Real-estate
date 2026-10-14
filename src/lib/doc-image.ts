@@ -2,11 +2,11 @@ import { FIRESTORE_HOST, basePath, getAccessToken, GOOGLE_REQUEST_TIMEOUT_MS } f
 import { getCfContext } from "@/lib/cf-runtime";
 import { SAFE_DOC_ID, type ImageKind } from "@/lib/image-url";
 
-type Target = { collection: string; field: string };
+type Target = { collection: string; field: string; /** Optional list of further images; `?i=N` selects entry N (N >= 1 — entry 0 is `field`). */ listField?: string };
 
 const TARGETS: Record<ImageKind, Target> = {
   agent: { collection: "agents", field: "photo" },
-  certificate: { collection: "certificates", field: "image" },
+  certificate: { collection: "certificates", field: "image", listField: "images" },
   media: { collection: "mediaPosts", field: "image" },
   property: { collection: "properties", field: "image" },
   featured: { collection: "featuredProjects", field: "image" },
@@ -42,16 +42,25 @@ export async function handleDocImage(request: Request, kind: ImageKind, id: stri
       }
     }
 
+    const wanted = Number(new URL(request.url).searchParams.get("i") ?? "0");
+    if (!Number.isInteger(wanted) || wanted < 0 || wanted >= 16) return NOT_FOUND();
+    const index = wanted;
+    const fields = target.listField ? [target.field, target.listField] : [target.field];
+    const mask = fields.map((f) => `mask.fieldPaths=${f}`).join("&");
+
     const token = await getAccessToken();
-    const upstream = await fetch(
-      `${FIRESTORE_HOST}/${basePath()}/${target.collection}/${id}?mask.fieldPaths=${target.field}`,
-      { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS) }
-    );
+    const upstream = await fetch(`${FIRESTORE_HOST}/${basePath()}/${target.collection}/${id}?${mask}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(GOOGLE_REQUEST_TIMEOUT_MS),
+    });
     if (upstream.status === 404) return NOT_FOUND();
     if (!upstream.ok) return new Response("Unavailable", { status: 502, headers: { "Cache-Control": "no-store" } });
 
-    const doc = (await upstream.json()) as { fields?: Record<string, { stringValue?: string }> };
-    const value = doc.fields?.[target.field]?.stringValue ?? "";
+    type FsFields = Record<string, { stringValue?: string; arrayValue?: { values?: { stringValue?: string }[] } }>;
+    const doc = (await upstream.json()) as { fields?: FsFields };
+    const list = target.listField ? (doc.fields?.[target.listField]?.arrayValue?.values ?? []) : [];
+    // Documents that predate the list only have the single field; otherwise entry N of the list wins.
+    const value = (list.length > 0 ? list[index]?.stringValue : index === 0 ? doc.fields?.[target.field]?.stringValue : "") ?? "";
     const match = /^data:(image\/(?:jpeg|png|webp|gif));base64,(.+)$/.exec(value);
     if (!match) return NOT_FOUND();
 

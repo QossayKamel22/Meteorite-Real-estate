@@ -7,6 +7,7 @@ const { resilientFetch } = await import(R+"resilient-fetch.ts");
 const { isGoogleUrl } = await import(R+"google-reviews-shared.ts");
 const { countWords } = await import(R+"ceo-message-shared.ts");
 const { publicImageSrc, isServedImage, shortHash, SAFE_DOC_ID } = await import(R+"image-url.ts");
+const { normalizeCertificateImages, MAX_CERT_IMAGES } = await import(R+"certificate-images.ts");
 
 test("initials: first + last name letters", () => {
   assert.equal(getInitials("Nitesh Sekhsaria"), "NS");
@@ -130,4 +131,40 @@ test("image id / served-image helpers", () => {
   assert.equal(isServedImage("/brand/logo.png"), false);
   assert.equal(isServedImage("https://x.com/a.jpg"), false);
   assert.notEqual(shortHash("a"), shortHash("b"));
+});
+
+const jpg = (n) => "data:image/jpeg;base64," + "A".repeat(n);
+test("certificate images: list, legacy single field, order and defaults", () => {
+  const a = jpg(100), b = jpg(200);
+  assert.deepEqual(normalizeCertificateImages({ images: [a, b] }).images, [a, b], "order is preserved (first = newest)");
+  assert.deepEqual(normalizeCertificateImages({ image: a }).images, [a], "legacy single image still accepted");
+  assert.deepEqual(normalizeCertificateImages({ images: [" " + a + " ", "", b] }).images, [a, b], "trims and drops blank rows");
+  assert.deepEqual(normalizeCertificateImages({ images: ["/brand/certificate-rera.jpg", "https://cdn.example.com/c.png"] }).images.length, 2);
+  assert.equal(normalizeCertificateImages({ images: [a], image: "ignored" }).images[0], a, "images wins over image");
+});
+test("certificate images: rejects bad input", () => {
+  const bad = (body, re) => { const r = normalizeCertificateImages(body); assert.equal(r.ok, false, JSON.stringify(body).slice(0,60)); if (re) assert.match(r.error, re); };
+  bad({}, /At least one/);
+  bad({ images: [] }, /At least one/);
+  bad({ images: ["", "  "] }, /At least one/);
+  bad({ images: "nope" }, /At least one|image/i);
+  bad({ images: [123] }, /file or a link/);
+  bad({ images: ["http://insecure.com/a.jpg"] }, /https/);
+  bad({ images: ["javascript:alert(1)"] }, /https/);
+  bad({ images: ["data:image/svg+xml;base64,PHN2Zz4="] }, /https/);        // SVG can carry scripts
+  bad({ images: ["data:text/html;base64,PGI+"] }, /https/);
+  bad({ images: ["/brand/../secret.png"] }, /https/);
+  bad({ images: ["//evil.com/a.png"] }, /https/);
+  bad({ images: ["/etc/passwd"] }, /https/);
+  bad({ images: [jpg(600_001)] }, /too large/);
+  bad({ images: Array.from({ length: MAX_CERT_IMAGES + 1 }, () => jpg(10)) }, /up to 8/);
+  bad({ images: Array.from({ length: 4 }, () => jpg(250_000)) }, /together are too large/);
+});
+test("publicImageSrc: per-image index for certificates", () => {
+  const data = "data:image/jpeg;base64," + "A".repeat(500), other = "data:image/jpeg;base64," + "B".repeat(500);
+  const u0 = publicImageSrc("certificate", "cert1", data, 0), u1 = publicImageSrc("certificate", "cert1", other, 1);
+  assert.match(u0, /^\/api\/img\/certificate\/cert1\?v=[0-9a-z]+$/, "image 0 keeps the plain URL");
+  assert.match(u1, /^\/api\/img\/certificate\/cert1\?i=1&v=[0-9a-z]+$/);
+  assert.notEqual(u0, publicImageSrc("certificate", "cert1", data, 1), "different index => different URL (separate cache entries)");
+  assert.equal(publicImageSrc("certificate", "cert1", "/brand/certificate-rera.jpg", 1), "/brand/certificate-rera.jpg");
 });

@@ -7,14 +7,20 @@ import {
   moveCertificate,
   type CertificateInput,
 } from "@/lib/certificates-data";
+import { normalizeCertificateImages } from "@/lib/certificate-images";
 
 function parseCertificatePatch(body: Record<string, unknown>): Partial<CertificateInput> | string {
   if (typeof body.title === "string" && !body.title.trim()) return "Title cannot be empty.";
-  if (typeof body.image === "string" && !body.image.trim()) return "Image URL cannot be empty.";
 
   const patch: Partial<CertificateInput> = {};
   if (typeof body.title === "string") patch.title = body.title.trim();
-  if (typeof body.image === "string") patch.image = body.image.trim();
+  // Replacing the images is optional (a show/hide toggle sends neither field).
+  if (body.images !== undefined || body.image !== undefined) {
+    const imgs = normalizeCertificateImages(body);
+    if (!imgs.ok) return imgs.error;
+    patch.images = imgs.images;
+    patch.image = imgs.images[0];
+  }
   if (typeof body.issuer === "string") patch.issuer = body.issuer.trim() || undefined;
   if (typeof body.licenseNo === "string") patch.licenseNo = body.licenseNo.trim() || undefined;
   if (typeof body.registrationDate === "string") {

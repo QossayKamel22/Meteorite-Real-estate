@@ -15,7 +15,16 @@
  */
 export function resizeAndEncodeImage(
   file: File,
-  { maxDimension = 640, quality = 0.78 }: { maxDimension?: number; quality?: number } = {}
+  {
+    maxDimension = 640,
+    quality = 0.78,
+    maxLength = 100_000,
+  }: {
+    maxDimension?: number;
+    quality?: number;
+    /** Largest acceptable data URL, in characters. Images that are served by URL (certificates) can allow more. */
+    maxLength?: number;
+  } = {}
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
@@ -56,12 +65,16 @@ export function resizeAndEncodeImage(
         ctx.fillRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
 
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        if (dataUrl.length > 100_000) {
-          reject(new Error("Image is still too large after compression — try a smaller or simpler photo."));
-          return;
+        // Try the requested quality first, then progressively lower ones, before giving up.
+        for (const q of [quality, 0.68, 0.58, 0.48]) {
+          if (q > quality) continue;
+          const dataUrl = canvas.toDataURL("image/jpeg", q);
+          if (dataUrl.length <= maxLength) {
+            resolve(dataUrl);
+            return;
+          }
         }
-        resolve(dataUrl);
+        reject(new Error("Image is still too large after compression — try a smaller or simpler photo."));
       };
       img.src = reader.result as string;
     };

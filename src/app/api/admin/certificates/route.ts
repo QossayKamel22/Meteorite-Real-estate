@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { getCertificates, addCertificate, type CertificateInput } from "@/lib/certificates-data";
+import { normalizeCertificateImages } from "@/lib/certificate-images";
 
 function parseCertificateInput(body: Record<string, unknown>): CertificateInput | string {
   const title = typeof body.title === "string" ? body.title.trim() : "";
-  const image = typeof body.image === "string" ? body.image.trim() : "";
+  const imgs = normalizeCertificateImages(body);
 
   if (!title) return "Title is required.";
-  if (!image) return "Image URL is required.";
+  if (!imgs.ok) return imgs.error;
 
   const issuer = typeof body.issuer === "string" && body.issuer.trim() ? body.issuer.trim() : undefined;
   const licenseNo =
@@ -28,7 +29,8 @@ function parseCertificateInput(body: Record<string, unknown>): CertificateInput 
 
   return {
     title,
-    image,
+    image: imgs.images[0],
+    images: imgs.images,
     visible,
     ...(issuer ? { issuer } : {}),
     ...(licenseNo ? { licenseNo } : {}),

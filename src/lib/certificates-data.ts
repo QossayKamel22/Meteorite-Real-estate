@@ -7,7 +7,10 @@ const COLLECTION = "certificates";
 export type Certificate = {
   id: string;
   title: string;
+  /** The main (newest) image — always the same as images[0]; kept so older code and data keep working. */
   image: string;
+  /** Every image for this certificate, newest first. Always has at least one. */
+  images: string[];
   issuer?: string;
   licenseNo?: string;
   registrationDate?: string;
@@ -29,6 +32,7 @@ const SEED_CERTIFICATES: CertificateInput[] = [
   {
     title: "Real Estate Office Registration Certificate",
     image: "/brand/certificate-rera.jpg",
+    images: ["/brand/certificate-rera.jpg"],
     issuer: "Dubai Land Department · RERA",
     licenseNo: "916037",
     registrationDate: "10/11/2020",
@@ -69,10 +73,14 @@ async function seedIfEmpty(): Promise<void> {
 }
 
 function toCertificate(id: string, data: Record<string, unknown>): Certificate {
+  // Older documents only have the single `image` field.
+  const list = Array.isArray(data.images) ? data.images.filter((v): v is string => typeof v === "string" && v !== "") : [];
+  const images = list.length > 0 ? list : data.image ? [data.image as string] : [];
   return {
     id,
     title: data.title as string,
-    image: data.image as string,
+    image: images[0] ?? "",
+    images,
     order: (data.order as number) ?? 0,
     issuer: data.issuer as string | undefined,
     licenseNo: data.licenseNo as string | undefined,
@@ -90,16 +98,24 @@ export async function getCertificates(opts?: { includeHidden?: boolean }): Promi
   const docs = await listCollection(COLLECTION, { orderBy: "order" });
   const all = docs.map((d) => toCertificate(d.id, d.data));
   if (opts?.includeHidden) return all; // admin: keep the raw data URL so the edit form round-trips it unchanged
-  return all.filter((c) => c.visible !== false).map((c) => ({ ...c, image: publicImageSrc("certificate", c.id, c.image) }));
+  // Public pages reference uploaded images by URL; the index picks the right entry of `images`.
+  return all
+    .filter((c) => c.visible !== false)
+    .map((c) => {
+      const images = c.images.map((img, i) => publicImageSrc("certificate", c.id, img, i));
+      return { ...c, images, image: images[0] ?? "" };
+    });
 }
 
 export async function addCertificate(data: CertificateInput): Promise<string> {
   const order = await countCollection(COLLECTION);
-  return addDoc(COLLECTION, { ...data, order });
+  return addDoc(COLLECTION, { ...data, image: data.images[0], order });
 }
 
 export async function updateCertificate(id: string, data: Partial<CertificateInput>): Promise<void> {
-  await setDocMerge(COLLECTION, id, { ...data, updatedAt: new Date().toISOString() });
+  // Keep the legacy single `image` field equal to the first (newest) image.
+  const image = data.images && data.images.length > 0 ? { image: data.images[0] } : {};
+  await setDocMerge(COLLECTION, id, { ...data, ...image, updatedAt: new Date().toISOString() });
 }
 
 export async function deleteCertificate(id: string): Promise<void> {
