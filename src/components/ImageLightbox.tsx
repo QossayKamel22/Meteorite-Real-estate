@@ -5,16 +5,19 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { isServedImage } from "@/lib/image-url";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ZoomIn } from "lucide-react";
+import { Download, X, ZoomIn } from "lucide-react";
 
 export default function ImageLightbox({
   src,
   alt,
   children,
+  downloadAs,
 }: {
   src: string;
   alt: string;
   children: React.ReactNode;
+  /** When set, the enlarged view shows a Download button that saves the picture under this file name. */
+  downloadAs?: string;
 }) {
   const [open, setOpen] = useState(false);
   // True only in the browser (false while server-rendering and during hydration).
@@ -82,6 +85,16 @@ export default function ImageLightbox({
                     height={1200}
                     className="h-auto max-h-[85vh] w-full rounded-2xl object-contain shadow-2xl"
                   />
+                  {downloadAs && (
+                    <a
+                      href={src}
+                      download={downloadAs}
+                      aria-label="Download this image"
+                      className="absolute -bottom-14 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-brand-gold px-5 py-2.5 text-sm font-semibold text-brand-navy shadow-lg transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    >
+                      <Download size={16} /> Download
+                    </a>
+                  )}
                   <button
                     type="button"
                     onClick={() => setOpen(false)}

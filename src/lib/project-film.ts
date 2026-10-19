@@ -1,84 +1,34 @@
 import "server-only";
 import { getDoc, setDocMerge } from "@/lib/firestore-rest";
-import { parseProjectFilm, type ProjectFilm } from "@/lib/project-film-shared";
+import { DEFAULT_FILMS } from "@/lib/project-film-defaults";
+import { parseProjectFilm, type ProjectFilm, type ProjectFilmsConfig } from "@/lib/project-film-shared";
+
+export { DEFAULT_FILMS };
 
 const COLLECTION = "settings";
 const DOC_ID = "project-films";
 
-const MB_POSTER = "/brand/binghatti/night-skyline.jpg";
-const OFFERS = "/brand/binghatti/offers/";
+export const DEFAULT_HEADING = "Featured Developments";
+export const DEFAULT_INTRO =
+  "Step inside the developments we are showing right now — watch the film, explore the renders and offer sheets, then speak to us.";
 
-/**
- * The two films shown until an admin edits the list (Admin > Homepage > Project films).
- * 1) Mercedes-Benz Places | Binghatti City — text and renders from the developer's brochure.
- * 2) Binghatti Offers — the six offer sheets supplied by the team (images carry their own
- *    figures; no prices are re-typed here so they can't drift from the sheets).
- */
-export const DEFAULT_FILMS: ProjectFilm[] = [
-  {
-    id: "mercedes-benz-places",
-    visible: true,
-    kicker: "Project Film",
-    title: "Mercedes-Benz Places | Binghatti City",
-    location: "Nad Al Sheba, Dubai",
-    description:
-      "The world's first Mercedes-Benz branded city: a masterplanned community of twelve sculpted towers where global brand prestige becomes a personal, lived-in experience — set in Nad Al Sheba, at the junction of Dubai's drive and artistry, beside the Meydan Racecourse.",
-    facts: [
-      { value: "12", label: "Towers" },
-      { value: "12", label: "Park experiences" },
-      { value: "Nad Al Sheba", label: "Location" },
-      { value: "Binghatti", label: "Developer" },
-    ],
-    videoUrl: "https://drive.google.com/file/d/1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD/view?usp=sharing",
-    poster: MB_POSTER,
-    images: [
-      { src: "/brand/binghatti/pool-aerial.jpg", alt: "Aerial view of the Grand Promenade pool terrace", ratio: 1.393 },
-      { src: "/brand/binghatti/sunset-towers.jpg", alt: "The towers and park at sunset", ratio: 0.698 },
-      { src: "/brand/binghatti/night-avenue.jpg", alt: "The tallest tower and the avenue at night", ratio: 1.393 },
-      { src: "/brand/binghatti/lakeside.jpg", alt: "Towers rising above the lakeside", ratio: 0.698 },
-      { src: "/brand/binghatti/promenade.jpg", alt: "The promenade and the star-crowned tower by day", ratio: 1.199 },
-      { src: "/brand/binghatti/towers-night.jpg", alt: "Illuminated towers on the arrival drive", ratio: 0.7 },
-    ],
-  },
-  {
-    id: "binghatti-offers",
-    visible: true,
-    kicker: "Project Film",
-    title: "Binghatti Offers",
-    location: "Nad Al Sheba · Al Jaddaf · JVC · Motor City · JVT",
-    description:
-      "A look at the Binghatti launches and ready homes we are offering right now — from Mercedes-Benz Places Phase 1 in Nad Al Sheba to Starlight and Ivory, Etherea, Skyter Races, Luxuria and ready three-bedroom residences. Swipe through the offer sheets, or contact us for current availability and payment plans.",
-    facts: [
-      { value: "6", label: "Offer sheets" },
-      { value: "5", label: "Dubai communities" },
-      { value: "Binghatti", label: "Developer" },
-    ],
-    videoUrl: "https://drive.google.com/file/d/12E_FyDnZ1duO1P4tsq-yxm9rZA0n6YMy/view?usp=sharing",
-    poster: `${OFFERS}offer-2.jpg`,
-    images: [
-      { src: `${OFFERS}offer-1.jpg`, alt: "Mercedes-Benz Places Phase 1 offer sheet", ratio: 0.679 },
-      { src: `${OFFERS}offer-2.jpg`, alt: "Starlight and Ivory, Al Jaddaf offer sheet", ratio: 1.5 },
-      { src: `${OFFERS}offer-3.jpg`, alt: "Etherea, JVC offer sheet", ratio: 1 },
-      { src: `${OFFERS}offer-4.jpg`, alt: "Skyter Races, Motor City offer sheet", ratio: 1.5 },
-      { src: `${OFFERS}offer-5.jpg`, alt: "Luxuria, JVT offer sheet", ratio: 0.914 },
-      { src: `${OFFERS}offer-6.jpg`, alt: "Ready three-bedroom residences offer sheet", ratio: 1 },
-    ],
-  },
-];
-
-/** The stored list if there is one (an admin saved it), otherwise the defaults. Corrupt entries are dropped. */
-export async function getProjectFilms(): Promise<ProjectFilm[]> {
+/** The stored configuration if an admin saved one, otherwise the defaults. Corrupt entries are dropped. */
+export async function getProjectFilms(): Promise<ProjectFilmsConfig> {
   const doc = await getDoc(COLLECTION, DOC_ID);
-  const stored = (doc?.data as { films?: unknown } | undefined)?.films;
-  if (!Array.isArray(stored)) return DEFAULT_FILMS;
+  const data = doc?.data as { films?: unknown; heading?: unknown; intro?: unknown } | undefined;
+  if (!data || !Array.isArray(data.films)) return { heading: DEFAULT_HEADING, intro: DEFAULT_INTRO, films: DEFAULT_FILMS };
   const films: ProjectFilm[] = [];
-  for (const item of stored) {
+  for (const item of data.films) {
     const r = parseProjectFilm(item);
     if (r.ok) films.push(r.value);
   }
-  return films;
+  return {
+    heading: typeof data.heading === "string" ? data.heading : DEFAULT_HEADING,
+    intro: typeof data.intro === "string" ? data.intro : DEFAULT_INTRO,
+    films,
+  };
 }
 
-export async function saveProjectFilms(films: ProjectFilm[]): Promise<void> {
-  await setDocMerge(COLLECTION, DOC_ID, { films, updatedAt: new Date().toISOString() });
+export async function saveProjectFilms(config: ProjectFilmsConfig): Promise<void> {
+  await setDocMerge(COLLECTION, DOC_ID, { ...config, updatedAt: new Date().toISOString() });
 }

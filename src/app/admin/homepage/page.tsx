@@ -65,14 +65,15 @@ export default async function AdminHomepagePage() {
       <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
         <div className="flex items-center gap-2">
           <Clapperboard size={16} className="text-brand-gold" />
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">Project films</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">Featured developments</h2>
         </div>
         <p className="mt-2 text-sm text-brand-ink/55">
-          Full-width video projects shown right after &quot;Faces &amp; Places&quot;. Each has its own video,
-          text, key facts and swipeable images. Add projects, reorder them, hide or delete them.
+          Video projects shown right after &quot;Faces &amp; Places&quot;. Only the project name is required —
+          add a video (it plays by itself), text, key facts, a poster and images, or leave any of them out.
+          Add, reorder, hide or delete projects.
         </p>
         <div className="mt-6">
-          <AdminProjectFilmsPanel films={projectFilms} />
+          <AdminProjectFilmsPanel config={projectFilms} />
         </div>
       </div>
 

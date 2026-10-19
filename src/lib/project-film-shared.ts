@@ -29,23 +29,85 @@ export function getFilmEmbedUrl(url: string): string | null {
   }
 }
 
+export type FilmVideo =
+  /** A real video file we play ourselves: muted autoplay, looping, no third-party UI. `fallback` is an embeddable page to use if the file can't be played. */
+  | { kind: "file"; src: string; fallback?: string }
+  /** An embeddable player (YouTube / Vimeo), started muted and looping. */
+  | { kind: "embed"; src: string };
+
+/**
+ * Decides how a link from the admin is played.
+ *  - a Google Drive share link  -> the file itself, streamed through the site (autoplay, no Drive buttons);
+ *    the Drive preview page is kept only as a fallback if the stream fails
+ *  - a bundled /brand/... .mp4/.webm, or an https link to one -> that file
+ *  - a YouTube or Vimeo link -> its player, muted, looping, without chrome
+ * Anything else returns null.
+ */
+export function getFilmVideo(url: string): FilmVideo | null {
+  const raw = url.trim();
+  if (/^\/brand\/[A-Za-z0-9._\-/]+\.(mp4|webm)$/i.test(raw) && !raw.includes("..") && !raw.includes("//")) {
+    // Bundled files go through /api/film/file/ so they support byte ranges (needed to loop and seek).
+    return { kind: "file", src: `/api/film/file/${raw.slice("/brand/".length)}`, fallback: undefined };
+  }
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:") return null;
+    const host = u.hostname.replace(/^www\./, "");
+    if (host === "drive.google.com") {
+      const id = u.pathname.match(/^\/file\/d\/([A-Za-z0-9_-]{10,})/)?.[1] ?? u.searchParams.get("id") ?? "";
+      if (!/^[A-Za-z0-9_-]{10,}$/.test(id)) return null;
+      return {
+        kind: "file",
+        // Played through our own /api/film/drive/<id> route: browsers refuse to hot-link Drive's file URL directly.
+        src: `/api/film/drive/${id}`,
+        fallback: `https://drive.google.com/file/d/${id}/preview`,
+      };
+    }
+    if (/\.(mp4|webm)$/i.test(u.pathname) && u.hostname.includes(".")) return { kind: "file", src: raw };
+    if (host === "youtu.be" || host === "youtube.com" || host === "m.youtube.com") {
+      const id =
+        host === "youtu.be" ? u.pathname.slice(1) : u.pathname.startsWith("/shorts/") ? u.pathname.slice(8) : u.searchParams.get("v") ?? "";
+      if (!/^[A-Za-z0-9_-]{6,15}$/.test(id)) return null;
+      return { kind: "embed", src: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&rel=0&modestbranding=1` };
+    }
+    if (host === "vimeo.com") {
+      const id = u.pathname.split("/").filter(Boolean).pop() ?? "";
+      return /^\d+$/.test(id) ? { kind: "embed", src: `https://player.vimeo.com/video/${id}?autoplay=1&muted=1&loop=1&autopause=0&playsinline=1` } : null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/** Every Google Drive file id mentioned anywhere in a piece of text (share links, open?id=, uc?id=). */
+export function driveIdsIn(text: string): string[] {
+  const ids = new Set<string>();
+  for (const m of text.matchAll(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([A-Za-z0-9_-]{10,})/g)) ids.add(m[1]);
+  return [...ids];
+}
+
 export type FilmFact = { value: string; label: string };
 
 /** One picture in a film's strip. `ratio` is width / height, so the strip can lay it out without cropping. */
 export type FilmImage = { src: string; alt: string; ratio: number };
 
+/** The shape of the video. It decides the layout: a landscape film runs edge to edge; a portrait (phone-style) film gets a tall frame beside the content. */
+export type FilmShape = "landscape" | "portrait";
+
 export type ProjectFilm = {
   /** Stable id (also the page anchor). */
   id: string;
   visible: boolean;
+  shape: FilmShape;
   kicker: string;
   title: string;
   location: string;
   description: string;
   facts: FilmFact[];
-  /** A Google Drive share link, or a YouTube / Vimeo link. */
+  /** A Google Drive share link, or a YouTube / Vimeo link. May be empty (the project then shows without a player). */
   videoUrl: string;
-  /** Shown in the player frame until the video has loaded. A bundled /brand/ file or an https link, or "". */
+  /** Shown in the player frame until the video has loaded (falls back to the first gallery image). "" = none. */
   poster: string;
   images: FilmImage[];
 };
@@ -57,8 +119,9 @@ export const MAX_FILM_IMAGES = 16;
 
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 
-/** A bundled file under /brand/ (no path tricks) or an https link. */
+/** A bundled file under /brand/ (no path tricks), an uploaded image served by the site, or an https link. */
 export function isFilmImageSrc(v: string): boolean {
+  if (/^\/api\/img\/film\/[A-Za-z0-9_-]{1,64}$/.test(v)) return true;
   if (/^\/brand\/[A-Za-z0-9._\-/]+$/.test(v) && !v.includes("..") && !v.includes("//")) return true;
   try {
     const u = new URL(v);
@@ -82,7 +145,9 @@ export function parseProjectFilm(body: unknown): Result<ProjectFilm> {
   const b = body as Record<string, unknown>;
   const id = typeof b.id === "string" ? b.id : "";
   if (!ID.test(id)) return { ok: false, error: "Invalid project id." };
-  if (typeof b.visible !== "boolean") return { ok: false, error: "Visibility must be on or off." };
+  const visible = b.visible === undefined ? true : b.visible;
+  if (typeof visible !== "boolean") return { ok: false, error: "Visibility must be on or off." };
+  const shape: FilmShape = b.shape === "portrait" ? "portrait" : "landscape";
 
   const kicker = text(b.kicker ?? "", FILM_LIMITS.kicker);
   if (kicker === null) return { ok: false, error: `Label must be ${FILM_LIMITS.kicker} characters or fewer.` };
@@ -105,9 +170,10 @@ export function parseProjectFilm(body: unknown): Result<ProjectFilm> {
     facts.push({ value, label });
   }
 
-  const videoUrl = text(b.videoUrl, FILM_LIMITS.videoUrl);
-  if (!videoUrl || !getFilmEmbedUrl(videoUrl)) {
-    return { ok: false, error: "Paste a Google Drive share link (or a YouTube / Vimeo link) for the video." };
+  // The video is optional; when there is one it must be a link we can embed.
+  const videoUrl = text(b.videoUrl ?? "", FILM_LIMITS.videoUrl);
+  if (videoUrl === null || (videoUrl !== "" && !getFilmVideo(videoUrl))) {
+    return { ok: false, error: "Paste a Google Drive share link (or a YouTube / Vimeo / .mp4 link) for the video, or leave it empty." };
   }
 
   const poster = typeof b.poster === "string" ? b.poster.trim() : "";
@@ -128,14 +194,22 @@ export function parseProjectFilm(body: unknown): Result<ProjectFilm> {
     images.push({ src, alt, ratio: Math.round(ratio * 1000) / 1000 });
   }
 
-  return { ok: true, value: { id, visible: b.visible, kicker: kicker || "Project Film", title, location, description, facts, videoUrl, poster, images } };
+  return { ok: true, value: { id, visible, shape, kicker: kicker || "Project Film", title, location, description, facts, videoUrl, poster, images } };
 }
 
-/** Validates the whole list the admin form submits. Ids must be unique. */
-export function parseProjectFilms(body: unknown): Result<ProjectFilm[]> {
-  const list = (body as { films?: unknown } | null)?.films;
+export type ProjectFilmsConfig = { heading: string; intro: string; films: ProjectFilm[] };
+export const HEADING_LIMITS = { heading: 80, intro: 300 } as const;
+
+/** Validates what the admin form submits: the shared heading/intro and the whole list. Ids must be unique. */
+export function parseProjectFilms(body: unknown): Result<ProjectFilmsConfig> {
+  const b = body as { films?: unknown; heading?: unknown; intro?: unknown } | null;
+  const list = b?.films;
   if (!Array.isArray(list)) return { ok: false, error: "Invalid request." };
-  if (list.length > MAX_FILMS) return { ok: false, error: `You can have up to ${MAX_FILMS} project films.` };
+  if (list.length > MAX_FILMS) return { ok: false, error: `You can have up to ${MAX_FILMS} projects.` };
+  const heading = text(b?.heading ?? "", HEADING_LIMITS.heading);
+  const intro = text(b?.intro ?? "", HEADING_LIMITS.intro);
+  if (heading === null) return { ok: false, error: `The section heading must be ${HEADING_LIMITS.heading} characters or fewer.` };
+  if (intro === null) return { ok: false, error: `The section intro must be ${HEADING_LIMITS.intro} characters or fewer.` };
   const films: ProjectFilm[] = [];
   const seen = new Set<string>();
   for (const [i, item] of list.entries()) {
@@ -145,5 +219,5 @@ export function parseProjectFilms(body: unknown): Result<ProjectFilm[]> {
     seen.add(r.value.id);
     films.push(r.value);
   }
-  return { ok: true, value: films };
+  return { ok: true, value: { heading, intro, films } };
 }

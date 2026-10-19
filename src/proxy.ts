@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { handleTrackVisit } from "@/lib/track-visit";
 import { handleDocImage } from "@/lib/doc-image";
 import { IMAGE_KINDS, type ImageKind } from "@/lib/image-url";
+import { handleDriveVideo } from "@/lib/film-video-proxy";
+import { handleBundledVideo } from "@/lib/film-file-proxy";
 import {
   authApiKey,
   authCookieName,
@@ -28,6 +30,13 @@ function notFoundFast(): Response {
 export async function proxy(request: NextRequest) {
   // Page-view beacon: answered here, in the lightweight middleware layer, so a
   // cold Worker never has to load the full Next server bundle for it.
+  const videoMatch = /^\/api\/film\/drive\/([A-Za-z0-9_-]+)$/.exec(request.nextUrl.pathname);
+  if (videoMatch) return handleDriveVideo(request, videoMatch[1]);
+  if (request.nextUrl.pathname.startsWith("/api/film/file/")) {
+    const res = await handleBundledVideo(request, request.nextUrl.pathname.slice("/api/film/file/".length));
+    // No edge cache here (local dev): send the browser to the plain static file.
+    return res ?? NextResponse.redirect(new URL(`/brand/${request.nextUrl.pathname.slice("/api/film/file/".length)}`, request.url), 307);
+  }
   const imageMatch = /^\/api\/img\/([a-z]+)\/([^/]+)$/.exec(request.nextUrl.pathname);
   if (imageMatch) {
     const kind = imageMatch[1] as ImageKind;
@@ -89,7 +98,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   // Only the routes that actually need this middleware:
   //  - /admin, /api/login, /api/logout  -> Firebase auth
-  //  - /api/track-visit, /api/img/*  -> answered here, cheaply
+  //  - /api/track-visit, /api/img/*, /api/film/drive/*  -> answered here, cheaply
   //  - everything that is NOT a known page/route of this site -> fast static 404 (see above)
   // Known pages (/, /about-us, ...) never run this code, so they stay as cheap as before.
   matcher: [
@@ -98,6 +107,8 @@ export const config = {
     "/api/logout",
     "/api/track-visit",
     "/api/img/:path*",
-    "/((?!(?:about-us|contact-us|for-sale|for-rent|media|privacy-policy|login|register|favorites|create-property|admin|api|_next)(?:/|$)|robots\\.txt$|sitemap\\.xml$|favicon\\.ico$|icon\\.png$|$).+)",
+    "/api/film/drive/:id",
+    "/api/film/file/:path*",
+    "/((?!(?:about-us|contact-us|for-sale|for-rent|media|privacy-policy|login|register|favorites|create-property|admin|api|_next|brand)(?:/|$)|robots\\.txt$|sitemap\\.xml$|favicon\\.ico$|icon\\.png$|$).+)",
   ],
 };

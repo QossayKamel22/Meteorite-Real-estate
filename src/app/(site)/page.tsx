@@ -43,7 +43,7 @@ export default async function Home() {
       <StatsSection />
       <AboutIntro />
       <PhotoCollage />
-      <ProjectFilmsSection films={projectFilms} />
+      <ProjectFilmsSection config={projectFilms} />
       <PropertyDiscovery />
       <FeaturedProjectSection projects={featuredProjects} />
       <CeoSection />

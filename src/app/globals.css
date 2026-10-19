@@ -516,3 +516,35 @@ body {
     animation: none;
   }
 }
+
+/* --- Developments band: obsidian + champagne gold, with a fine diamond lattice. */
+.obsidian-lattice {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'><path d='M28 6 L50 28 L28 50 L6 28 Z' fill='none' stroke='white' stroke-opacity='0.55' stroke-width='0.6'/></svg>");
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 20%, transparent 75%);
+}
+
+@keyframes gold-sheen {
+  0% {
+    background-position: -150% 0;
+  }
+  100% {
+    background-position: 250% 0;
+  }
+}
+
+.gold-sheen {
+  background-image: linear-gradient(100deg, #e9dd7a 0%, #fff6b8 22%, #dbcc3b 44%, #b8a92a 66%, #e9dd7a 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-sheen 9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-sheen {
+    animation: none;
+  }
+}

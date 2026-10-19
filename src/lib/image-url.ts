@@ -1,9 +1,9 @@
 // Pure helpers (no server-only imports) so they can be unit-tested with Node.
 
 /** Which Firestore document type an uploaded image belongs to. */
-export type ImageKind = "agent" | "certificate" | "media" | "property" | "featured";
+export type ImageKind = "agent" | "certificate" | "media" | "property" | "featured" | "film";
 
-export const IMAGE_KINDS: readonly ImageKind[] = ["agent", "certificate", "media", "property", "featured"];
+export const IMAGE_KINDS: readonly ImageKind[] = ["agent", "certificate", "media", "property", "featured", "film"];
 
 /** Firestore document ids are 20-char alphanumerics; accept only that shape before building a path. */
 export const SAFE_DOC_ID = /^[A-Za-z0-9_-]{1,64}$/;

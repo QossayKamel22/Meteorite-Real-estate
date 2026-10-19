@@ -7,7 +7,7 @@ const { resilientFetch } = await import(R+"resilient-fetch.ts");
 const { isGoogleUrl } = await import(R+"google-reviews-shared.ts");
 const { countWords } = await import(R+"ceo-message-shared.ts");
 const { publicImageSrc, isServedImage, shortHash, SAFE_DOC_ID } = await import(R+"image-url.ts");
-const { getFilmEmbedUrl, parseProjectFilm, parseProjectFilms, MAX_FILMS } = await import(R+"project-film-shared.ts");
+const { getFilmEmbedUrl, getFilmVideo, driveIdsIn, parseProjectFilm, parseProjectFilms, MAX_FILMS } = await import(R+"project-film-shared.ts");
 const { normalizeCertificateImages, MAX_CERT_IMAGES } = await import(R+"certificate-images.ts");
 
 test("initials: first + last name letters", () => {
@@ -188,7 +188,7 @@ test("project film: validation and normalisation", () => {
   const r = parseProjectFilm(good); assert.equal(r.ok, true); assert.equal(r.value.title, "Binghatti City"); assert.equal(r.value.kicker, "Project Film"); assert.equal(r.value.facts.length, 1);
   assert.equal(r.value.images[0].alt, "Pool"); assert.equal(r.value.images[0].ratio, 1.393);
   const bad = (patch, re) => { const x = parseProjectFilm({ ...good, ...patch }); assert.equal(x.ok, false, JSON.stringify(patch).slice(0, 80)); assert.match(x.error, re); };
-  bad({ title: "" }, /Title/); bad({ visible: 1 }, /Visibility/); bad({ videoUrl: "https://example.com/v.mp4" }, /Drive/); bad({ videoUrl: "" }, /Drive/);
+  bad({ title: "" }, /Title/); bad({ visible: 1 }, /Visibility/); bad({ videoUrl: "https://example.com/page.html" }, /Drive/);
   bad({ description: "x".repeat(701) }, /Description/); bad({ facts: [{ value: "1", label: "" }] }, /both/);
   bad({ facts: Array.from({ length: 5 }, () => ({ value: "1", label: "a" })) }, /up to 4/);
   bad({ id: "bad id!" }, /id/); bad({ id: "../x" }, /id/);
@@ -200,10 +200,39 @@ test("project film: validation and normalisation", () => {
 });
 test("project films: list rules", () => {
   const f = (id) => ({ id, visible: true, kicker: "", title: "T " + id, location: "", description: "", facts: [], videoUrl: "https://youtu.be/dQw4w9WgXcQ", poster: "", images: [] });
-  assert.equal(parseProjectFilms({ films: [f("a"), f("b")] }).value.length, 2);
+  assert.equal(parseProjectFilms({ films: [f("a"), f("b")] }).value.films.length, 2);
   assert.equal(parseProjectFilms({ films: [] }).ok, true, "an empty list (everything deleted) is allowed");
   assert.equal(parseProjectFilms({ films: [f("a"), f("a")] }).ok, false, "duplicate ids");
   assert.equal(parseProjectFilms({ films: Array.from({ length: MAX_FILMS + 1 }, (_, i) => f("x" + i)) }).ok, false);
   assert.equal(parseProjectFilms({ nope: 1 }).ok, false); assert.equal(parseProjectFilms(null).ok, false);
   const r = parseProjectFilms({ films: [f("a"), { ...f("b"), title: "" }] }); assert.equal(r.ok, false); assert.match(r.error, /^Project 2:/);
+  const cfg = parseProjectFilms({ heading: " Big ", intro: "x", films: [f("a")] }); assert.equal(cfg.value.heading, "Big"); assert.equal(cfg.value.films.length, 1);
+  assert.equal(parseProjectFilms({ heading: "x".repeat(81), films: [] }).ok, false); assert.equal(parseProjectFilms({ intro: "x".repeat(301), films: [] }).ok, false);
+});
+
+test("project film: ONLY the name is required; everything else is optional", () => {
+  const r = parseProjectFilm({ id: "x1", title: "Just a name" });
+  assert.equal(r.ok, true);
+  assert.deepEqual({ ...r.value, id: undefined }, { id: undefined, visible: true, shape: "landscape", kicker: "Project Film", title: "Just a name", location: "", description: "", facts: [], videoUrl: "", poster: "", images: [] });
+  assert.equal(parseProjectFilm({ id: "x1", title: "T", shape: "portrait" }).value.shape, "portrait");
+  assert.equal(parseProjectFilm({ id: "x1", title: "T", shape: "weird" }).value.shape, "landscape");
+  assert.equal(parseProjectFilm({ id: "x1", title: "T", poster: "/api/img/film/AbC123xyz" }).ok, true, "an uploaded film image is a valid poster");
+  assert.equal(parseProjectFilm({ id: "x1", title: "T", poster: "/api/img/agent/AbC123xyz" }).ok, false, "other image routes are not");
+});
+test("project film: how each kind of link is played", () => {
+  const id = "1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD";
+  const d = getFilmVideo(`https://drive.google.com/file/d/${id}/view?usp=sharing`);
+  assert.equal(d.kind, "file"); assert.equal(d.src, `/api/film/drive/${id}`); assert.equal(d.fallback, `https://drive.google.com/file/d/${id}/preview`);
+  assert.equal(getFilmVideo("/brand/binghatti/mercedes-city.mp4").src, "/api/film/file/binghatti/mercedes-city.mp4");
+  assert.equal(getFilmVideo("https://cdn.example.com/clips/a.mp4?x=1").kind, "file");
+  const y = getFilmVideo("https://youtu.be/dQw4w9WgXcQ"); assert.equal(y.kind, "embed"); assert.match(y.src, /autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&controls=0/);
+  assert.match(getFilmVideo("https://vimeo.com/123456789").src, /player\.vimeo\.com\/video\/123456789\?autoplay=1&muted=1&loop=1/);
+  for (const bad of ["", "javascript:alert(1)", "/brand/../x.mp4", "//evil.com/a.mp4", "/etc/passwd.mp4", "http://cdn.example.com/a.mp4", "https://example.com/page", "https://drive.google.com/drive/folders/" + id, "https://drive.google.com.evil.io/file/d/" + id])
+    assert.equal(getFilmVideo(bad), null, bad);
+});
+
+test("driveIdsIn finds every Drive file id in saved data", () => {
+  const txt = JSON.stringify({ a: "https://drive.google.com/file/d/12E_FyDnZ1duO1P4tsq-yxm9rZA0n6YMy/view?usp=sharing", b: "https://drive.google.com/open?id=1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD", c: "https://youtu.be/dQw4w9WgXcQ", d: "https://drive.google.com/drive/folders/AAAAAAAAAAAAAAAAAA" });
+  assert.deepEqual(driveIdsIn(txt).sort(), ["12E_FyDnZ1duO1P4tsq-yxm9rZA0n6YMy", "1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD"]);
+  assert.deepEqual(driveIdsIn(""), []);
 });

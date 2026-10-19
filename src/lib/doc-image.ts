@@ -10,6 +10,7 @@ const TARGETS: Record<ImageKind, Target> = {
   media: { collection: "mediaPosts", field: "image" },
   property: { collection: "properties", field: "image" },
   featured: { collection: "featuredProjects", field: "image" },
+  film: { collection: "filmImages", field: "image" },
 };
 
 const NOT_FOUND = () => new Response("Not found", { status: 404, headers: { "Cache-Control": "public, max-age=60" } });

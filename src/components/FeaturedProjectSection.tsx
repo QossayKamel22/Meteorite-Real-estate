@@ -174,7 +174,7 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
                   {project.facts.map((f) => (
                     <motion.div key={`${f.value}-${f.label}`} variants={rowIn} className="py-5 first:pt-0 last:pb-0">
                       <dt className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-gold">{f.label}</dt>
-                      <dd className="mt-1.5 text-3xl font-light tracking-tight text-white sm:text-4xl">
+                      <dd className="mt-1.5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                         <CountUp value={f.value} active={inView} />
                       </dd>
                     </motion.div>
@@ -182,7 +182,7 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
                 </dl>
               ) : (
                 <motion.div variants={rowIn} className="text-center">
-                  <p className="text-3xl font-light tracking-tight text-white">{project.name}</p>
+                  <p className="text-3xl font-semibold tracking-tight text-white">{project.name}</p>
                   <span className="mx-auto my-5 block h-px w-10 bg-brand-gold/60" />
                   {project.location && (
                     <p className="text-xs font-medium uppercase tracking-[0.3em] text-white/45">{project.location}</p>
