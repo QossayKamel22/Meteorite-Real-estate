@@ -41,6 +41,11 @@ export const MAX_FACTS = 4;
 
 const DATA_IMAGE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$/;
 
+/** A bundled site image such as /brand/binghatti/x.jpg (no path tricks). */
+export function isBrandPath(v: string): boolean {
+  return /^\/brand\/[A-Za-z0-9._\-/]+$/.test(v) && !v.includes("..") && !v.includes("//");
+}
+
 export function isHttpsUrl(value: string): boolean {
   try {
     const u = new URL(value);
@@ -105,7 +110,7 @@ export function parseFeaturedProject(body: unknown): Result {
 
   const image = typeof b.image === "string" ? b.image.trim() : "";
   if (image.length > FEATURED_LIMITS.image) return { ok: false, error: "That image is too large. Try a smaller one." };
-  if (image && !isHttpsUrl(image) && !DATA_IMAGE.test(image)) {
+  if (image && !isHttpsUrl(image) && !DATA_IMAGE.test(image) && !isBrandPath(image)) {
     return { ok: false, error: "The image must be an uploaded JPG/PNG/WebP or an https:// link." };
   }
 

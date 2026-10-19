@@ -7,7 +7,7 @@ const { resilientFetch } = await import(R+"resilient-fetch.ts");
 const { isGoogleUrl } = await import(R+"google-reviews-shared.ts");
 const { countWords } = await import(R+"ceo-message-shared.ts");
 const { publicImageSrc, isServedImage, shortHash, SAFE_DOC_ID } = await import(R+"image-url.ts");
-const { getFilmEmbedUrl, parseProjectFilm } = await import(R+"project-film-shared.ts");
+const { getFilmEmbedUrl, parseProjectFilm, parseProjectFilms, MAX_FILMS } = await import(R+"project-film-shared.ts");
 const { normalizeCertificateImages, MAX_CERT_IMAGES } = await import(R+"certificate-images.ts");
 
 test("initials: first + last name letters", () => {
@@ -184,11 +184,26 @@ test("project film: embed URLs from Drive / YouTube / Vimeo, nothing else", () =
     "javascript:alert(1)", "https://youtube.com/watch?v=<script>", "https://vimeo.com/abc"]) assert.equal(getFilmEmbedUrl(bad), null, bad);
 });
 test("project film: validation and normalisation", () => {
-  const good = { visible: true, kicker: "", title: " Binghatti City ", location: "Dubai", description: "d", facts: [{ value: "12", label: "Towers" }, { value: "", label: "" }], videoUrl: "https://drive.google.com/file/d/1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD/view" };
+  const good = { id: "binghatti-city", visible: true, kicker: "", title: " Binghatti City ", location: "Dubai", description: "d", facts: [{ value: "12", label: "Towers" }, { value: "", label: "" }], videoUrl: "https://drive.google.com/file/d/1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD/view", poster: "/brand/binghatti/night-skyline.jpg", images: [{ src: "/brand/binghatti/pool-aerial.jpg", alt: " Pool ", ratio: 1.39349 }] };
   const r = parseProjectFilm(good); assert.equal(r.ok, true); assert.equal(r.value.title, "Binghatti City"); assert.equal(r.value.kicker, "Project Film"); assert.equal(r.value.facts.length, 1);
-  const bad = (patch, re) => { const x = parseProjectFilm({ ...good, ...patch }); assert.equal(x.ok, false, JSON.stringify(patch)); assert.match(x.error, re); };
+  assert.equal(r.value.images[0].alt, "Pool"); assert.equal(r.value.images[0].ratio, 1.393);
+  const bad = (patch, re) => { const x = parseProjectFilm({ ...good, ...patch }); assert.equal(x.ok, false, JSON.stringify(patch).slice(0, 80)); assert.match(x.error, re); };
   bad({ title: "" }, /Title/); bad({ visible: 1 }, /Visibility/); bad({ videoUrl: "https://example.com/v.mp4" }, /Drive/); bad({ videoUrl: "" }, /Drive/);
   bad({ description: "x".repeat(701) }, /Description/); bad({ facts: [{ value: "1", label: "" }] }, /both/);
   bad({ facts: Array.from({ length: 5 }, () => ({ value: "1", label: "a" })) }, /up to 4/);
+  bad({ id: "bad id!" }, /id/); bad({ id: "../x" }, /id/);
+  bad({ poster: "javascript:alert(1)" }, /poster/); bad({ poster: "/etc/passwd" }, /poster/); bad({ poster: "/brand/../secret.png" }, /poster/);
+  bad({ images: [{ src: "http://insecure.com/a.jpg", alt: "", ratio: 1 }] }, /gallery/); bad({ images: [{ src: "/brand/a.jpg", alt: "", ratio: 0 }] }, /gallery/); bad({ images: [{ src: "/brand/a.jpg", alt: "", ratio: 99 }] }, /gallery/);
+  bad({ images: Array.from({ length: 17 }, () => ({ src: "/brand/a.jpg", alt: "", ratio: 1 })) }, /up to 16/);
   assert.equal(parseProjectFilm(null).ok, false);
+  assert.equal(parseProjectFilm({ ...good, poster: "", images: [] }).ok, true, "poster and images are optional");
+});
+test("project films: list rules", () => {
+  const f = (id) => ({ id, visible: true, kicker: "", title: "T " + id, location: "", description: "", facts: [], videoUrl: "https://youtu.be/dQw4w9WgXcQ", poster: "", images: [] });
+  assert.equal(parseProjectFilms({ films: [f("a"), f("b")] }).value.length, 2);
+  assert.equal(parseProjectFilms({ films: [] }).ok, true, "an empty list (everything deleted) is allowed");
+  assert.equal(parseProjectFilms({ films: [f("a"), f("a")] }).ok, false, "duplicate ids");
+  assert.equal(parseProjectFilms({ films: Array.from({ length: MAX_FILMS + 1 }, (_, i) => f("x" + i)) }).ok, false);
+  assert.equal(parseProjectFilms({ nope: 1 }).ok, false); assert.equal(parseProjectFilms(null).ok, false);
+  const r = parseProjectFilms({ films: [f("a"), { ...f("b"), title: "" }] }); assert.equal(r.ok, false); assert.match(r.error, /^Project 2:/);
 });
