@@ -30,7 +30,7 @@ const csp = [
   "form-action 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
-  "frame-src 'self' https://www.google.com https://meteorite-real-estate.firebaseapp.com https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.instagram.com https://www.facebook.com https://staticxx.facebook.com https://platform.twitter.com https://twitter.com https://x.com",
+  "frame-src 'self' https://drive.google.com https://www.google.com https://meteorite-real-estate.firebaseapp.com https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://www.instagram.com https://www.facebook.com https://staticxx.facebook.com https://platform.twitter.com https://twitter.com https://x.com",
   "img-src 'self' data: https:",
   "font-src 'self' data:",
   `style-src 'self' 'unsafe-inline'`,

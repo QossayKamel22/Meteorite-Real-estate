@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Building2, LayoutTemplate, MessageSquareQuote, Quote } from "lucide-react";
+import { Building2, Clapperboard, LayoutTemplate, MessageSquareQuote, Quote } from "lucide-react";
 import { getHomepageContent } from "@/lib/homepage-content";
 import { getCeoMessage } from "@/lib/ceo-message";
 import { getGoogleReviews } from "@/lib/google-reviews";
+import { getProjectFilm } from "@/lib/project-film";
+import AdminProjectFilmForm from "@/components/AdminProjectFilmForm";
 import { getFeaturedProjects } from "@/lib/featured-projects-data";
 import { getTestimonials } from "@/lib/testimonials-data";
 import AdminHomepageContentForm from "@/components/AdminHomepageContentForm";
@@ -15,12 +17,13 @@ export const metadata: Metadata = { title: "Homepage · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomepagePage() {
-  const [content, ceoMessage, testimonials, googleReviews, featuredProjects] = await Promise.all([
+  const [content, ceoMessage, testimonials, googleReviews, featuredProjects, projectFilm] = await Promise.all([
     getHomepageContent(),
     getCeoMessage(),
     getTestimonials({ includeHidden: true }),
     getGoogleReviews(),
     getFeaturedProjects({ includeHidden: true }),
+    getProjectFilm(),
   ]);
 
   return (
@@ -56,6 +59,20 @@ export default async function AdminHomepagePage() {
         </p>
         <div className="mt-6">
           <AdminCeoMessageForm message={ceoMessage} />
+        </div>
+      </div>
+
+      <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">
+        <div className="flex items-center gap-2">
+          <Clapperboard size={16} className="text-brand-gold" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">Project film</h2>
+        </div>
+        <p className="mt-2 text-sm text-brand-ink/55">
+          A landscape video section shown right after &quot;Faces &amp; Places&quot;. Paste the video link, edit
+          the text and key facts, or switch the whole section off.
+        </p>
+        <div className="mt-6">
+          <AdminProjectFilmForm film={projectFilm} />
         </div>
       </div>
 

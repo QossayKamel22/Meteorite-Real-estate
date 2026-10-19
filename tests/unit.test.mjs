@@ -7,6 +7,7 @@ const { resilientFetch } = await import(R+"resilient-fetch.ts");
 const { isGoogleUrl } = await import(R+"google-reviews-shared.ts");
 const { countWords } = await import(R+"ceo-message-shared.ts");
 const { publicImageSrc, isServedImage, shortHash, SAFE_DOC_ID } = await import(R+"image-url.ts");
+const { getFilmEmbedUrl, parseProjectFilm } = await import(R+"project-film-shared.ts");
 const { normalizeCertificateImages, MAX_CERT_IMAGES } = await import(R+"certificate-images.ts");
 
 test("initials: first + last name letters", () => {
@@ -167,4 +168,27 @@ test("publicImageSrc: per-image index for certificates", () => {
   assert.match(u1, /^\/api\/img\/certificate\/cert1\?i=1&v=[0-9a-z]+$/);
   assert.notEqual(u0, publicImageSrc("certificate", "cert1", data, 1), "different index => different URL (separate cache entries)");
   assert.equal(publicImageSrc("certificate", "cert1", "/brand/certificate-rera.jpg", 1), "/brand/certificate-rera.jpg");
+});
+
+test("project film: embed URLs from Drive / YouTube / Vimeo, nothing else", () => {
+  const id = "1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD";
+  const drive = `https://drive.google.com/file/d/${id}/preview`;
+  assert.equal(getFilmEmbedUrl(`https://drive.google.com/file/d/${id}/view?usp=sharing`), drive);
+  assert.equal(getFilmEmbedUrl(`https://drive.google.com/open?id=${id}`), drive);
+  assert.equal(getFilmEmbedUrl(`https://drive.google.com/uc?id=${id}&export=download`), drive);
+  assert.equal(getFilmEmbedUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ"), "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ");
+  assert.equal(getFilmEmbedUrl("https://youtu.be/dQw4w9WgXcQ"), "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ");
+  assert.equal(getFilmEmbedUrl("https://vimeo.com/123456789"), "https://player.vimeo.com/video/123456789");
+  for (const bad of ["", "not a url", "http://drive.google.com/file/d/" + id + "/view", "https://drive.google.com/drive/folders/" + id,
+    "https://drive.google.com/file/d/short/view", "https://evil.com/file/d/" + id + "/view", "https://drive.google.com.evil.io/file/d/" + id,
+    "javascript:alert(1)", "https://youtube.com/watch?v=<script>", "https://vimeo.com/abc"]) assert.equal(getFilmEmbedUrl(bad), null, bad);
+});
+test("project film: validation and normalisation", () => {
+  const good = { visible: true, kicker: "", title: " Binghatti City ", location: "Dubai", description: "d", facts: [{ value: "12", label: "Towers" }, { value: "", label: "" }], videoUrl: "https://drive.google.com/file/d/1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD/view" };
+  const r = parseProjectFilm(good); assert.equal(r.ok, true); assert.equal(r.value.title, "Binghatti City"); assert.equal(r.value.kicker, "Project Film"); assert.equal(r.value.facts.length, 1);
+  const bad = (patch, re) => { const x = parseProjectFilm({ ...good, ...patch }); assert.equal(x.ok, false, JSON.stringify(patch)); assert.match(x.error, re); };
+  bad({ title: "" }, /Title/); bad({ visible: 1 }, /Visibility/); bad({ videoUrl: "https://example.com/v.mp4" }, /Drive/); bad({ videoUrl: "" }, /Drive/);
+  bad({ description: "x".repeat(701) }, /Description/); bad({ facts: [{ value: "1", label: "" }] }, /both/);
+  bad({ facts: Array.from({ length: 5 }, () => ({ value: "1", label: "a" })) }, /up to 4/);
+  assert.equal(parseProjectFilm(null).ok, false);
 });
