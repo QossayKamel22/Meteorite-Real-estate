@@ -4,7 +4,7 @@ import { company, credentials } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import StatsSection from "@/components/StatsSection";
-import CeoSection from "@/components/CeoSection";
+import { LeadershipSpread } from "@/components/CeoSection";
 import AgentsSection from "@/components/AgentsSection";
 import ContactCta from "@/components/ContactCta";
 import DevelopersAndCertificate from "@/components/DevelopersAndCertificate";
@@ -88,7 +88,7 @@ export default async function AboutUsPage() {
 
       <DevelopersAndCertificate />
 
-      <CeoSection />
+      <LeadershipSpread />
       <AgentsSection variant="about" />
       <ContactCta />
     </div>

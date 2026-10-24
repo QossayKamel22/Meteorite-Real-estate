@@ -160,32 +160,34 @@ function AgentForm({
         </div>
       </div>
 
-      <details className="pt-1">
+      <details className="pt-1" open={Boolean(form.bio)}>
         <summary className="cursor-pointer text-xs font-medium text-brand-ink/60">
-          Leadership bio fields (optional — shown in the Leadership section)
+          Leadership profile (optional) — anyone with a Bio here appears in the Leadership carousel on the homepage and About Us
         </summary>
         <div className="mt-3 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">Bio</label>
+            <label className="block text-xs font-medium text-brand-ink/60">
+              Bio — leave a blank line between paragraphs. The first paragraph is shown larger.
+            </label>
             <textarea
               value={form.bio}
               onChange={(e) => set("bio", e.target.value)}
-              rows={2}
+              rows={7}
               className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">Background</label>
+            <label className="block text-xs font-medium text-brand-ink/60">Background (optional extra paragraph)</label>
             <textarea
               value={form.background}
               onChange={(e) => set("background", e.target.value)}
-              rows={2}
+              rows={3}
               className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
             />
           </div>
           <div>
             <label className="block text-xs font-medium text-brand-ink/60">
-              Credentials (one per line)
+              Credentials — short badges, one per line
             </label>
             <textarea
               value={form.credentials}

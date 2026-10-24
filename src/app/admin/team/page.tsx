@@ -19,7 +19,8 @@ export default async function AdminTeamPage() {
           <h1 className="text-xl font-semibold tracking-tight text-heading">Team</h1>
           <p className="text-sm text-brand-ink/55">
             Shown on the Homepage &quot;Our Team&quot; section, the About Us &quot;Leadership &amp;
-            Team&quot; section, and the Faces &amp; Places photo strip.
+            Team&quot; section, and the Faces &amp; Places photo strip. Anyone you give a Leadership
+            bio (open &quot;Leadership profile&quot; when editing) joins the Leadership carousel, in this order.
           </p>
         </div>
       </div>
