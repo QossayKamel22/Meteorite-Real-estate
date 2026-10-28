@@ -548,3 +548,44 @@ body {
     animation: none;
   }
 }
+
+/* --- Reel wall --- */
+@keyframes reel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.reel-ring {
+  animation: reel-spin 7s linear infinite;
+}
+@keyframes reel-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+.reel-pulse {
+  animation: reel-pulse 2.4s ease-out infinite;
+}
+@keyframes reel-scan {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(520%);
+  }
+}
+.reel-scan {
+  animation: reel-scan 5.5s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel-ring,
+  .reel-pulse,
+  .reel-scan {
+    animation: none;
+  }
+}

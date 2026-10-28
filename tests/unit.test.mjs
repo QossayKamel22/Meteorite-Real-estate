@@ -8,6 +8,7 @@ const { isGoogleUrl } = await import(R+"google-reviews-shared.ts");
 const { countWords } = await import(R+"ceo-message-shared.ts");
 const { publicImageSrc, isServedImage, shortHash, SAFE_DOC_ID } = await import(R+"image-url.ts");
 const { getFilmEmbedUrl, getFilmVideo, driveIdsIn, parseProjectFilm, parseProjectFilms, MAX_FILMS } = await import(R+"project-film-shared.ts");
+const { parseReelUrl, reelEmbedSrc, parseReelFields, parseSocialAccounts, autoCover } = await import(R+"reels-shared.ts");
 const { normalizeCertificateImages, MAX_CERT_IMAGES } = await import(R+"certificate-images.ts");
 
 test("initials: first + last name letters", () => {
@@ -235,4 +236,52 @@ test("driveIdsIn finds every Drive file id in saved data", () => {
   const txt = JSON.stringify({ a: "https://drive.google.com/file/d/12E_FyDnZ1duO1P4tsq-yxm9rZA0n6YMy/view?usp=sharing", b: "https://drive.google.com/open?id=1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD", c: "https://youtu.be/dQw4w9WgXcQ", d: "https://drive.google.com/drive/folders/AAAAAAAAAAAAAAAAAA" });
   assert.deepEqual(driveIdsIn(txt).sort(), ["12E_FyDnZ1duO1P4tsq-yxm9rZA0n6YMy", "1_UB02c8k3oEn1kLGZnij_PPy0GSepuSD"]);
   assert.deepEqual(driveIdsIn(""), []);
+});
+
+test("reels: every platform's links are recognised and normalised", () => {
+  const tt = parseReelUrl("https://www.tiktok.com/@meteorite.real.es/video/7701700031061003541?is_from_webapp=1&sender_device=pc");
+  assert.deepEqual(tt, { ok: true, platform: "tiktok", id: "7701700031061003541", url: "https://www.tiktok.com/@meteorite.real.es/video/7701700031061003541" });
+  assert.equal(parseReelUrl("https://m.tiktok.com/@a.b_c/video/7701007988298992917/").id, "7701007988298992917");
+  assert.equal(parseReelUrl("https://vm.tiktok.com/ZMabc123/").resolve, true);
+  assert.equal(parseReelUrl("https://www.tiktok.com/t/ZTabc123/").resolve, true);
+  assert.equal(parseReelUrl("https://www.tiktok.com/@meteorite.real.es").ok, false, "a profile page is not a video");
+  assert.equal(parseReelUrl("https://www.youtube.com/shorts/dQw4w9WgXcQ").platform, "youtube");
+  assert.equal(parseReelUrl("https://youtu.be/dQw4w9WgXcQ?si=x").id, "dQw4w9WgXcQ");
+  assert.equal(parseReelUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=5").id, "dQw4w9WgXcQ");
+  assert.deepEqual(parseReelUrl("https://www.instagram.com/reel/C8abcDEF12/?igsh=xyz"), { ok: true, platform: "instagram", id: "reel/C8abcDEF12", url: "https://www.instagram.com/reel/C8abcDEF12/" });
+  assert.equal(parseReelUrl("https://www.instagram.com/reels/C8abcDEF12/").id, "reel/C8abcDEF12");
+  assert.equal(parseReelUrl("https://www.instagram.com/meteorite.real.estate.dubai/reel/C8abcDEF12/").id, "reel/C8abcDEF12");
+  assert.equal(parseReelUrl("https://www.instagram.com/p/C8abcDEF12/").id, "p/C8abcDEF12");
+  assert.equal(parseReelUrl("https://www.facebook.com/reel/1234567890123").platform, "facebook");
+  assert.equal(parseReelUrl("https://www.facebook.com/watch/?v=1234567890123").id, "1234567890123");
+  assert.equal(parseReelUrl("https://www.facebook.com/MeteoriteRE/videos/1234567890123/").id, "1234567890123");
+  assert.equal(parseReelUrl("https://fb.watch/abc123/").resolve, true);
+  for (const bad of ["", "nope", "http://www.tiktok.com/@a/video/7701700031061003541", "https://evil.com/@a/video/7701700031061003541", "https://tiktok.com.evil.io/@a/video/7701700031061003541", "https://www.youtube.com/channel/UCabc", "https://www.instagram.com/meteorite/", "javascript:alert(1)", "https://www.facebook.com/MeteoriteRE"])
+    assert.equal(parseReelUrl(bad).ok, false, bad);
+});
+test("reels: player addresses are derived from the link and only for the right platform", () => {
+  const u = "https://www.tiktok.com/@meteorite.real.es/video/7701700031061003541";
+  assert.match(reelEmbedSrc("tiktok", u, true), /^https:\/\/www\.tiktok\.com\/player\/v1\/7701700031061003541\?.*autoplay=1&muted=1&loop=1/);
+  assert.match(reelEmbedSrc("tiktok", u, false), /autoplay=0/);
+  assert.equal(reelEmbedSrc("youtube", u, true), null, "a TikTok link is not a YouTube reel");
+  assert.match(reelEmbedSrc("youtube", "https://youtu.be/dQw4w9WgXcQ", true), /^https:\/\/www\.youtube-nocookie\.com\/embed\/dQw4w9WgXcQ\?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ/);
+  assert.equal(reelEmbedSrc("instagram", "https://www.instagram.com/reel/C8abcDEF12/", true), "https://www.instagram.com/reel/C8abcDEF12/embed/");
+  assert.match(reelEmbedSrc("facebook", "https://www.facebook.com/reel/1234567890123", true), /plugins\/video\.php\?href=https%3A%2F%2Fwww\.facebook\.com%2Freel%2F1234567890123&show_text=false&autoplay=true/);
+  assert.equal(reelEmbedSrc("tiktok", "https://evil.com/x", true), null);
+  assert.equal(autoCover("youtube", "https://youtu.be/dQw4w9WgXcQ"), "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg");
+  assert.equal(autoCover("tiktok", u), "");
+});
+test("reels: admin input needs only a working link", () => {
+  const ok = parseReelFields({ url: "https://www.tiktok.com/@meteorite.real.es/video/7701700031061003541?x=1" });
+  assert.equal(ok.ok, true); assert.equal(ok.value.title, ""); assert.equal(ok.value.visible, true); assert.equal(ok.value.cover, ""); assert.equal(ok.value.platform, "tiktok");
+  assert.equal(parseReelFields({ url: "https://youtu.be/dQw4w9WgXcQ", title: "  Hello   world ", cover: "/api/img/film/AbC123", visible: false }).value.title, "Hello world");
+  const bad = (b, re) => { const r = parseReelFields(b); assert.equal(r.ok, false); assert.match(r.error, re); };
+  bad(null, /Invalid/); bad({}, /Paste the link/); bad({ url: "https://example.com/v" }, /isn't a TikTok/); bad({ url: "https://vm.tiktok.com/ZMabc123/" }, /short link/);
+  bad({ url: "https://youtu.be/dQw4w9WgXcQ", title: "x".repeat(101) }, /100 characters/); bad({ url: "https://youtu.be/dQw4w9WgXcQ", cover: "/etc/passwd" }, /cover/); bad({ url: "https://youtu.be/dQw4w9WgXcQ", cover: "http://x.com/a.jpg" }, /cover/); bad({ url: "https://youtu.be/dQw4w9WgXcQ", visible: "no" }, /Visibility/);
+});
+test("social accounts: only real TikTok / YouTube pages, empty hides the link", () => {
+  assert.deepEqual(parseSocialAccounts({ tiktok: "https://www.tiktok.com/@meteorite.real.es", youtube: "" }).value, { tiktok: "https://www.tiktok.com/@meteorite.real.es", youtube: "" });
+  assert.equal(parseSocialAccounts({ tiktok: "", youtube: "https://www.youtube.com/@meteorite" }).ok, true);
+  assert.equal(parseSocialAccounts({}).ok, true);
+  for (const b of [{ tiktok: "https://evil.com/@a" }, { tiktok: "http://tiktok.com/@a" }, { youtube: "https://tiktok.com/@a" }, { tiktok: "javascript:alert(1)" }, { tiktok: "https://tiktok.com.evil.io/@a" }]) assert.equal(parseSocialAccounts(b).ok, false, JSON.stringify(b));
 });

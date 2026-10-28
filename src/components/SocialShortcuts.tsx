@@ -3,45 +3,60 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { company, socialLinks } from "@/lib/content";
-import { FacebookIcon, InstagramIcon, WhatsAppIcon, XIcon } from "@/components/SocialIcons";
+import { FacebookIcon, InstagramIcon, TikTokIcon, WhatsAppIcon, XIcon, YouTubeIcon } from "@/components/SocialIcons";
+import type { SocialAccounts } from "@/lib/reels-shared";
 import Reveal from "@/components/Reveal";
 
-const PLATFORMS = [
-  {
-    name: "Instagram",
-    handle: "@meteorite.real.estate.dubai",
-    href: socialLinks.instagram,
-    Icon: InstagramIcon,
-    glow: "from-[#FF543E]/25 via-[#C837AB]/20 to-transparent",
-  },
-  {
-    name: "Facebook",
-    handle: "Follow our page",
-    href: socialLinks.facebook,
-    Icon: FacebookIcon,
-    glow: "from-[#1877F2]/25 via-[#1877F2]/10 to-transparent",
-  },
-  {
-    name: "X",
-    handle: "Follow @MeteoriteRE",
-    href: socialLinks.twitter,
-    Icon: XIcon,
-    glow: "from-white/15 via-white/5 to-transparent",
-  },
-  {
-    name: "WhatsApp",
-    handle: company.phoneDisplay,
-    href: company.whatsappUrl,
-    Icon: WhatsAppIcon,
-    glow: "from-[#25D366]/25 via-[#25D366]/10 to-transparent",
-  },
-] as const;
+function platformsFor(accounts: SocialAccounts) {
+  return [
+    {
+      name: "Instagram",
+      handle: "@meteorite.real.estate.dubai",
+      href: socialLinks.instagram,
+      Icon: InstagramIcon,
+      glow: "from-[#FF543E]/25 via-[#C837AB]/20 to-transparent",
+    },
+    {
+      name: "Facebook",
+      handle: "Follow our page",
+      href: socialLinks.facebook,
+      Icon: FacebookIcon,
+      glow: "from-[#1877F2]/25 via-[#1877F2]/10 to-transparent",
+    },
+    ...(accounts.tiktok
+      ? [{ name: "TikTok", handle: tiktokHandle(accounts.tiktok), href: accounts.tiktok, Icon: TikTokIcon, glow: "from-[#FE2C55]/25 via-[#25F4EE]/15 to-transparent" }]
+      : []),
+    ...(accounts.youtube
+      ? [{ name: "YouTube", handle: "Watch our channel", href: accounts.youtube, Icon: YouTubeIcon, glow: "from-[#FF0000]/25 via-[#FF0000]/10 to-transparent" }]
+      : []),
+    {
+      name: "X",
+      handle: "Follow @MeteoriteRE",
+      href: socialLinks.twitter,
+      Icon: XIcon,
+      glow: "from-white/15 via-white/5 to-transparent",
+    },
+    {
+      name: "WhatsApp",
+      handle: company.phoneDisplay,
+      href: company.whatsappUrl,
+      Icon: WhatsAppIcon,
+      glow: "from-[#25D366]/25 via-[#25D366]/10 to-transparent",
+    },
+  ];
+}
 
-export default function SocialShortcuts() {
+/** "@meteorite.real.es" from a TikTok page link, falling back to a generic line. */
+function tiktokHandle(url: string): string {
+  return /\/(@[A-Za-z0-9._-]+)/.exec(url)?.[1] ?? "Follow us";
+}
+
+export default function SocialShortcuts({ accounts }: { accounts: SocialAccounts }) {
   const reduceMotion = useReducedMotion();
+  const PLATFORMS = platformsFor(accounts);
 
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div className={`grid grid-cols-2 gap-4 ${PLATFORMS.length > 4 ? "md:grid-cols-3 lg:grid-cols-5" : "lg:grid-cols-4"}`}>
       {PLATFORMS.map((platform, i) => (
         <Reveal key={platform.name} delay={i * 0.08}>
           <motion.a

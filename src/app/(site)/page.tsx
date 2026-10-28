@@ -16,6 +16,10 @@ import { getHomepageContent } from "@/lib/homepage-content";
 import { getGoogleReviews } from "@/lib/google-reviews";
 import { getProjectFilms } from "@/lib/project-film";
 import ProjectFilmsSection from "@/components/ProjectFilmSection";
+import { getReels } from "@/lib/reels-data";
+import { getSocialAccounts } from "@/lib/social-accounts";
+import { socialLinks } from "@/lib/content";
+import ReelsSection from "@/components/ReelsSection";
 import { getFeaturedProjects } from "@/lib/featured-projects-data";
 import { pageMetadata } from "@/lib/seo";
 
@@ -26,7 +30,7 @@ export const metadata = pageMetadata({
 });
 
 export default async function Home() {
-  const [stats, agents, testimonials, content, googleReviews, featuredProjects, projectFilms] = await Promise.all([
+  const [stats, agents, testimonials, content, googleReviews, featuredProjects, projectFilms, reels, accounts] = await Promise.all([
     getStatsList(),
     getAgents(),
     getTestimonials(),
@@ -34,6 +38,8 @@ export default async function Home() {
     getGoogleReviews(),
     getFeaturedProjects(),
     getProjectFilms(),
+    getReels(),
+    getSocialAccounts(),
   ]);
   const ceo = agents.find((a) => a.bio) ?? agents[0];
 
@@ -46,6 +52,7 @@ export default async function Home() {
       <ProjectFilmsSection config={projectFilms} />
       <PropertyDiscovery />
       <FeaturedProjectSection projects={featuredProjects} />
+      <ReelsSection reels={reels} accounts={{ ...accounts, instagram: socialLinks.instagram, facebook: socialLinks.facebook }} />
       <CeoSection />
       <CeoMessageSection />
       <AgentsSection />

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { company, socialLinks } from "@/lib/content";
+import { getSocialAccounts } from "@/lib/social-accounts";
 
 const footerLinks = [
   { label: "Home", href: "/" },
@@ -11,7 +12,8 @@ const footerLinks = [
   { label: "Privacy Policy", href: "/privacy-policy" },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const accounts = await getSocialAccounts();
   return (
     <footer className="border-t border-white/10 bg-brand-navy text-white/85">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
@@ -55,6 +57,28 @@ export default function Footer() {
               >
                 Instagram
               </a>
+              {accounts.tiktok && (
+                <a
+                  href={accounts.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/60 transition-colors hover:text-brand-gold"
+                  aria-label="Meteorite Real Estate on TikTok"
+                >
+                  TikTok
+                </a>
+              )}
+              {accounts.youtube && (
+                <a
+                  href={accounts.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-white/60 transition-colors hover:text-brand-gold"
+                  aria-label="Meteorite Real Estate on YouTube"
+                >
+                  YouTube
+                </a>
+              )}
             </div>
           </div>
 

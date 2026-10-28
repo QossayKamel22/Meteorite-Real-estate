@@ -55,3 +55,25 @@ export function WhatsAppIcon({ size = 20 }: { size?: number }) {
     </svg>
   );
 }
+
+export function TikTokIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect width="24" height="24" rx="6" fill="#000000" />
+      <g transform="translate(-0.5 0.4)">
+        <path d="M16.2 7.2c-.7-.5-1.2-1.3-1.3-2.2h-1.8v9.5a1.8 1.8 0 1 1-1.8-1.8c.2 0 .4 0 .5.1v-1.9a3.7 3.7 0 1 0 3.1 3.7V10a4.9 4.9 0 0 0 2.8.9V9a3 3 0 0 1-1.5-1.8Z" fill="#25F4EE" transform="translate(-0.5 0.4)" />
+        <path d="M16.2 7.2c-.7-.5-1.2-1.3-1.3-2.2h-1.8v9.5a1.8 1.8 0 1 1-1.8-1.8c.2 0 .4 0 .5.1v-1.9a3.7 3.7 0 1 0 3.1 3.7V10a4.9 4.9 0 0 0 2.8.9V9a3 3 0 0 1-1.5-1.8Z" fill="#FE2C55" transform="translate(0.5 -0.4)" />
+        <path d="M16.2 7.2c-.7-.5-1.2-1.3-1.3-2.2h-1.8v9.5a1.8 1.8 0 1 1-1.8-1.8c.2 0 .4 0 .5.1v-1.9a3.7 3.7 0 1 0 3.1 3.7V10a4.9 4.9 0 0 0 2.8.9V9a3 3 0 0 1-1.5-1.8Z" fill="#FFFFFF" />
+      </g>
+    </svg>
+  );
+}
+
+export function YouTubeIcon({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="1" y="4.5" width="22" height="15" rx="4.5" fill="#FF0000" />
+      <path d="M10 8.9v6.2l5.4-3.1L10 8.9Z" fill="#FFFFFF" />
+    </svg>
+  );
+}

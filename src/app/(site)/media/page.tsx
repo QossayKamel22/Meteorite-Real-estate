@@ -19,6 +19,7 @@ import { company, externalListings } from "@/lib/content";
 import { getMediaPosts, type MediaPost } from "@/lib/media-posts-data";
 import Reveal from "@/components/Reveal";
 import SocialShortcuts from "@/components/SocialShortcuts";
+import { getSocialAccounts } from "@/lib/social-accounts";
 import SocialEmbed from "@/components/SocialEmbed";
 import SectionHeading from "@/components/SectionHeading";
 import MediaVideo from "@/components/MediaVideo";
@@ -316,7 +317,7 @@ export default async function MediaPage() {
           </div>
 
           <div className="mt-10">
-            <SocialShortcuts />
+            <SocialShortcuts accounts={await getSocialAccounts()} />
           </div>
         </div>
       </section>
