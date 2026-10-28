@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { addReel, getReels } from "@/lib/reels-data";
+import { fetchInstagramCover } from "@/lib/reel-cover";
 import { MAX_REELS, parseReelFields, parseReelUrl } from "@/lib/reels-shared";
 
 /** Follows a share/short link (vm.tiktok.com, fb.watch, …) to the real address — only to hosts we know. */
@@ -49,6 +50,7 @@ export async function POST(request: Request) {
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
 
   try {
+    if (parsed.value.platform === "instagram" && !parsed.value.cover) parsed.value.cover = await fetchInstagramCover(parsed.value.url);
     const id = await addReel(parsed.value);
     revalidatePath("/");
     return NextResponse.json({ ok: true, id });

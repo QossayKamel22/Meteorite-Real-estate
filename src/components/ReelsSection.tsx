@@ -46,7 +46,9 @@ function ReelCard({
 }) {
   const reduce = useReducedMotion();
   const Icon = ICON[reel.platform];
-  const src = playing ? reelEmbedSrc(reel.platform, reel.url, true) : null;
+  // Instagram won't play a reel inside another site, so its card opens the reel on Instagram instead.
+  const external = reel.platform === "instagram";
+  const src = playing && !external ? reelEmbedSrc(reel.platform, reel.url, true) : null;
 
   return (
     <li ref={register} data-reel-index={index} className="relative flex-none snap-center" style={{ width: "var(--reel-w)" }}>
@@ -80,19 +82,32 @@ function ReelCard({
           </div>
 
           {/* the click target: centre a side card, or start the video on the centred one */}
-          {!playing && (
+          {!playing && (external && active ? (
+            <a
+              href={reel.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Watch on Instagram: ${reel.title || "reel"}`}
+              className="group absolute inset-0 flex flex-col items-center justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
+            >
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-gold/90 text-brand-navy ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-110">
+                <Play size={24} fill="currentColor" className="ml-0.5" />
+              </span>
+              <span className="rounded-full bg-black/55 px-3.5 py-1.5 text-xs font-semibold text-white ring-1 ring-white/25 backdrop-blur">Watch on Instagram</span>
+            </a>
+          ) : (
             <button
               type="button"
               onClick={active ? onPlay : onSelect}
               aria-label={active ? `Play: ${reel.title || PLATFORM_LABEL[reel.platform] + " reel"}` : `Show reel ${index + 1}`}
               className="group absolute inset-0 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
             >
-              <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-brand-gold/90 !text-brand-navy text-white ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-110">
+              <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-brand-gold/90 !text-brand-navy ring-1 ring-white/40 transition-transform duration-300 group-hover:scale-110">
                 {active && !reduce && <span aria-hidden="true" className="reel-pulse absolute inset-0 rounded-full ring-2 ring-brand-gold/70" />}
                 <Play size={24} fill="currentColor" className="ml-0.5" />
               </span>
             </button>
-          )}
+          ))}
         </div>
       </div>
     </li>
@@ -196,7 +211,7 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
   // (`playing` is derived below, so moving away from a card stops it without any extra state.)
   useEffect(() => {
     const r = list[active];
-    if (!r || reduce || !live || playId === r.id) return;
+    if (!r || r.platform === "instagram" || reduce || !live || playId === r.id) return;
     const t = window.setTimeout(() => setPlayId(r.id), DWELL_MS);
     return () => window.clearTimeout(t);
   }, [active, list, reduce, live, playId]);

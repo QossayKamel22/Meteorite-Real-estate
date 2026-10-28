@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CheckCircle2, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
@@ -50,6 +50,25 @@ export default function AdminReelsPanel({ reels, accounts }: { reels: Reel[]; ac
   const [accBusy, setAccBusy] = useState(false);
   const coverInput = useRef<HTMLInputElement>(null);
   const coverTarget = useRef("");
+
+  // Instagram reels can't play on our page, so their cards need a cover; fetch any that lack one.
+  useEffect(() => {
+    const missing = reels.filter((r) => r.platform === "instagram" && !r.cover);
+    if (missing.length === 0) return;
+    let live = true;
+    (async () => {
+      let changed = false;
+      for (const r of missing) {
+        const res = await fetch(`/api/admin/reels/${r.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ autoCover: true }) }).catch(() => null);
+        if (res?.ok) changed = true;
+      }
+      if (live && changed) router.refresh();
+    })();
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const detected = url.trim() ? parseReelUrl(url) : null;
   const atLimit = reels.length >= MAX_REELS;

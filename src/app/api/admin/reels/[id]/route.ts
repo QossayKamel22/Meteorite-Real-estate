@@ -3,6 +3,8 @@ import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { deleteReel, moveReel, updateReel } from "@/lib/reels-data";
 import { REEL_LIMITS, isReelCover } from "@/lib/reels-shared";
+import { fetchInstagramCover } from "@/lib/reel-cover";
+import { getReels } from "@/lib/reels-data";
 import { SAFE_DOC_ID } from "@/lib/image-url";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -39,6 +41,13 @@ export async function PUT(request: Request, ctx: Ctx) {
   if (body.cover !== undefined) {
     const c = typeof body.cover === "string" ? body.cover.trim() : null;
     if (c === null || (c && (c.length > REEL_LIMITS.cover || !isReelCover(c)))) return NextResponse.json({ error: "The cover must be an uploaded image or an https link." }, { status: 400 });
+    patch.cover = c;
+  }
+  if (body.autoCover === true) {
+    const reel = (await getReels({ includeHidden: true })).find((r) => r.id === g.id);
+    if (!reel || reel.platform !== "instagram") return NextResponse.json({ error: "Only Instagram covers can be fetched." }, { status: 400 });
+    const c = await fetchInstagramCover(reel.url);
+    if (!c) return NextResponse.json({ error: "Couldn't read the cover from Instagram. Upload one instead." }, { status: 502 });
     patch.cover = c;
   }
   if (body.visible !== undefined) {
