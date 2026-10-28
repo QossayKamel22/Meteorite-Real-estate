@@ -18,7 +18,7 @@ export default function LogoMarquee() {
         {track.map((dev, i) => (
           <div
             key={`${dev.name}-${i}`}
-            className="shimmer-border group relative flex h-24 w-44 flex-none items-center justify-center overflow-hidden rounded-2xl border border-brand-gold/15 bg-gradient-to-b from-white to-brand-paper p-6 shadow-[0_2px_10px_-4px_rgba(13,16,49,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-brand-gold/40 hover:shadow-[0_16px_32px_-12px_rgba(219,204,59,0.35)]"
+            className="shimmer-border group relative flex h-24 w-44 flex-none items-center justify-center overflow-hidden rounded-2xl border border-brand-gold/15 bg-white p-6 shadow-[0_2px_10px_-4px_rgba(13,16,49,0.12)] dark:border-white/10 dark:shadow-[0_6px_18px_-8px_rgba(0,0,0,0.6)] transition-all duration-300 hover:-translate-y-1 hover:border-brand-gold/40 hover:shadow-[0_16px_32px_-12px_rgba(219,204,59,0.35)]"
           >
             <Image
               src={dev.logo}
@@ -27,7 +27,7 @@ export default function LogoMarquee() {
               height={64}
               className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105 group-hover:opacity-0"
             />
-            <span className="absolute inset-0 flex translate-y-2 items-center justify-center bg-gradient-to-b from-white to-brand-paper px-3 text-center text-xs font-semibold text-heading opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            <span className="absolute inset-0 flex translate-y-2 items-center justify-center bg-white px-3 text-center text-xs font-semibold text-brand-navy opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
               {dev.name}
             </span>
           </div>

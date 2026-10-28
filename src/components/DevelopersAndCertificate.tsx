@@ -23,7 +23,7 @@ export default async function DevelopersAndCertificate() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="relative mt-10 overflow-hidden rounded-3xl border border-brand-gold/20 bg-gradient-to-b from-white to-brand-paper py-10 shadow-[0_20px_60px_-30px_rgba(219,204,59,0.5)] transition-shadow duration-300 hover:shadow-[0_24px_70px_-28px_rgba(219,204,59,0.65)]">
+          <div className="relative mt-10 overflow-hidden rounded-3xl border border-brand-gold/20 bg-gradient-to-b from-surface to-brand-paper py-10 shadow-[0_20px_60px_-30px_rgba(219,204,59,0.5)] transition-shadow duration-300 hover:shadow-[0_24px_70px_-28px_rgba(219,204,59,0.65)]">
             <div className="pointer-events-none absolute left-1/2 top-0 h-40 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-gold/10 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-brand-gold/10 blur-3xl" />
             <LogoMarquee />
