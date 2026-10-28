@@ -137,6 +137,7 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
   const scroller = useRef<HTMLUListElement>(null);
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const raf = useRef(0);
+  const anim = useRef(0);
   const [filter, setFilter] = useState<ReelPlatform | "all">("all");
   const [active, setActive] = useState(0);
   const [playId, setPlayId] = useState<string | null>(null);
@@ -183,7 +184,24 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
       const el = scroller.current;
       const li = items.current[i];
       if (!el || !li) return;
-      el.scrollTo({ left: li.offsetLeft + li.offsetWidth / 2 - el.clientWidth / 2, behavior: smooth && !reduce ? "smooth" : "auto" });
+      const target = li.offsetLeft + li.offsetWidth / 2 - el.clientWidth / 2;
+      cancelAnimationFrame(anim.current);
+      if (!smooth || reduce) {
+        el.scrollLeft = target;
+        return;
+      }
+      // Our own tween: native smooth scrolling is ignored or cut short by some browsers
+      // (notably Safari) while scroll-snap is on, which made the arrows do nothing.
+      const from = el.scrollLeft;
+      const t0 = performance.now();
+      el.style.scrollSnapType = "none";
+      const tick = (now: number) => {
+        const k = Math.min(1, (now - t0) / 550);
+        el.scrollLeft = from + (target - from) * (1 - Math.pow(1 - k, 3));
+        if (k < 1) anim.current = requestAnimationFrame(tick);
+        else el.style.scrollSnapType = "";
+      };
+      anim.current = requestAnimationFrame(tick);
     },
     [reduce]
   );
