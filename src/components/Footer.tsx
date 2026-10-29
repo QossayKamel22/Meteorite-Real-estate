@@ -128,7 +128,12 @@ export default async function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>{company.copyrightNotice}</p>
+          <div className="space-y-1">
+            <p>{company.copyrightNotice}</p>
+            <p>
+              Website designed &amp; developed by <span className="font-medium text-white/70">Qossay Kamel</span> for {company.name}.
+            </p>
+          </div>
           <p>
             RERA ORN {company.orn} · Broker Card #{company.brokerCard}
           </p>
