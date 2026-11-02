@@ -242,7 +242,7 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
       ref={rootRef}
       aria-label="Reels"
       aria-roledescription="carousel"
-      className="relative isolate overflow-hidden bg-brand-navy py-20 text-white sm:py-28"
+      className="relative isolate overflow-hidden bg-brand-navy py-12 text-white sm:py-16"
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") step(1);
         if (e.key === "ArrowLeft") step(-1);
@@ -256,11 +256,11 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Our listings on video</span>
           <span className="h-px w-8 bg-brand-gold" />
         </div>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Step inside our apartments</h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/60">This is how we market what we sell and rent: real walk-throughs of our apartments, shot by our team. Swipe through and watch the one in the middle — then get in touch to book a viewing.</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Step inside our apartments</h2>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/60 sm:text-base">Real walk-throughs of the apartments we sell and rent, shot by our team. Watch the one in the middle, then get in touch to book a viewing.</p>
 
         {platforms.length > 1 && (
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-2" role="group" aria-label="Filter reels by platform">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2" role="group" aria-label="Filter reels by platform">
             {(["all", ...platforms] as const).map((p) => {
               const on = filter === p;
               const Icon = p === "all" ? null : ICON[p];
@@ -274,14 +274,14 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
         )}
       </motion.div>
 
-      <div className="relative mt-12">
+      <div className="relative mt-6">
         <ul
           ref={scroller}
           onScroll={onScroll}
           tabIndex={0}
           aria-live="polite"
-          className="flex snap-x snap-mandatory items-center gap-5 overflow-x-auto overflow-y-hidden py-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          style={{ ["--reel-w" as string]: "clamp(210px, 62vw, 290px)", paddingInline: "calc(50% - var(--reel-w) / 2)", perspective: "1400px" }}
+          className="flex snap-x snap-mandatory items-center gap-4 overflow-x-auto overflow-y-hidden py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          style={{ ["--reel-w" as string]: "clamp(190px, 56vw, 245px)", paddingInline: "calc(50% - var(--reel-w) / 2)", perspective: "1400px" }}
         >
           <AnimatePresence initial={false} mode="popLayout">
             {list.map((r, i) => (
@@ -301,7 +301,7 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
           </AnimatePresence>
         </ul>
 
-        <div className="mx-auto mt-2 flex max-w-md items-center justify-center gap-5 px-4">
+        <div className="mx-auto mt-1 flex max-w-md items-center justify-center gap-5 px-4">
           <button type="button" onClick={() => step(-1)} disabled={active === 0} aria-label="Previous reel" className="group flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.06] text-white ring-1 ring-white/20 backdrop-blur transition-all duration-300 hover:bg-white hover:text-black disabled:opacity-30 disabled:hover:bg-white/[0.06] disabled:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold">
             <ArrowLeft size={20} className="transition-transform duration-300 group-hover:-translate-x-0.5" />
           </button>
@@ -317,7 +317,7 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
       </div>
 
       {follow.length > 0 && (
-        <div className="relative mx-auto mt-10 flex max-w-3xl flex-wrap items-center justify-center gap-3 px-4">
+        <div className="relative mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-3 px-4">
           <span className="w-full text-center text-xs font-semibold uppercase tracking-[0.2em] text-white/40 sm:w-auto">See more of our apartments</span>
           {follow.map(({ label, href, Icon }) => (
             <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={`Meteorite Real Estate on ${label}`} className="group flex items-center gap-2 rounded-full bg-white/[0.06] py-1.5 pl-2 pr-4 text-sm font-medium text-white/85 ring-1 ring-white/15 transition-colors hover:bg-white hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold">

@@ -7,7 +7,7 @@ export default async function CeoMessageSection() {
   if (paragraphs.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-brand-podcast py-20 sm:py-24">
+    <section className="relative overflow-hidden bg-brand-podcast py-12 sm:py-16">
       <div className="glow-field-podcast" />
       <div className="grain-overlay" />
 
@@ -22,7 +22,7 @@ export default async function CeoMessageSection() {
         <path d="M0 160V110h50V70h40v40h30V40h50v70h40V85h30v25h50V55h45v55h35V90h40v20h55V30h50v80h40V75h35v35h50V60h45v50h40V95h30v15h55V45h50v65h40V80h40v30h50V65h45v45h40V100h50v60z" />
       </svg>
 
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <CeoMessageCard paragraphs={paragraphs} signerTitle={signerTitle} company={company} />
       </div>
     </section>

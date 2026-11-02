@@ -23,7 +23,7 @@ function AgentCard({
     <Reveal delay={delay} className={featured ? "sm:col-span-2 lg:col-span-1" : undefined}>
       <div
         className={`glass glass-dark shimmer-border group relative flex h-full flex-col items-center overflow-hidden rounded-3xl text-center transition-transform duration-300 hover:-translate-y-1.5 ${
-          featured ? "p-9 ring-1 ring-brand-gold/25" : "p-8"
+          featured ? "p-9 ring-1 ring-brand-gold/25" : "p-6"
         }`}
       >
         {isLead && (
@@ -53,32 +53,33 @@ function AgentCard({
         <h3 className={`mt-5 font-semibold text-white ${featured ? "text-xl" : "text-lg"}`}>
           {agent.name}
         </h3>
-        <p className="mt-1 text-sm font-medium text-brand-gold">{agent.title}</p>
+        <p className="mt-2 max-w-full whitespace-nowrap rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-brand-gold">
+          {agent.title}
+        </p>
 
-        <div className="mt-5 flex items-center gap-2">
+        <span aria-hidden="true" className="mt-5 h-px w-12 bg-brand-gold/40" />
+
+        <div className="mt-4 flex items-center justify-center gap-2.5">
           {"phone" in agent && agent.phone && (
             <a
               href={`tel:${agent.phone.replace(/\s/g, "")}`}
               aria-label={`Call ${agent.name}`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-white/70 transition-colors hover:bg-brand-gold hover:text-brand-navy"
+              title={`Call ${agent.name}`}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-brand-gold ring-1 ring-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-gold hover:text-brand-navy"
             >
-              <Phone size={15} />
+              <Phone size={16} />
             </a>
           )}
           <a
             href={`mailto:${agent.email}`}
             aria-label={`Email ${agent.name}`}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-white/70 transition-colors hover:bg-brand-gold hover:text-brand-navy"
+            title={`Email ${agent.name}`}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-brand-gold ring-1 ring-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-gold hover:text-brand-navy"
           >
-            <Mail size={15} />
+            <Mail size={16} />
           </a>
           {"profileUrl" in agent && agent.profileUrl && (
-            <a
-              href={agent.profileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-1 inline-flex items-center gap-1 text-sm font-medium text-white/60 transition-colors group-hover:text-brand-gold"
-            >
+            <a href={agent.profileUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex items-center gap-1 text-sm font-medium text-white/60 transition-colors hover:text-brand-gold">
               Profile <span aria-hidden="true">→</span>
             </a>
           )}

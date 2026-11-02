@@ -4,17 +4,28 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, Building2, Clapperboard, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
 
-const NAV = [
-  { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  { href: "/admin/homepage", label: "Homepage", icon: LayoutTemplate },
-  { href: "/admin/properties", label: "Properties", icon: Building2 },
-  { href: "/admin/media", label: "Media", icon: ImageIcon },
-  { href: "/admin/reels", label: "Reels", icon: Clapperboard },
-  { href: "/admin/statistics", label: "Statistics", icon: BarChart3 },
-  { href: "/admin/team", label: "Team", icon: IdCard },
-  { href: "/admin/certificates", label: "Certificates", icon: ShieldCheck },
-  { href: "/admin/users", label: "Users", icon: Users },
+const GROUPS = [
+  { label: "", items: [{ href: "/admin", label: "Overview", icon: LayoutDashboard }] },
+  {
+    label: "Content",
+    items: [
+      { href: "/admin/homepage", label: "Homepage", icon: LayoutTemplate },
+      { href: "/admin/properties", label: "Properties", icon: Building2 },
+      { href: "/admin/media", label: "Media", icon: ImageIcon },
+      { href: "/admin/reels", label: "Reels", icon: Clapperboard },
+    ],
+  },
+  {
+    label: "Company",
+    items: [
+      { href: "/admin/team", label: "Team", icon: IdCard },
+      { href: "/admin/certificates", label: "Certificates", icon: ShieldCheck },
+      { href: "/admin/statistics", label: "Statistics", icon: BarChart3 },
+    ],
+  },
+  { label: "Access", items: [{ href: "/admin/users", label: "Users", icon: Users }] },
 ];
+const NAV = GROUPS.flatMap((g) => g.items);
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/admin") return pathname === "/admin";
@@ -28,26 +39,31 @@ export default function AdminSidebar() {
     <>
       {/* Desktop sidebar */}
       <nav className="hidden w-56 flex-none border-r border-brand-line bg-surface px-3 py-6 lg:block">
-        <ul className="space-y-1">
-          {NAV.map(({ href, label, icon: Icon }) => {
-            const active = isActive(pathname, href);
-            return (
-              <li key={href}>
-                <Link prefetch={false}
-                  href={href}
-                  className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "bg-brand-navy text-white"
-                      : "text-brand-ink/65 hover:bg-brand-paper hover:text-heading"
-                  }`}
-                >
-                  <Icon size={16} strokeWidth={1.75} />
-                  {label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="space-y-5">
+          {GROUPS.map((g) => (
+            <div key={g.label || "top"}>
+              {g.label && <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-ink/40">{g.label}</p>}
+              <ul className="space-y-1">
+                {g.items.map(({ href, label, icon: Icon }) => {
+                  const active = isActive(pathname, href);
+                  return (
+                    <li key={href}>
+                      <Link prefetch={false}
+                        href={href}
+                        className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                          active ? "bg-brand-navy text-white" : "text-brand-ink/65 hover:bg-brand-paper hover:text-heading"
+                        }`}
+                      >
+                        <Icon size={16} strokeWidth={1.75} />
+                        {label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
       </nav>
 
       {/* Mobile tab strip */}

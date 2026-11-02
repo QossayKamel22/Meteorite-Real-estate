@@ -64,7 +64,7 @@ function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: n
           <MediaVideo url={post.video} poster={post.image} />
         ) : (
           post.image && (
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
+            <div className={`relative w-full overflow-hidden bg-brand-paper ${post.portrait ? "aspect-[4/5]" : "aspect-[4/3]"}`}>
               <Image
                 src={post.image}
                 unoptimized={isServedImage(post.image)}

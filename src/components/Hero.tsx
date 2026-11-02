@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
@@ -31,7 +30,6 @@ export default function Hero({
   content: HomepageContent;
 }) {
   const reduceMotion = useReducedMotion();
-  const [videoReady, setVideoReady] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -63,34 +61,23 @@ export default function Hero({
   });
 
   return (
-    <section className="relative overflow-hidden bg-brand-navy cine-bars">
+    <section className="relative -mt-16 overflow-hidden bg-brand-navy cine-bars">
       <div className="absolute inset-0 overflow-hidden">
         <Image
           src="/brand/hero-dubai-skyline.jpg"
           alt="Dubai skyline at dusk"
           fill
           priority
-          className={`object-cover opacity-45 ${reduceMotion || videoReady ? "" : "ken-burns"}`}
+          className={`object-cover opacity-60 ${reduceMotion ? "" : "ken-burns"}`}
           sizes="100vw"
         />
-        {/* The film plays over the still picture, which stays underneath as the first frame
-            and as the only background for visitors who prefer reduced motion. */}
-        {!reduceMotion && (
-          <video
-            src="/api/film/file/hero-dubai-nights.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-hidden="true"
-            onCanPlay={() => setVideoReady(true)}
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${videoReady ? "opacity-60" : "opacity-0"}`}
-          />
-        )}
-        {!reduceMotion && !videoReady && <div className="light-sweep" />}
+        {!reduceMotion && <div className="light-sweep" />}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/75 to-brand-navy/40" />
+      {/* grade: darker on the left where the headline sits, a vignette, and a long fade into the page below */}
+      <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(8,10,34,0.82)_0%,rgba(8,10,34,0.5)_45%,rgba(8,10,34,0.18)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(4,5,20,0.7)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-navy to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#060820]/80 to-transparent" />
       <div className="glow-field opacity-70" />
       <div className="grain-overlay" />
       <Particles />
@@ -110,7 +97,7 @@ export default function Hero({
         </span>
       </motion.div>
 
-      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 py-24 sm:px-6 sm:py-32 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:py-40">
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 pt-32 pb-24 sm:px-6 sm:pt-40 sm:pb-32 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-8 lg:pb-40 lg:pt-48">
         <div>
           <motion.div {...rise(0)} className="glass glass-dark inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-white/85">
             <ShieldCheck size={14} className="text-brand-gold" />
@@ -118,7 +105,7 @@ export default function Hero({
           </motion.div>
           <motion.h1
             {...rise(0.1)}
-            className="mt-6 max-w-2xl text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
+            className="mt-6 max-w-2xl text-4xl font-medium leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.6rem] [text-shadow:0_2px_30px_rgba(0,0,0,0.45)]"
           >
             {content.heroHeadline}
           </motion.h1>

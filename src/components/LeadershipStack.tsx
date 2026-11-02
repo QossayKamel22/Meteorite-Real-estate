@@ -36,7 +36,7 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
     show: { opacity: 1, y: 0, transition: { duration: reduce ? 0.2 : 0.9, ease: SMOOTH } },
   };
   const photo: Variants = {
-    hidden: reduce ? { opacity: 0 } : { opacity: 0, x: side * -36 },
+    hidden: reduce ? { opacity: 0 } : { opacity: 0, x: side * -24 },
     show: { opacity: 1, x: 0, transition: { duration: reduce ? 0.2 : 1.1, ease: SMOOTH } },
   };
 
@@ -47,12 +47,12 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
       initial="hidden"
       animate={shown ? "show" : "hidden"}
       variants={group}
-      className={`relative grid items-center gap-8 lg:gap-14 ${flip ? "lg:grid-cols-[1fr_minmax(0,330px)]" : "lg:grid-cols-[minmax(0,330px)_1fr]"}`}
+      className={`relative grid items-center gap-6 lg:gap-10 ${flip ? "lg:grid-cols-[1fr_minmax(0,250px)]" : "lg:grid-cols-[minmax(0,250px)_1fr]"}`}
     >
-      <motion.div variants={photo} className={`relative mx-auto w-full max-w-[17rem] sm:max-w-xs lg:max-w-none ${flip ? "lg:order-2" : ""}`}>
+      <motion.div variants={photo} className={`relative mx-auto w-full max-w-[13rem] sm:max-w-[15rem] lg:max-w-none ${flip ? "lg:order-2" : ""}`}>
         {/* offset gold frame behind the portrait */}
-        <div aria-hidden="true" className={`absolute inset-0 rounded-[2rem] border border-brand-gold/50 ${flip ? "-translate-x-4 translate-y-4" : "translate-x-4 translate-y-4"}`} />
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-brand-navy shadow-[0_30px_70px_-30px_rgba(13,16,49,0.6)] ring-1 ring-brand-gold/20">
+        <div aria-hidden="true" className={`absolute inset-0 rounded-[1.5rem] border border-brand-gold/50 ${flip ? "-translate-x-3 translate-y-3" : "translate-x-3 translate-y-3"}`} />
+        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-brand-navy shadow-[0_30px_70px_-30px_rgba(13,16,49,0.6)] ring-1 ring-brand-gold/20">
           <motion.div style={{ y: drift }} className="absolute -inset-[8%]">
             <Image
               src={leader.photo}
@@ -64,7 +64,7 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
             />
           </motion.div>
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-navy/70 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+          <div className="absolute inset-x-0 bottom-0 p-4">
             <p className="text-base font-semibold tracking-tight text-white">{leader.name.split(" ").slice(0, 2).join(" ")}</p>
             <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-gold-soft">{leader.title}</p>
           </div>
@@ -74,36 +74,36 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
       <div className="relative">
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -top-6 left-0 select-none text-[4.5rem] font-semibold leading-none tracking-tighter text-transparent [-webkit-text-stroke:1px_rgba(219,204,59,0.3)] sm:text-[6rem]"
+          className="pointer-events-none absolute -top-3 left-0 select-none text-[3rem] font-semibold leading-none tracking-tighter text-transparent [-webkit-text-stroke:1px_rgba(219,204,59,0.3)] sm:text-[3.75rem]"
         >
           {String(index + 1).padStart(2, "0")}
         </span>
-        <div className="relative pt-16 sm:pt-20">
+        <div className="relative pt-10 sm:pt-12">
           <motion.div variants={rise} className="flex items-center gap-2.5">
             <span className="h-px w-8 bg-brand-gold" />
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">{leader.title}</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold">{leader.title}</span>
           </motion.div>
-          <motion.h3 variants={rise} className="mt-3 text-2xl font-semibold tracking-tight text-heading sm:text-3xl">{leader.name}</motion.h3>
+          <motion.h3 variants={rise} className="mt-2 text-xl font-semibold tracking-tight text-heading sm:text-2xl">{leader.name}</motion.h3>
 
           {bio.map((p, i) => (
-            <motion.p key={`b${i}`} variants={rise} className={`max-w-2xl leading-relaxed ${i === 0 ? "mt-5 text-base text-brand-ink/75 sm:text-[17px]" : "mt-3 text-[15px] text-brand-ink/65"}`}>
+            <motion.p key={`b${i}`} variants={rise} className={`max-w-2xl leading-relaxed ${i === 0 ? "mt-3 text-[15px] text-brand-ink/75" : "mt-2 text-sm text-brand-ink/65"}`}>
               {p}
             </motion.p>
           ))}
           {background.map((p, i) => (
-            <motion.p key={`g${i}`} variants={rise} className="mt-3 max-w-2xl text-[15px] leading-relaxed text-brand-ink/60">{p}</motion.p>
+            <motion.p key={`g${i}`} variants={rise} className="mt-2 max-w-2xl text-sm leading-relaxed text-brand-ink/60">{p}</motion.p>
           ))}
 
           {leader.credentials && leader.credentials.length > 0 && (
-            <ul className="mt-5 flex flex-wrap gap-2.5">
+            <ul className="mt-4 flex flex-wrap gap-2">
               {leader.credentials.map((c) => (
-                <motion.li key={c} variants={rise} className="glass rounded-full px-3.5 py-1 text-[13px] font-medium text-brand-ink/70">{c}</motion.li>
+                <motion.li key={c} variants={rise} className="glass rounded-full px-3 py-0.5 text-xs font-medium text-brand-ink/70">{c}</motion.li>
               ))}
             </ul>
           )}
           {leader.profileUrl && (
             <motion.div variants={rise}>
-              <a href={leader.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold">
+              <a href={leader.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold">
                 View full leadership profile <ArrowUpRight size={15} />
               </a>
             </motion.div>
@@ -123,16 +123,16 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
 export default function LeadershipStack({ leaders }: { leaders: Agent[] }) {
   if (leaders.length === 0) return null;
   return (
-    <section aria-label="Leadership" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-16">
+    <section aria-label="Leadership" className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
         <div className="flex items-center justify-center gap-2.5">
           <span className="h-px w-8 bg-brand-gold" />
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Leadership</span>
           <span className="h-px w-8 bg-brand-gold" />
         </div>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-heading sm:text-3xl">The people leading Meteorite</h2>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight text-heading sm:text-2xl">The people leading Meteorite</h2>
       </div>
-      <div className="space-y-16 sm:space-y-24">
+      <div className="space-y-10 sm:space-y-14">
         {leaders.map((l, i) => (
           <Row key={l.id} leader={l} index={i} />
         ))}

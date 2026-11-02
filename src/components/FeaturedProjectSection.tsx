@@ -92,14 +92,14 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
     >
       <div className="grain-overlay" />
 
-      <div className="relative flex flex-col justify-center p-7 sm:p-12 lg:p-14">
+      <div className="relative flex flex-col justify-center p-6 sm:p-9 lg:p-10">
         <motion.div variants={rise} className="flex items-center gap-2.5">
           <motion.span variants={line} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">{project.kicker}</span>
         </motion.div>
 
         <div className="mt-3 overflow-hidden py-0.5">
-          <motion.h2 variants={curtain} className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+          <motion.h2 variants={curtain} className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
             {project.name}
           </motion.h2>
         </div>
@@ -107,7 +107,7 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
         {project.location && (
           <motion.p
             variants={rise}
-            className="mt-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white/55"
+            className="mt-3 flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.18em] text-white/55"
           >
             <MapPin size={13} strokeWidth={1.75} className="text-brand-gold" />
             {project.location}
@@ -115,13 +115,13 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
         )}
 
         {project.description && (
-          <motion.p variants={rise} className="mt-6 max-w-xl text-[15px] leading-relaxed text-white/70 sm:text-base">
+          <motion.p variants={rise} className="mt-4 max-w-xl text-sm leading-relaxed text-white/70 sm:text-[15px]">
             {project.description}
           </motion.p>
         )}
 
         {project.facts.length > 0 && !factsInPanel && (
-          <dl className="mt-8 flex max-w-xl flex-wrap gap-x-8 gap-y-6">
+          <dl className="mt-6 flex max-w-xl flex-wrap gap-x-8 gap-y-4">
             {project.facts.map((f) => (
               <motion.div key={`${f.value}-${f.label}`} variants={rise} className="border-l border-white/15 pl-4">
                 <dd className="whitespace-nowrap text-xl font-semibold tracking-tight text-white sm:text-2xl">
@@ -133,7 +133,7 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
           </dl>
         )}
 
-        <motion.div variants={rise} className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <motion.div variants={rise} className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
           <a
             href={project.linkUrl}
             target="_blank"
@@ -150,7 +150,7 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
         </motion.div>
       </div>
 
-      <div className="relative min-h-[16rem] overflow-hidden sm:min-h-[22rem] lg:min-h-full">
+      <div className="relative min-h-[14rem] overflow-hidden sm:min-h-[18rem] lg:min-h-full">
         {hasImage ? (
           <motion.div variants={reveal} className="absolute inset-0">
             <motion.div variants={zoom} className="absolute inset-0">
@@ -168,11 +168,11 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
           </motion.div>
         ) : (
           <div className="flex h-full min-h-[inherit] items-center justify-center bg-brand-navy-light p-6 sm:p-10">
-            <div className="flex h-full w-full max-w-sm flex-col justify-center rounded-2xl border border-white/10 px-7 py-9 sm:px-9">
+            <div className="flex h-full w-full max-w-sm flex-col justify-center rounded-2xl border border-white/10 px-6 py-6 sm:px-8">
               {factsInPanel ? (
                 <dl className="divide-y divide-white/10">
                   {project.facts.map((f) => (
-                    <motion.div key={`${f.value}-${f.label}`} variants={rowIn} className="py-5 first:pt-0 last:pb-0">
+                    <motion.div key={`${f.value}-${f.label}`} variants={rowIn} className="py-4 first:pt-0 last:pb-0">
                       <dt className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-gold">{f.label}</dt>
                       <dd className="mt-1.5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                         <CountUp value={f.value} active={inView} />
@@ -254,7 +254,7 @@ export default function FeaturedProjectSection({ projects }: { projects: Feature
       ref={rootRef}
       aria-roledescription={multiple ? "carousel" : undefined}
       aria-label="Featured projects"
-      className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8"
+      className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
@@ -291,7 +291,7 @@ export default function FeaturedProjectSection({ projects }: { projects: Feature
       </div>
 
       {multiple && (
-        <div className="mt-6 flex items-center gap-4">
+        <div className="mt-4 flex items-center gap-4">
           <span className="w-14 flex-none text-sm font-medium tabular-nums text-brand-ink/50" aria-hidden="true">
             {String(safeIndex + 1).padStart(2, "0")}
             <span className="text-brand-ink/30"> / {String(count).padStart(2, "0")}</span>

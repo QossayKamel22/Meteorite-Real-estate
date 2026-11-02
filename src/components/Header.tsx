@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Heart, Menu, X } from "lucide-react";
 import { company, navLinks } from "@/lib/content";
@@ -11,6 +12,8 @@ import UserAvatarMenu from "@/components/UserAvatarMenu";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // On the home page the header floats over the hero film until the visitor scrolls.
+  const overHero = usePathname() === "/" && !scrolled && !open;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -21,7 +24,7 @@ export default function Header() {
 
   return (
     <header
-      className={`glass-nav sticky top-0 z-50 border-b transition-[border-color,box-shadow] duration-300 ${
+      className={`glass-nav sticky top-0 z-50 border-b transition-[border-color,box-shadow,background-color] duration-500 ${overHero ? "over-hero" : ""} ${
         scrolled ? "border-brand-line/70 shadow-[0_1px_0_rgba(13,16,49,0.04)]" : "border-transparent"
       }`}
     >

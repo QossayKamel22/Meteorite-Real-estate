@@ -124,11 +124,27 @@ export default async function AdminOverviewPage() {
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <StatCard icon={Eye} label="Visits (all time)" value={analytics.totalAllTime} href="/admin" />
           <StatCard icon={TrendingUp} label="Visits today" value={analytics.totalToday} href="/admin" />
           <StatCard icon={UsersIcon} label="Total users" value={users.length} href="/admin/users" />
+          <StatCard icon={ShieldCheck} label="Admins" value={adminCount} href="/admin/users" />
+          <StatCard icon={UserX} label="Disabled accounts" value={disabledCount} href="/admin/users" />
           <StatCard icon={IdCard} label="Team members" value={agents.length} href="/admin/team" />
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {[
+            { href: "/admin/media", label: "Add a media post" },
+            { href: "/admin/reels", label: "Add a reel" },
+            { href: "/admin/team", label: "Edit the team" },
+            { href: "/admin/properties", label: "Manage properties" },
+            { href: "/admin/homepage", label: "Edit the homepage" },
+          ].map((q) => (
+            <Link key={q.href} prefetch={false} href={q.href} className="rounded-full border border-brand-line bg-surface px-4 py-1.5 text-sm font-medium text-brand-ink/75 transition-colors hover:border-brand-gold hover:text-heading">
+              {q.label}
+            </Link>
+          ))}
         </div>
 
         <div className="mt-4 grid gap-6 lg:grid-cols-3">
@@ -156,17 +172,12 @@ export default async function AdminOverviewPage() {
             <UsersIcon size={16} strokeWidth={1.75} />
           </span>
           <div>
-            <h2 className="text-base font-semibold text-heading">Users &amp; team</h2>
+            <h2 className="text-base font-semibold text-heading">Users</h2>
             <p className="text-sm text-brand-ink/55">Accounts, roles, and sign-in activity.</p>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <StatCard icon={ShieldCheck} label="Admins" value={adminCount} href="/admin/users" />
-          <StatCard icon={UserX} label="Disabled accounts" value={disabledCount} href="/admin/users" />
-        </div>
-
-        <div className="mt-4 grid gap-6 lg:grid-cols-3">
+        <div className="mt-4 grid gap-6 lg:grid-cols-4">
           <div className="glass shimmer-border rounded-3xl p-6 transition-shadow duration-300 hover:shadow-2xl sm:p-8 lg:col-span-2">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
               Sign-ins, last {DAYS_WINDOW} days
@@ -182,9 +193,7 @@ export default async function AdminOverviewPage() {
               <BreakdownPie data={roleBreakdown} />
             </div>
           </div>
-        </div>
 
-        <div className="mt-4 grid gap-6 lg:grid-cols-3">
           <div className="glass shimmer-border rounded-3xl p-6 transition-shadow duration-300 hover:shadow-2xl sm:p-8">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
               Sign-in method

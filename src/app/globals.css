@@ -141,6 +141,16 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+/* The header over the hero film: clear glass with the dark-theme text colours, whatever the site theme. */
+.glass-nav.over-hero {
+  --brand-ink: #eceae0;
+  --brand-paper: rgba(255, 255, 255, 0.1);
+  --heading: #f6f4ea;
+  background: linear-gradient(to bottom, rgba(6, 8, 32, 0.55), transparent);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .glass-nav {
   background: var(--glass-nav-bg);
   backdrop-filter: blur(18px) saturate(180%);

@@ -1,6 +1,6 @@
 import "server-only";
 import { publicImageSrc } from "@/lib/image-url";
-import { addDoc, deleteDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
+import { commitWrites, addDoc, deleteDoc, getDoc, listCollection, setDocMerge } from "@/lib/firestore-rest";
 import { MAX_PINNED_POSTS } from "@/lib/media-posts-constants";
 
 export { MAX_PINNED_POSTS };
@@ -28,6 +28,8 @@ export type MediaPost = {
   section?: string;
   /** Pinned posts (max 6, enforced by the admin API) show first, right after the podcast section(s). */
   pinned?: boolean;
+  /** A tall (4:5) picture such as a poster: shown whole instead of cropped to a landscape frame. */
+  portrait?: boolean;
   createdAt: string;
   /** Defaults to true when absent. */
   visible?: boolean;
@@ -47,6 +49,7 @@ function toMediaPost(id: string, data: Record<string, unknown>): MediaPost {
     url: data.url as string | undefined,
     section: data.section as string | undefined,
     pinned: data.pinned as boolean | undefined,
+    portrait: data.portrait as boolean | undefined,
     createdAt: (data.createdAt as string) ?? new Date(0).toISOString(),
     visible: data.visible as boolean | undefined,
   };
@@ -59,9 +62,34 @@ function toMediaPost(id: string, data: Record<string, unknown>): MediaPost {
 // itself) grows without bound as more posts pile up over time.
 const PUBLIC_FETCH_LIMIT = 60;
 
+const SEED_POSTS: { id: string; marker: string; title: string; body: string; image: string }[] = [
+  { id: "poster-saad-abdullah-soboh", marker: "teamPostersSeeded", title: "Meet our CEO — Saad Abdullah Soboh", body: "CEO and Founder of Meteorite Real Estate, an accredited RERA / Dubai Land Department broker.", image: "/brand/posters/saad-abdullah-soboh.jpg" },
+  { id: "poster-meher-samir-zamily", marker: "teamPostersSeeded-meher", title: "Meet our team — Meher Samir M Zamily", body: "Sales Manager: selling, buying (ready and off-plan property) and leasing.", image: "/brand/posters/meher-samir-zamily.jpg" },
+];
+let postersSeeded = false;
+
+/** Each team poster is added once (tracked by its own marker); after that it is an ordinary post the admin can edit or delete. */
+async function seedPostersOnce(): Promise<void> {
+  if (postersSeeded) return;
+  for (const p of SEED_POSTS) {
+    if (await getDoc("_meta", p.marker)) continue;
+    await commitWrites([
+      { collection: "_meta", id: p.marker, data: { seededAt: new Date().toISOString() }, requireAbsent: true },
+      {
+        collection: COLLECTION,
+        id: p.id,
+        data: { kind: "post", title: p.title, body: p.body, image: p.image, portrait: true, visible: true, createdAt: new Date().toISOString() },
+        requireAbsent: true,
+      },
+    ]);
+  }
+  postersSeeded = true;
+}
+
 /** By default, only visible posts are returned, newest first — pass
  *  includeHidden for the admin panel, which needs to see (and un-hide) everything. */
 export async function getMediaPosts(opts?: { includeHidden?: boolean }): Promise<MediaPost[]> {
+  await seedPostersOnce().catch(() => undefined);
   const docs = await listCollection(COLLECTION, {
     orderBy: "createdAt",
     direction: "DESCENDING",
