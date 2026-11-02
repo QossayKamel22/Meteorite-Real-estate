@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
@@ -30,6 +31,7 @@ export default function Hero({
   content: HomepageContent;
 }) {
   const reduceMotion = useReducedMotion();
+  const [videoReady, setVideoReady] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -68,10 +70,25 @@ export default function Hero({
           alt="Dubai skyline at dusk"
           fill
           priority
-          className={`object-cover opacity-45 ${reduceMotion ? "" : "ken-burns"}`}
+          className={`object-cover opacity-45 ${reduceMotion || videoReady ? "" : "ken-burns"}`}
           sizes="100vw"
         />
-        {!reduceMotion && <div className="light-sweep" />}
+        {/* The film plays over the still picture, which stays underneath as the first frame
+            and as the only background for visitors who prefer reduced motion. */}
+        {!reduceMotion && (
+          <video
+            src="/api/film/file/hero-dubai-nights.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            onCanPlay={() => setVideoReady(true)}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${videoReady ? "opacity-60" : "opacity-0"}`}
+          />
+        )}
+        {!reduceMotion && !videoReady && <div className="light-sweep" />}
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-brand-navy/75 to-brand-navy/40" />
       <div className="glow-field opacity-70" />
