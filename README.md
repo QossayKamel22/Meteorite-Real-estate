@@ -30,6 +30,7 @@ RERA-certified · Trusted since 2005 · Next.js 16 · TypeScript · Tailwind CSS
 - [Deployment (Cloudflare Workers)](#deployment-cloudflare-workers)
 - [Environment variables](#environment-variables)
 - [Project structure](#project-structure)
+- [Media, images and video](#media-images-and-video)
 - [Verified content policy](#verified-content-policy)
 - [Known gaps &amp; roadmap](#known-gaps--roadmap)
 - [Quality checks](#quality-checks)
@@ -63,11 +64,12 @@ All screenshots below are from the live application. Personal account details in
 
 | | |
 |---|---|
-| 🏠 **Homepage** | Hero with admin-editable copy, live stats counter, company intro, property discovery, leadership, team, testimonials, contact CTA |
+| 🏠 **Homepage** | A hero that slides through night photographs of Dubai (floating header over it), live stats, company intro, "Faces & Places" collage, Featured Developments (video projects), property discovery, featured project, a reel wall (TikTok / Instagram / YouTube / Facebook), a self-moving poster band, Leadership with the CEO's message, team, testimonials, contact CTA |
 | 🥃 **Liquid Glass UI** | Frosted `.glass` panels, animated navy/gold glow fields, shimmering hover borders — no generic AI-purple gradients |
 | 🎞️ **Motion** | Framer Motion scroll reveals, staggered card entrances, a shared logo-loading animation for both route transitions and auth actions — all reduced-motion aware |
 | 🏢 **Real property listings** | For Sale / For Rent pages show real property cards (price, beds/baths/size, location, photo) seeded from the company's own live Bayut portfolio, fully admin-manageable |
-| 📸 **Media feed** | Social media post links and native photo+text updates, managed from the admin dashboard |
+| 📸 **Media** | Podcasts, pinned and latest posts, a fanned poster deck with a full-screen viewer, video-tour links and social shortcuts — all managed from the admin dashboard |
+| 🎬 **Reels & video** | Reels from four platforms in a 3-D coverflow (the middle one plays); project films with bundled or Google-Drive video, played through a range-capable proxy |
 | 🔐 **Real authentication** | Google sign-in and email/password sign-up/sign-in, backed by Firebase Auth |
 | 🛡️ **Role-based admin dashboard** | No admin password anywhere — admin access is a `role` on your normal account, promoted from within the dashboard itself. See [Admin dashboard](#admin-dashboard). |
 | ⭐ **Favorites** | Guest-friendly, `localStorage`-backed saved properties |
@@ -81,13 +83,14 @@ Every admin-only feature is reached from the same `/login` every visitor uses �
 
 | Section | What it manages |
 |---|---|
-| **Overview** | Live counts (users, admins, team members) and charts (sign-ins, user roles, sign-in method, homepage stats) — all computed from real Firestore data |
-| **Homepage** | Hero badge/headline/subheadline text, and full CRUD on client testimonials |
+| **Overview** | Visits (all time, today, per day, per section), users, admins, team members; sign-in charts; homepage statistics; quick links to add content. The sidebar is grouped: Content, Company, Access |
+| **Homepage** | Hero pictures (the slideshow behind the headline), hero text, the CEO's message, Featured Developments (video projects with facts, images and offer sheets), the featured project, Google reviews summary and client testimonials |
 | **Properties** | Add/edit/delete/reorder/hide property listings shown on For Sale and For Rent |
-| **Media** | Add/edit/delete social media post links or native photo+text posts shown on the Media page |
-| **Statistics** | The four homepage stat numbers, each with its own visibility toggle |
-| **Team** | The agent/leadership roster — photos, titles, bios, reorderable and independently hideable |
-| **Certificates** | Licensing/registration certificates shown on About Us |
+| **Media** | The poster series (upload, reorder, delete) plus social post links, native photo posts and podcast embeds, with pinning |
+| **Reels** | Paste a TikTok / Instagram / YouTube / Facebook link to add a reel; title, cover, hide, reorder; your TikTok and YouTube account links (shown in the reel wall and the footer) |
+| **Statistics** | The homepage stat numbers, each with its own visibility toggle |
+| **Team** | The agent/leadership roster — photos, titles, contact details, Leadership bios, reorderable and independently hideable |
+| **Certificates** | Licensing/registration certificates (several images each) shown on About Us |
 | **Users** | Search/filter every signed-in account, promote or revoke admin access, disable accounts |
 
 `/admin` is protected twice — once by the edge middleware (`src/proxy.ts`) and again by a server-side check in the admin layout — so it never depends on either check alone.
@@ -104,19 +107,18 @@ flowchart LR
     Home --> Register["/register"]
     Home --> Favorites["/favorites"]
     Home --> Media["/media"]
-    Home --> Payment["/payment"]
     Home --> AddProperty["/create-property"]
     Home --> Admin["/admin (role-gated)"]
 
     ForSale -.-> Bayut["Bayut — full live portfolio"]
     ForRent -.-> Bayut
-    Payment -.-> Contact
     AddProperty -.-> Contact
 
     Admin --> AdminOverview["Overview"]
     Admin --> AdminHomepage["Homepage"]
     Admin --> AdminProperties["Properties"]
     Admin --> AdminMedia["Media"]
+    Admin --> AdminReels["Reels"]
     Admin --> AdminStats["Statistics"]
     Admin --> AdminTeam["Team"]
     Admin --> AdminCerts["Certificates"]
@@ -250,10 +252,21 @@ src/
 │  ├─ *-data.ts           one data module per collection (properties, agents, media-posts, ...)
 │  ├─ session.ts          thin wrapper over next-firebase-auth-edge's getTokens()
 │  └─ auth-context.tsx    real Firebase Auth state (Google + email/password)
-├─ proxy.ts               edge middleware — session refresh + /admin gating
+├─ proxy.ts               edge middleware — session refresh, /admin gating, image and video routes, fast 404s
 public/brand/             logo, hero photo, CEO portrait — pulled from the live site
 docs/screenshots/         the images used in this README
 ```
+
+## Media, images and video
+
+Notes on the parts that are easy to break:
+
+- **Uploaded images are served by URL, never inlined.** Photos uploaded in the admin are stored as data URLs on Firestore documents, but public pages reference them as `/api/img/<kind>/<id>?v=<hash>` (answered by `src/proxy.ts`). Admin-side getters keep the raw data so edit forms round-trip. Extra pictures (reel covers, poster series, hero pictures, project-film images) go through `/api/admin/film-images` and are stored in `filmImages`.
+- **Video.** Bundled mp4 files are served through `/api/film/file/<name>` (an edge-cached copy with byte-range support, so looping and seeking work); Google Drive videos are streamed through `/api/film/drive/<id>`, and only for ids saved in a project film. Keep each bundled file under 25 MB (the static-asset limit).
+- **Reels.** TikTok (`player/v1`), YouTube and Facebook play inside the page; **Instagram does not allow embedded playback**, so its cards show the reel's own cover (fetched from the public embed page and stored here) and open the reel on Instagram. The CSP `frame-src` list in `next.config.ts` has to include any platform you embed.
+- **Hero.** The slideshow pictures are `public/brand/hero/*.jpg` (Unsplash, credited in `CREDITS.txt`) or uploads from Admin → Homepage → Hero pictures. A saved list that only contains the retired first set of pictures is treated as "never customised" (see `src/lib/hero-images.ts`).
+- **Seeded content.** One-time seeds (the two TikTok reels, the two team posters in Media) use a marker document in `_meta`, so deleting them in the admin sticks.
+- **Caching.** `public/_headers` makes `/_next/static/*` immutable. `StyleGuard` re-requests the stylesheets (and reloads once) if a page ever arrives without its styles; the route error boundary retries once by itself before showing "Something went wrong".
 
 ## Verified content policy
 
@@ -267,14 +280,17 @@ Every hardcoded company fact — phone numbers, email, RERA ORN, broker card, ad
 |---|---|---|
 | Property detail pages | 🟡 Cards only | For Sale/For Rent show rich cards with a WhatsApp CTA; no dedicated `/property/[id]` page yet |
 | Favorites sync | 🟡 Device-local only | Needs real property IDs synced to the signed-in user's account |
-| Agent/certificate/property images | 🟡 Uploaded, not hosted | Resized client-side and stored as base64 in Firestore — no Firebase Storage (needs the paid Blaze plan, not enabled by choice) |
-| Payment / Add Property | 🟡 Linked out | Original page content on WordPress couldn't be verified or migrated — these link to Stripe / a contact form instead |
+| Uploaded images | 🟡 Stored in Firestore | Resized client-side and stored as base64 on documents (served by URL) — no Firebase Storage (needs the paid Blaze plan, not enabled by choice) |
+| Instagram reels | 🟡 Open on Instagram | Instagram does not allow its reels to play inside another site |
+| Hero video | 🟡 Waiting for a clean cut | The company's cinematic film has titles burned into it; a version without them would replace the photo slideshow |
+| Add Property | 🟡 Linked out | Original page content on WordPress couldn't be verified or migrated — it links to a contact form instead (`/payment` and `/blog` redirect to the home page) |
 | Account disable latency | 🟡 Not instant | Disabling a user takes effect within its current session's token lifetime (~1 hour), not immediately — a tradeoff of the edge-native auth session (see [Deployment](#deployment-cloudflare-workers)) |
 
 ## Quality checks
 
 - ✅ `npm run build` — all routes compile and prerender
 - ✅ `npm run lint` — zero errors
+- ✅ `node --test tests/unit.test.mjs` — unit tests for the pure helpers (reel links, project films, poster and hero lists, image URLs, reviews)
 - ✅ End-to-end verified against the live Firebase project and the live Cloudflare deployment: sign-in, admin access, and CRUD writes on every admin panel
 
 ---
