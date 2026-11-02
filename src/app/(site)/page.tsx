@@ -5,7 +5,6 @@ import PhotoCollage from "@/components/PhotoCollage";
 import PropertyDiscovery from "@/components/PropertyDiscovery";
 import FeaturedProjectSection from "@/components/FeaturedProjectSection";
 import CeoSection from "@/components/CeoSection";
-import CeoMessageSection from "@/components/CeoMessageSection";
 import AgentsSection from "@/components/AgentsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import ContactCta from "@/components/ContactCta";
@@ -54,7 +53,6 @@ export default async function Home() {
       <FeaturedProjectSection projects={featuredProjects} />
       <ReelsSection reels={reels} accounts={{ ...accounts, instagram: socialLinks.instagram, facebook: socialLinks.facebook }} />
       <CeoSection />
-      <CeoMessageSection />
       <AgentsSection />
       <TestimonialsSection testimonials={testimonials} google={googleReviews} />
       <ContactCta />

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion, useInView, useReducedMotion, type PanInfo, type Variants } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Agent } from "@/lib/agents-data";
+import LeadershipMessage from "@/components/LeadershipMessage";
 import { isServedImage } from "@/lib/image-url";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -126,7 +127,7 @@ function Leader({ leader, first }: { leader: Agent; first: boolean }) {
  * underneath. Everyone with a Leadership bio in Admin > Team appears here, in
  * team order. It never advances by itself (there is text to read).
  */
-export default function LeadershipCarousel({ leaders }: { leaders: Agent[] }) {
+export default function LeadershipCarousel({ leaders, message }: { leaders: Agent[]; message?: { paragraphs: string[]; signerTitle: string; company: string } }) {
   const reduce = useReducedMotion();
   const count = leaders.length;
   const multiple = count > 1;
@@ -151,7 +152,7 @@ export default function LeadershipCarousel({ leaders }: { leaders: Agent[] }) {
       ref={rootRef}
       aria-roledescription={multiple ? "carousel" : undefined}
       aria-label="Leadership"
-      className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8"
+      className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8"
       onKeyDown={(e) => {
         if (!multiple) return;
         if (e.key === "ArrowRight") next();
@@ -272,6 +273,8 @@ export default function LeadershipCarousel({ leaders }: { leaders: Agent[] }) {
             </div>
           </div>
         )}
+
+        {message && <LeadershipMessage {...message} />}
       </motion.div>
     </section>
   );

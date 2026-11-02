@@ -320,14 +320,25 @@ function ShowcaseFilm({ film, index }: { film: ProjectFilm; index: number }) {
           <Enquire rise={rise} />
 
           {film.images.length > 0 && (
-            <motion.div variants={rise} className="mt-12">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/45">Tap a sheet to enlarge · download any of them</p>
-              <ul className="columns-2 gap-3 sm:gap-4 [&>li]:mb-3 sm:[&>li]:mb-4">
-                {film.images.map((img) => (
-                  <li key={img.src} className="group/tile relative break-inside-avoid overflow-hidden rounded-2xl ring-1 ring-white/10 transition-shadow duration-300 hover:ring-brand-gold/50">
+            <motion.div variants={rise} className="mt-8">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/45">Offer sheets · tap to enlarge</p>
+                <p className="text-xs text-white/35">{film.images.length} {film.images.length === 1 ? "sheet" : "sheets"} · swipe →</p>
+              </div>
+              <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {film.images.map((img, i) => (
+                  <motion.li
+                    key={img.src}
+                    initial={{ opacity: 0, y: reduce ? 0 : 22, scale: reduce ? 1 : 0.96 }}
+                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.7, delay: Math.min(i, 5) * 0.07, ease: EASE }}
+                    className="group/tile relative flex-none snap-start overflow-hidden rounded-xl ring-1 ring-white/10 transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:ring-brand-gold/60"
+                    style={{ height: "clamp(11rem, 22vw, 14rem)", aspectRatio: img.ratio }}
+                  >
                     <ImageLightbox src={img.src} alt={img.alt} downloadAs={downloadName(img.alt, img.src)}>
-                      <span className="relative block w-full" style={{ aspectRatio: img.ratio }}>
-                        <Image src={img.src} alt={img.alt} fill sizes="(min-width: 1024px) 380px, 46vw" className="object-cover transition-transform duration-[1200ms] ease-out group-hover/tile:scale-[1.03]" />
+                      <span className="relative block h-full w-full" style={{ height: "clamp(11rem, 22vw, 14rem)", aspectRatio: img.ratio }}>
+                        <Image src={img.src} alt={img.alt} fill sizes="260px" className="object-cover transition-transform duration-[1200ms] ease-out group-hover/tile:scale-[1.05]" />
                       </span>
                     </ImageLightbox>
                     <a
@@ -335,11 +346,11 @@ function ShowcaseFilm({ film, index }: { film: ProjectFilm; index: number }) {
                       download={downloadName(img.alt, img.src)}
                       aria-label={`Download: ${img.alt}`}
                       title="Download"
-                      className="absolute bottom-2 right-2 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-brand-gold hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
+                      className="absolute bottom-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white ring-1 ring-white/25 backdrop-blur transition-colors hover:bg-brand-gold hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                     >
-                      <Download size={16} />
+                      <Download size={15} />
                     </a>
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
             </motion.div>
