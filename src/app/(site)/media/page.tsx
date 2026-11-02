@@ -22,6 +22,7 @@ import SocialShortcuts from "@/components/SocialShortcuts";
 import { getSocialAccounts } from "@/lib/social-accounts";
 import SocialEmbed from "@/components/SocialEmbed";
 import SectionHeading from "@/components/SectionHeading";
+import DubaiSeries from "@/components/DubaiSeries";
 import MediaVideo from "@/components/MediaVideo";
 import { pageMetadata } from "@/lib/seo";
 
@@ -141,6 +142,7 @@ export default async function MediaPage() {
     podcastGroups.length > 0 && { href: "#podcasts", label: "Podcasts", icon: Headphones },
     pinnedPosts.length > 0 && { href: "#featured", label: "Featured", icon: Sparkles },
     posts.length > 0 && { href: "#posts", label: "Posts", icon: ImageIcon },
+    { href: "#series", label: "Posters", icon: Sparkles },
     { href: "#tours", label: "Video Tours", icon: PlayCircle },
     { href: "#follow", label: "Follow Us", icon: Share2 },
   ].filter(Boolean) as { href: string; label: string; icon: typeof Headphones }[];
@@ -268,6 +270,16 @@ export default async function MediaPage() {
           </div>
         </section>
       )}
+
+      <section id="series" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <SectionHeading kicker="Poster series" title="Dubai, in five frames" />
+        <Reveal delay={0.15}>
+          <p className="mt-3 mb-6 max-w-xl text-[15px] leading-relaxed text-brand-ink/60">
+            From the Marina to the Burj Al Arab: the five posters we share across our social channels. Tap one to enlarge it, or download it.
+          </p>
+        </Reveal>
+        <DubaiSeries />
+      </section>
 
       <section id="tours" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
         <SectionHeading as="h3" title="Property video tours" />
