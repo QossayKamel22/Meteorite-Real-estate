@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
@@ -17,19 +18,31 @@ import type { Testimonial } from "@/lib/testimonials-data";
 import type { HomepageContent } from "@/lib/homepage-content";
 import Particles from "@/components/Particles";
 import HeroReviews from "@/components/HeroReviews";
+import type { HeroImage } from "@/lib/hero-images-shared";
+
+const SLIDE_MS = 7000;
 
 export default function Hero({
   stats,
   ceo,
   testimonials,
   content,
+  images,
 }: {
   stats: StatsList;
   ceo: Agent | undefined;
   testimonials: Testimonial[];
   content: HomepageContent;
+  images: HeroImage[];
 }) {
   const reduceMotion = useReducedMotion();
+  const [slide, setSlide] = useState(0);
+  const many = images.length > 1 && !reduceMotion;
+  useEffect(() => {
+    if (!many) return;
+    const t = window.setInterval(() => setSlide((s) => (s + 1) % images.length), SLIDE_MS);
+    return () => window.clearInterval(t);
+  }, [many, images.length]);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -63,14 +76,21 @@ export default function Hero({
   return (
     <section className="relative -mt-16 overflow-hidden bg-brand-navy cine-bars">
       <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src="/brand/hero-dubai-skyline.jpg"
-          alt="Dubai skyline at dusk"
-          fill
-          priority
-          className={`object-cover opacity-60 ${reduceMotion ? "" : "ken-burns"}`}
-          sizes="100vw"
-        />
+        {images.map((img, i) => (
+          <Image
+            key={img.src}
+            src={img.src}
+            unoptimized={img.src.startsWith("/api/img/")}
+            alt={i === slide ? img.alt : ""}
+            aria-hidden={i === slide ? undefined : true}
+            fill
+            priority={i === 0}
+            loading="eager"
+            sizes="100vw"
+            className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${i === slide ? "opacity-60" : "opacity-0"} ${reduceMotion ? "" : "ken-burns"}`}
+            style={reduceMotion ? undefined : { animationDelay: `${-(i * 9)}s` }}
+          />
+        ))}
         {!reduceMotion && <div className="light-sweep" />}
       </div>
       {/* grade: darker on the left where the headline sits, a vignette, and a long fade into the page below */}

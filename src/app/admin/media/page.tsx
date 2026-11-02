@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { Image as ImageIcon } from "lucide-react";
 import { getMediaPosts } from "@/lib/media-posts-data";
+import { getPosterSeries } from "@/lib/poster-series";
+import AdminPosterSeriesPanel from "@/components/AdminPosterSeriesPanel";
 import AdminMediaPanel from "@/components/AdminMediaPanel";
 
 export const metadata: Metadata = { title: "Media · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminMediaPage() {
-  const posts = await getMediaPosts({ includeHidden: true });
+  const [posts, posters] = await Promise.all([getMediaPosts({ includeHidden: true }), getPosterSeries()]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
@@ -22,6 +24,10 @@ export default async function AdminMediaPage() {
             text directly.
           </p>
         </div>
+      </div>
+
+      <div className="mt-6">
+        <AdminPosterSeriesPanel posters={posters} />
       </div>
 
       <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">

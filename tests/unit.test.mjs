@@ -285,3 +285,22 @@ test("social accounts: only real TikTok / YouTube pages, empty hides the link", 
   assert.equal(parseSocialAccounts({}).ok, true);
   for (const b of [{ tiktok: "https://evil.com/@a" }, { tiktok: "http://tiktok.com/@a" }, { youtube: "https://tiktok.com/@a" }, { tiktok: "javascript:alert(1)" }, { tiktok: "https://tiktok.com.evil.io/@a" }]) assert.equal(parseSocialAccounts(b).ok, false, JSON.stringify(b));
 });
+
+const { parsePosters, MAX_POSTERS, DEFAULT_POSTERS } = await import(R+"poster-series-shared.ts");
+test("poster series: only bundled or uploaded pictures, bounded list", () => {
+  assert.equal(parsePosters({ items: DEFAULT_POSTERS }).ok, true);
+  assert.equal(parsePosters({ items: [{ src: "/api/img/film/abc123", alt: "  A  poster " }] }).value[0].alt, "A poster");
+  assert.equal(parsePosters({ items: [{ src: "/api/img/film/abc123", alt: "" }] }).value[0].alt, "Meteorite Real Estate poster");
+  for (const src of ["https://evil.com/x.jpg", "javascript:alert(1)", "/brand/series/../secret.jpg", "/etc/passwd", "/api/img/agent/abc"]) assert.equal(parsePosters({ items: [{ src, alt: "x" }] }).ok, false, src);
+  assert.equal(parsePosters({ items: Array(MAX_POSTERS + 1).fill(DEFAULT_POSTERS[0]) }).ok, false);
+  assert.equal(parsePosters({}).ok, false);
+  assert.equal(parsePosters({ items: [] }).ok, true);
+});
+
+const { parseHeroImages, DEFAULT_HERO_IMAGES, MAX_HERO_IMAGES } = await import(R+"hero-images-shared.ts");
+test("hero images: bundled or uploaded pictures only, bounded list", () => {
+  assert.equal(parseHeroImages({ items: DEFAULT_HERO_IMAGES }).ok, true);
+  assert.equal(parseHeroImages({ items: [{ src: "/api/img/film/abc123", alt: "" }] }).value[0].alt, "Dubai");
+  for (const src of ["https://evil.com/a.jpg", "/brand/../x.jpg", "javascript:1", "/brand/binghatti/../x.jpg", "/api/img/agent/abc"]) assert.equal(parseHeroImages({ items: [{ src, alt: "x" }] }).ok, false, src);
+  assert.equal(parseHeroImages({ items: Array(MAX_HERO_IMAGES + 1).fill(DEFAULT_HERO_IMAGES[0]) }).ok, false);
+});

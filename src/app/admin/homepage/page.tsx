@@ -4,6 +4,8 @@ import { getHomepageContent } from "@/lib/homepage-content";
 import { getCeoMessage } from "@/lib/ceo-message";
 import { getGoogleReviews } from "@/lib/google-reviews";
 import { getProjectFilms } from "@/lib/project-film";
+import { getHeroImages } from "@/lib/hero-images";
+import AdminPosterSeriesPanel from "@/components/AdminPosterSeriesPanel";
 import AdminProjectFilmsPanel from "@/components/AdminProjectFilmsPanel";
 import { getFeaturedProjects } from "@/lib/featured-projects-data";
 import { getTestimonials } from "@/lib/testimonials-data";
@@ -17,13 +19,14 @@ export const metadata: Metadata = { title: "Homepage · Admin" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomepagePage() {
-  const [content, ceoMessage, testimonials, googleReviews, featuredProjects, projectFilms] = await Promise.all([
+  const [content, ceoMessage, testimonials, googleReviews, featuredProjects, projectFilms, heroImages] = await Promise.all([
     getHomepageContent(),
     getCeoMessage(),
     getTestimonials({ includeHidden: true }),
     getGoogleReviews(),
     getFeaturedProjects({ includeHidden: true }),
     getProjectFilms(),
+    getHeroImages(),
   ]);
 
   return (
@@ -38,6 +41,20 @@ export default async function AdminHomepagePage() {
             The hero copy, CEO message, featured project and client testimonials shown on the homepage.
           </p>
         </div>
+      </div>
+
+      <div className="mt-6">
+        <AdminPosterSeriesPanel
+          posters={heroImages}
+          endpoint="/api/admin/hero-images"
+          title="Hero pictures"
+          hint="The pictures behind the homepage headline. They change on their own every few seconds. Use dark, wide (16:9) photos; up to 8."
+          addLabel="Add pictures"
+          max={8}
+          wide
+          maxDimension={1920}
+          emptyNote="No pictures: the hero falls back to the default night skyline."
+        />
       </div>
 
       <div className="glass shimmer-border mt-6 rounded-3xl p-6 sm:p-8">

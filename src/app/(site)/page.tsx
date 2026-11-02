@@ -11,6 +11,7 @@ import ContactCta from "@/components/ContactCta";
 import { getStatsList } from "@/lib/site-stats";
 import { getAgents } from "@/lib/agents-data";
 import { getTestimonials } from "@/lib/testimonials-data";
+import { getHeroImages } from "@/lib/hero-images";
 import { getHomepageContent } from "@/lib/homepage-content";
 import { getGoogleReviews } from "@/lib/google-reviews";
 import { getProjectFilms } from "@/lib/project-film";
@@ -29,7 +30,7 @@ export const metadata = pageMetadata({
 });
 
 export default async function Home() {
-  const [stats, agents, testimonials, content, googleReviews, featuredProjects, projectFilms, reels, accounts] = await Promise.all([
+  const [stats, agents, testimonials, content, googleReviews, featuredProjects, projectFilms, reels, accounts, heroImages] = await Promise.all([
     getStatsList(),
     getAgents(),
     getTestimonials(),
@@ -39,12 +40,13 @@ export default async function Home() {
     getProjectFilms(),
     getReels(),
     getSocialAccounts(),
+    getHeroImages(),
   ]);
   const ceo = agents.find((a) => a.bio) ?? agents[0];
 
   return (
     <>
-      <Hero stats={stats} ceo={ceo} testimonials={testimonials} content={content} />
+      <Hero stats={stats} ceo={ceo} testimonials={testimonials} content={content} images={heroImages} />
       <StatsSection />
       <AboutIntro />
       <PhotoCollage />
