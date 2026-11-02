@@ -276,7 +276,7 @@ export default async function MediaPage() {
         <section id="series" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <div className="grid items-center gap-6 lg:grid-cols-[1fr_1.15fr] lg:gap-12">
             <div>
-              <SectionHeading kicker="Poster series" title="Dubai, in five frames" />
+              <SectionHeading kicker="Poster series" title="Dubai, in frames" />
               <Reveal delay={0.15}>
                 <p className="mt-3 max-w-md text-[15px] leading-relaxed text-brand-ink/60">
                   From the Marina to the Burj Al Arab — the posters we share across our channels. Hover to fan them out, tap one to view it full screen or download it.

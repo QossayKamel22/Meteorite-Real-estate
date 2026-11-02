@@ -19,6 +19,7 @@ import ProjectFilmsSection from "@/components/ProjectFilmSection";
 import { getReels } from "@/lib/reels-data";
 import { getSocialAccounts } from "@/lib/social-accounts";
 import { socialLinks } from "@/lib/content";
+import PosterBand from "@/components/PosterBand";
 import ReelsSection from "@/components/ReelsSection";
 import { getFeaturedProjects } from "@/lib/featured-projects-data";
 import { pageMetadata } from "@/lib/seo";
@@ -54,6 +55,7 @@ export default async function Home() {
       <PropertyDiscovery />
       <FeaturedProjectSection projects={featuredProjects} />
       <ReelsSection reels={reels} accounts={{ ...accounts, instagram: socialLinks.instagram, facebook: socialLinks.facebook }} />
+      <PosterBand />
       <CeoSection />
       <AgentsSection />
       <TestimonialsSection testimonials={testimonials} google={googleReviews} />

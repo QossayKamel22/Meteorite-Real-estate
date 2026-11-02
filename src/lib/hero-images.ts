@@ -5,6 +5,9 @@ import { DEFAULT_HERO_IMAGES, isHeroSrc, type HeroImage } from "@/lib/hero-image
 const COLLECTION = "settings";
 const DOC_ID = "hero-images";
 
+/** The first set of pictures the hero shipped with. A list saved with only these (for example by moving one in the admin) is treated as "never customised", so new defaults still reach it. */
+const LEGACY_SRCS = new Set(["/brand/hero-dubai-skyline.jpg", "/brand/binghatti/night-skyline.jpg", "/brand/binghatti/night-avenue.jpg"]);
+
 export async function getHeroImages(): Promise<HeroImage[]> {
   const doc = await getDoc(COLLECTION, DOC_ID);
   const items = (doc?.data as { items?: unknown } | undefined)?.items;
@@ -13,7 +16,8 @@ export async function getHeroImages(): Promise<HeroImage[]> {
     .map((i) => ({ src: String((i as HeroImage)?.src ?? ""), alt: String((i as HeroImage)?.alt ?? "") }))
     .filter((p) => isHeroSrc(p.src));
   // An empty saved list falls back to the defaults: the hero is never left without a picture.
-  return list.length > 0 ? list : DEFAULT_HERO_IMAGES;
+  if (list.length === 0 || list.every((p) => LEGACY_SRCS.has(p.src))) return DEFAULT_HERO_IMAGES;
+  return list;
 }
 
 export async function saveHeroImages(items: HeroImage[]): Promise<void> {

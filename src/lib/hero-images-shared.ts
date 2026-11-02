@@ -6,14 +6,15 @@ export const MAX_HERO_IMAGES = 8;
 
 /** Dark, night-time pictures the hero starts with, until the admin saves a list of its own. */
 export const DEFAULT_HERO_IMAGES: HeroImage[] = [
-  { src: "/brand/hero-dubai-skyline.jpg", alt: "Dubai skyline at dusk" },
-  { src: "/brand/binghatti/night-skyline.jpg", alt: "Towers lit up over Dubai at night" },
-  { src: "/brand/binghatti/night-avenue.jpg", alt: "A Dubai avenue and tower at night" },
+  { src: "/brand/hero/dubai-night-skyline.jpg", alt: "Dubai's towers and waterfront lit up at night" },
+  { src: "/brand/hero/dubai-marina-night.jpg", alt: "Dubai Marina at night" },
+  { src: "/brand/hero/burj-khalifa-storm.jpg", alt: "The Burj Khalifa under storm clouds" },
+  { src: "/brand/hero/dubai-dusk-silhouette.jpg", alt: "The Dubai skyline in silhouette at dusk" },
 ];
 
 /** A hero picture is a bundled file or an image uploaded through the admin. */
 export function isHeroSrc(v: string): boolean {
-  return /^\/brand\/(?:binghatti\/)?[A-Za-z0-9._-]+\.(jpg|jpeg|png|webp)$/.test(v) || /^\/api\/img\/film\/[A-Za-z0-9_-]{1,64}$/.test(v);
+  return /^\/brand\/(?:binghatti\/|hero\/)?[A-Za-z0-9._-]+\.(jpg|jpeg|png|webp)$/.test(v) || /^\/api\/img\/film\/[A-Za-z0-9_-]{1,64}$/.test(v);
 }
 
 export function parseHeroImages(input: unknown): { ok: true; value: HeroImage[] } | { ok: false; error: string } {

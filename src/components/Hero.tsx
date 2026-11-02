@@ -87,16 +87,16 @@ export default function Hero({
             priority={i === 0}
             loading="eager"
             sizes="100vw"
-            className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${i === slide ? "opacity-60" : "opacity-0"} ${reduceMotion ? "" : "ken-burns"}`}
+            className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${i === slide ? "opacity-90" : "opacity-0"} ${reduceMotion ? "" : "ken-burns"}`}
             style={reduceMotion ? undefined : { animationDelay: `${-(i * 9)}s` }}
           />
         ))}
         {!reduceMotion && <div className="light-sweep" />}
       </div>
       {/* grade: darker on the left where the headline sits, a vignette, and a long fade into the page below */}
-      <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(8,10,34,0.82)_0%,rgba(8,10,34,0.5)_45%,rgba(8,10,34,0.18)_100%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(4,5,20,0.7)_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-navy to-transparent" />
+      <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(8,10,34,0.8)_0%,rgba(8,10,34,0.38)_48%,rgba(8,10,34,0.08)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(4,5,20,0.5)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-brand-navy to-transparent" />
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#060820]/80 to-transparent" />
       <div className="glow-field opacity-70" />
       <div className="grain-overlay" />
