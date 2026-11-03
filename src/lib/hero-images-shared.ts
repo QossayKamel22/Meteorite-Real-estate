@@ -9,6 +9,8 @@ export const DEFAULT_HERO_IMAGES: HeroImage[] = [
   { src: "/brand/hero/dubai-night-skyline.jpg", alt: "Dubai's towers and waterfront lit up at night" },
   { src: "/brand/hero/dubai-marina-night.jpg", alt: "Dubai Marina at night" },
   { src: "/brand/hero/burj-khalifa-storm.jpg", alt: "The Burj Khalifa under storm clouds" },
+  { src: "/brand/hero/burj-khalifa-blue-night.jpg", alt: "The Burj Khalifa and Downtown Dubai on a blue night" },
+  { src: "/brand/hero/sheikh-zayed-road-dusk.jpg", alt: "Sheikh Zayed Road light trails under a dusk sky" },
   { src: "/brand/hero/dubai-dusk-silhouette.jpg", alt: "The Dubai skyline in silhouette at dusk" },
 ];
 
