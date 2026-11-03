@@ -5,7 +5,7 @@ import { motion, useReducedMotion, useScroll, useSpring, useTransform, type Moti
 
 /** One word of the message: it brightens as the reader's scroll reaches it. */
 function Word({ children, progress, from, to, still }: { children: string; progress: MotionValue<number>; from: number; to: number; still: boolean }) {
-  const opacity = useTransform(progress, [from, to], [0.18, 1]);
+  const opacity = useTransform(progress, [from, to], [0.4, 1]);
   return (
     <motion.span style={still ? undefined : { opacity }} className="mr-[0.26em] inline-block">
       {children}
@@ -30,7 +30,7 @@ export default function LeadershipMessage({ paragraphs, signerTitle, company }: 
 
   return (
     <div ref={ref} className="mx-auto mt-14 max-w-3xl text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold">A message from our CEO</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-ink">A message from our CEO</p>
       <p className="mt-5 text-2xl font-semibold leading-snug tracking-tight text-heading sm:text-[1.75rem]">
         {words.map((w, i) => (
           <Word key={i} progress={progress} from={(i / words.length) * 0.85} to={(i / words.length) * 0.85 + 0.15} still={reduce}>

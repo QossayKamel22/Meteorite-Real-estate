@@ -38,7 +38,7 @@ export default function PartnershipsPanel() {
       <div className="text-center">
         <div className="flex items-center justify-center gap-2.5">
           <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "right" }} className="h-px w-8 bg-brand-gold" />
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Trusted Partnerships</span>
+          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">Trusted Partnerships</span>
           <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
         </div>
         <MaskWords text="Registered with the following developers" show={show} delay={0.1} className="mx-auto mt-3 max-w-2xl text-2xl font-semibold tracking-tight text-heading sm:text-3xl" />
@@ -65,8 +65,8 @@ export default function PartnershipsPanel() {
           </motion.li>
         ))}
       </ul>
-      <p className="mt-6 text-center text-xs text-brand-ink/45">
-        <span className="text-sm font-semibold tabular-nums text-brand-gold">{n}</span> registered developer partnerships across Dubai
+      <p className="mt-6 text-center text-xs text-brand-ink/62">
+        <span className="text-sm font-semibold tabular-nums text-gold-ink">{n}</span> registered developer partnerships across Dubai
       </p>
     </div>
   );

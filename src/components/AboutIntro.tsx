@@ -66,7 +66,7 @@ export default function AboutIntro() {
           <div>
             <div className="flex items-center gap-2.5">
               <motion.span initial={{ scaleX: 0 }} animate={shown ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
-              <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">{`About ${company.name}`}</span>
+              <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">{`About ${company.name}`}</span>
             </div>
             <MaskWords text="A RERA-certified brokerage, trusted since 2005" show={shown} delay={0.1} className="mt-3 max-w-xl text-3xl font-semibold tracking-tight text-heading sm:text-4xl" />
             <motion.p

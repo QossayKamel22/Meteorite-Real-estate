@@ -70,7 +70,7 @@ function Leader({ leader, first }: { leader: Agent; first: boolean }) {
       <div>
         <motion.div variants={rise} className="flex items-center gap-2.5">
           <span className="h-px w-8 bg-brand-gold" />
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Leadership</span>
+          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">Leadership</span>
         </motion.div>
         <motion.h2 variants={rise} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
           {leader.name}

@@ -53,7 +53,7 @@ function Tile({ tour, index, show, still }: { tour: Tour; index: number; show: b
         </span>
         <div className="relative mt-6">
           <h3 className="text-lg font-semibold leading-tight text-heading">{tour.label}</h3>
-          <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand-ink/60 transition-colors group-hover:text-brand-gold">
+          <span className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand-ink/60 transition-colors group-hover:text-gold-ink">
             Watch tours <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </span>
         </div>

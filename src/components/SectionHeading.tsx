@@ -55,7 +55,7 @@ export default function SectionHeading({
             style={{ transformOrigin: align === "center" ? "center" : "left" }}
             className="h-px w-8 bg-brand-gold"
           />
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">
+          <span className={`text-sm font-semibold uppercase tracking-[0.2em] ${theme === "light" ? "text-brand-gold" : "text-gold-ink"}`}>
             {kicker}
           </span>
         </motion.div>

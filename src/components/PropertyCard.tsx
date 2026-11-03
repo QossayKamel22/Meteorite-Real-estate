@@ -73,8 +73,8 @@ export default function PropertyCard({ property, delay = 0 }: { property: Proper
         </div>
         <div className="relative flex flex-1 flex-col p-5">
           <p className="flex items-baseline gap-1.5">
-            <span className="bg-gradient-to-r from-heading to-heading bg-clip-text text-lg font-semibold tracking-tight text-heading transition-colors duration-300 group-hover:text-brand-gold">{price.amount}</span>
-            {price.per && <span className="text-xs font-medium text-brand-ink/50">{price.per}</span>}
+            <span className="bg-gradient-to-r from-heading to-heading bg-clip-text text-lg font-semibold tracking-tight text-heading transition-colors duration-300 group-hover:text-gold-ink">{price.amount}</span>
+            {price.per && <span className="text-xs font-medium text-brand-ink/65">{price.per}</span>}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-brand-ink/80">{property.title}</h3>
           <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-ink/55">

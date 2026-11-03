@@ -78,7 +78,7 @@ export default function CertificateShowcase({ cert, first, index }: { cert: Cert
         <div className="mt-20 text-center">
           <div className="flex items-center justify-center gap-2.5">
             <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "right" }} className="h-px w-8 bg-brand-gold" />
-            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Official Registration</span>
+            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">Official Registration</span>
             <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
           </div>
           <MaskWords text="Our certificates" show={show} delay={0.1} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl" />
@@ -117,7 +117,7 @@ export default function CertificateShowcase({ cert, first, index }: { cert: Cert
                   <Icon size={17} strokeWidth={1.8} />
                 </motion.span>
                 <div className="glass shimmer-border rounded-2xl px-5 py-3.5 transition-all duration-300 hover:-translate-y-0.5 hover:translate-x-1 hover:shadow-xl">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-ink/50">{label}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-ink/65">{label}</p>
                   <p className="mt-0.5 text-[15px] font-medium text-brand-ink/85">{value}</p>
                   {label.startsWith("Registered") && used !== null && (
                     <div className="mt-3" aria-label={`${Math.round(used * 100)}% of the registration period has passed`}>
@@ -130,7 +130,7 @@ export default function CertificateShowcase({ cert, first, index }: { cert: Cert
               </motion.li>
             ))}
           </ul>
-          {cert.issuer && <p className="relative mt-3 pl-14 text-xs text-brand-ink/45">Issued by {cert.issuer}. Click the certificate to view full size.</p>}
+          {cert.issuer && <p className="relative mt-3 pl-14 text-xs text-brand-ink/62">Issued by {cert.issuer}. Click the certificate to view full size.</p>}
         </div>
       </div>
     </div>

@@ -322,7 +322,7 @@ export default function FeaturedProjectSection({ projects }: { projects: Feature
                   className={`group relative flex min-w-[8.5rem] flex-1 flex-col gap-2 rounded-xl px-3.5 pb-3 pt-2.5 text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${active ? "bg-brand-gold/10" : "hover:bg-brand-ink/[0.04]"}`}
                 >
                   <span className="flex items-baseline gap-2">
-                    <span className={`text-[11px] font-semibold tabular-nums transition-colors ${active ? "text-brand-gold" : "text-brand-ink/35"}`}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className={`text-[11px] font-semibold tabular-nums transition-colors ${active ? "text-gold-ink" : "text-brand-ink/62"}`}>{String(i + 1).padStart(2, "0")}</span>
                     <span className={`truncate text-sm font-semibold transition-colors ${active ? "text-heading" : "text-brand-ink/55 group-hover:text-heading"}`}>{p.name}</span>
                   </span>
                   <span className="relative block h-[2px] w-full overflow-hidden rounded-full bg-brand-ink/12">

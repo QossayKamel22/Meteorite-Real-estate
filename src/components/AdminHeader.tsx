@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "@/lib/theme-context";
-import { Moon, ShieldCheck, Sun } from "lucide-react";
+import { ExternalLink, Moon, ShieldCheck, Sun } from "lucide-react";
 import AdminSignOutButton from "@/components/AdminSignOutButton";
 
 export default function AdminHeader() {
@@ -49,11 +49,15 @@ export default function AdminHeader() {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <Link prefetch={false}
+          <Link
+            prefetch={false}
             href="/"
-            className="hidden text-sm font-medium text-white/70 transition-colors hover:text-white sm:block"
+            aria-label="View the website"
+            className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-sm font-medium text-white/80 ring-1 ring-white/15 transition-colors hover:bg-white/10 hover:text-white sm:px-3 sm:ring-0"
           >
-            View site
+            <ExternalLink size={15} className="text-brand-gold" />
+            <span className="hidden sm:inline">View site</span>
+            <span className="text-xs sm:hidden">Site</span>
           </Link>
           <button
             type="button"

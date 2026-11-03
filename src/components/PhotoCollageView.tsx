@@ -79,7 +79,7 @@ export default function PhotoCollageView({ people, companyName }: { people: Pers
           <div>
             <div className="flex items-center gap-2.5">
               <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Faces &amp; Places</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">Faces &amp; Places</p>
             </div>
             <MaskWords text="A real team, in the city we know best" show={show} delay={0.1} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl" />
             <motion.p
@@ -130,7 +130,7 @@ export default function PhotoCollageView({ people, companyName }: { people: Pers
               ))}
             </div>
 
-            <motion.p initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 1.3 }} className="mt-4 text-center text-xs text-brand-ink/40">
+            <motion.p initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 1.3 }} className="mt-4 text-center text-xs text-brand-ink/58">
               {companyName} — {people.length} of our team, in Dubai
             </motion.p>
           </div>

@@ -55,7 +55,7 @@ export default function ContactAside({ address, poBox, orn, brokerCard, mapSrc }
           <MapPin size={18} className="mt-0.5 flex-none text-brand-gold" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-brand-ink/80">{address}</p>
-            <p className="mt-1 text-xs text-brand-ink/50">P.O. Box: {poBox}</p>
+            <p className="mt-1 text-xs text-brand-ink/65">P.O. Box: {poBox}</p>
           </div>
           <button type="button" onClick={copy} aria-label="Copy the office address" className="flex h-9 flex-none items-center gap-1.5 rounded-full border border-brand-line px-3 text-xs font-semibold text-heading transition-colors hover:border-brand-gold hover:text-brand-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold">
             {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}

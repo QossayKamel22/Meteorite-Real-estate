@@ -15,7 +15,7 @@ export default function MediaHeading({ kicker, title, note, as = "h2" }: { kicke
     <div ref={ref}>
       <div className="flex items-center gap-2.5">
         <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
-        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">{kicker}</span>
+        <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">{kicker}</span>
       </div>
       <MaskWords as={as} text={title} show={show} delay={0.1} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl" />
       {note && (

@@ -81,7 +81,7 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
         <div className="relative pt-10 sm:pt-12">
           <motion.div variants={rise} className="flex items-center gap-2.5">
             <span className="h-px w-8 bg-brand-gold" />
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold">{leader.title}</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-ink">{leader.title}</span>
           </motion.div>
           <motion.h3 variants={rise} className="mt-2 text-xl font-semibold tracking-tight text-heading sm:text-2xl">{leader.name}</motion.h3>
 
@@ -127,7 +127,7 @@ export default function LeadershipStack({ leaders }: { leaders: Agent[] }) {
       <div className="mx-auto mb-8 max-w-2xl text-center sm:mb-10">
         <div className="flex items-center justify-center gap-2.5">
           <span className="h-px w-8 bg-brand-gold" />
-          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Leadership</span>
+          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">Leadership</span>
           <span className="h-px w-8 bg-brand-gold" />
         </div>
         <h2 className="mt-2 text-xl font-semibold tracking-tight text-heading sm:text-2xl">The people leading Meteorite</h2>

@@ -90,7 +90,7 @@ export default function ReviewCard({ t }: { t: Testimonial }) {
         <ReviewAvatar name={t.name} size="md" />
         <span>
           <span className="block text-sm font-semibold text-heading">{t.name}</span>
-          <span className="block text-xs font-normal text-brand-ink/50">{t.role}</span>
+          <span className="block text-xs font-normal text-brand-ink/65">{t.role}</span>
         </span>
       </figcaption>
     </figure>

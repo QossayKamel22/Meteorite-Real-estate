@@ -773,3 +773,11 @@ body {
     transform: scaleX(1);
   }
 }
+
+/* Gold used as text on a light page needs more weight than the brand gold; on the dark theme it is the brand gold itself. */
+.text-gold-ink {
+  color: #8a7b00;
+}
+[data-theme="dark"] .text-gold-ink {
+  color: var(--brand-gold);
+}
