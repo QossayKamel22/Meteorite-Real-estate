@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Award, BadgeCheck, MapPin, ShieldCheck } from "lucide-react";
+import { Award, BadgeCheck, ShieldCheck } from "lucide-react";
 import { company, credentials } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
@@ -7,6 +7,7 @@ import StatsSection from "@/components/StatsSection";
 import { LeadershipSpread } from "@/components/CeoSection";
 import AgentsSection from "@/components/AgentsSection";
 import ContactCta from "@/components/ContactCta";
+import RegistrationDetails from "@/components/RegistrationDetails";
 import DevelopersAndCertificate from "@/components/DevelopersAndCertificate";
 import { pageMetadata } from "@/lib/seo";
 
@@ -55,35 +56,8 @@ export default async function AboutUsPage() {
 
       <StatsSection />
 
-      <section className="mx-auto max-w-5xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-        <Reveal>
-          <div className="glass shimmer-border rounded-3xl p-8 transition-all duration-300 hover:shadow-2xl sm:p-10">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20">
-                <MapPin size={18} strokeWidth={1.75} />
-              </span>
-              <h2 className="text-lg font-semibold text-heading">Registration Details</h2>
-            </div>
-            <dl className="mt-6 grid gap-6 text-sm sm:grid-cols-2">
-              <div>
-                <dt className="text-brand-ink/50">Office Address</dt>
-                <dd className="mt-1 text-brand-ink/80">{company.address}</dd>
-              </div>
-              <div>
-                <dt className="text-brand-ink/50">P.O. Box</dt>
-                <dd className="mt-1 text-brand-ink/80">{company.poBox}</dd>
-              </div>
-              <div>
-                <dt className="text-brand-ink/50">RERA ORN</dt>
-                <dd className="mt-1 text-brand-ink/80">{company.orn}</dd>
-              </div>
-              <div>
-                <dt className="text-brand-ink/50">Broker Card</dt>
-                <dd className="mt-1 text-brand-ink/80">#{company.brokerCard}</dd>
-              </div>
-            </dl>
-          </div>
-        </Reveal>
+      <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <RegistrationDetails address={company.address} poBox={company.poBox} orn={company.orn} brokerCard={company.brokerCard} />
       </section>
 
       <DevelopersAndCertificate />
