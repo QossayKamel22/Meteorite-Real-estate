@@ -1,20 +1,10 @@
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import type { Testimonial } from "@/lib/testimonials-data";
 import type { GoogleReviewsSummary } from "@/lib/google-reviews-shared";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import ReviewsGrid from "@/components/ReviewsGrid";
-import GoogleMark from "@/components/GoogleMark";
-
-function StarRow({ rating }: { rating: number }) {
-  return (
-    <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`}>
-      {[1, 2, 3, 4, 5].map((n) => (
-        <Star key={n} size={14} className="text-brand-gold" fill={n <= rating ? "currentColor" : "none"} strokeWidth={1.5} />
-      ))}
-    </div>
-  );
-}
+import GoogleRatingBadge from "@/components/GoogleRatingBadge";
 
 export default function TestimonialsSection({
   testimonials,
@@ -31,7 +21,7 @@ export default function TestimonialsSection({
   const showGoogleSummary = reviewCount > 0;
 
   return (
-    <section className="relative overflow-hidden bg-brand-paper py-20 sm:py-24">
+    <section className="relative overflow-hidden bg-brand-paper py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
@@ -39,30 +29,7 @@ export default function TestimonialsSection({
           </div>
           {showGoogleSummary && (
             <Reveal delay={0.15}>
-              <a
-                href={google.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-md dark:bg-white/[0.07] dark:shadow-none dark:ring-white/15 dark:hover:bg-white/[0.1]"
-              >
-                <div>
-                  <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-ink/65">
-                    <GoogleMark />
-                    Google
-                  </p>
-                  <div className="mt-1 flex items-center gap-3">
-                    <p className="text-2xl font-semibold leading-none tracking-tight text-heading">
-                      {google.rating.toFixed(1)}
-                    </p>
-                    <div>
-                      <StarRow rating={Math.round(google.rating)} />
-                      <p className="mt-0.5 text-xs text-brand-ink/65">
-                        {reviewCount} review{reviewCount === 1 ? "" : "s"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </a>
+              <GoogleRatingBadge rating={google.rating} count={reviewCount} url={google.url} />
             </Reveal>
           )}
         </div>

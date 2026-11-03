@@ -18,7 +18,7 @@ export default function ReviewsGrid({ testimonials }: { testimonials: Testimonia
 
   return (
     <>
-      <div id={gridId} className="mt-12 grid items-start gap-6 md:grid-cols-3">
+      <div id={gridId} className="mt-8 grid items-start gap-5 md:grid-cols-3">
         {visible.map((t, i) => (
           <Reveal key={t.id} delay={(i % INITIAL_COUNT) * 0.08}>
             <ReviewCard t={t} />
@@ -27,7 +27,7 @@ export default function ReviewsGrid({ testimonials }: { testimonials: Testimonia
       </div>
 
       {hiddenCount > 0 && (
-        <div className="mt-10 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
