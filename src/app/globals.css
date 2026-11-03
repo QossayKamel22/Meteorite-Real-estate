@@ -624,3 +624,78 @@ body {
     animation: none;
   }
 }
+
+/* Meteorites crossing the Contact page hero: a bright head with a fading tail, on a long loop. */
+.shooting-star {
+  position: absolute;
+  height: 1.5px;
+  width: 140px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(233, 221, 122, 0.9));
+  border-radius: 999px;
+  opacity: 0;
+  transform: rotate(-24deg);
+  animation: shooting-star 9s ease-in infinite;
+}
+.shooting-star::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: -2px;
+  height: 5px;
+  width: 5px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 12px 3px rgba(233, 221, 122, 0.85);
+}
+@keyframes shooting-star {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-24deg);
+  }
+  3% {
+    opacity: 1;
+  }
+  14% {
+    opacity: 0;
+    transform: translate3d(520px, 235px, 0) rotate(-24deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(520px, 235px, 0) rotate(-24deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shooting-star {
+    display: none;
+  }
+}
+
+/* A ripple that keeps spreading from the pin on the map card. */
+.pin-ripple {
+  animation: pin-ripple 2.6s ease-out infinite;
+}
+@keyframes pin-ripple {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pin-ripple {
+    animation: none;
+    opacity: 0.3;
+  }
+}
+
+/* The handset shakes twice when you point at the phone card. */
+@keyframes contact-ring {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-16deg); }
+  40% { transform: rotate(14deg); }
+  60% { transform: rotate(-10deg); }
+  80% { transform: rotate(8deg); }
+}
