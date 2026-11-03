@@ -44,7 +44,7 @@ function CountUp({ value, active }: { value: string; active: boolean }) {
   return <>{target === null ? value : shown.toLocaleString("en-US")}</>;
 }
 
-function ProjectCard({ project, priority }: { project: FeaturedProject; priority: boolean }) {
+function ProjectCard({ project, priority, index }: { project: FeaturedProject; priority: boolean; index: number }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.25 });
@@ -93,6 +93,9 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
       <div className="grain-overlay" />
 
       <div className="relative flex flex-col justify-center p-6 sm:p-9 lg:p-10">
+        <span aria-hidden="true" className="pointer-events-none absolute right-5 top-2 select-none text-[6.5rem] font-semibold leading-none tracking-tighter text-transparent [-webkit-text-stroke:1px_rgba(219,204,59,0.22)] sm:text-[8rem]">
+          {String(index + 1).padStart(2, "0")}
+        </span>
         <motion.div variants={rise} className="flex items-center gap-2.5">
           <motion.span variants={line} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">{project.kicker}</span>
@@ -165,9 +168,23 @@ function ProjectCard({ project, priority }: { project: FeaturedProject; priority
               />
             </motion.div>
             <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-20 bg-gradient-to-r from-brand-navy to-transparent lg:block" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-navy/45 via-transparent to-transparent" />
+            {["left-4 top-4 border-l border-t", "right-4 top-4 border-r border-t", "bottom-4 left-4 border-b border-l", "bottom-4 right-4 border-b border-r"].map((c) => (
+              <span key={c} aria-hidden="true" className={`pointer-events-none absolute h-5 w-5 border-brand-gold/70 ${c}`} />
+            ))}
+            {project.location && (
+              <span className="pointer-events-none absolute bottom-6 right-7 flex items-center gap-1.5 rounded-full bg-brand-navy/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur">
+                <MapPin size={11} className="text-brand-gold" /> {project.location}
+              </span>
+            )}
           </motion.div>
         ) : (
-          <div className="flex h-full min-h-[inherit] items-center justify-center bg-brand-navy-light p-6 sm:p-10">
+          <div className="relative flex h-full min-h-[inherit] items-center justify-center overflow-hidden bg-brand-navy-light p-6 sm:p-10">
+            <svg aria-hidden="true" viewBox="0 0 400 400" className="stat-orbit pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 text-brand-gold opacity-[0.12]" style={{ animationDuration: "90s" }}>
+              {[60, 100, 140, 180].map((r, i) => (
+                <circle key={r} cx="200" cy="200" r={r} fill="none" stroke="currentColor" strokeWidth="0.8" strokeDasharray={i % 2 ? "3 7" : "none"} />
+              ))}
+            </svg>
             <div className="flex h-full w-full max-w-sm flex-col justify-center rounded-2xl border border-white/10 px-6 py-6 sm:px-8">
               {factsInPanel ? (
                 <dl className="divide-y divide-white/10">
@@ -285,19 +302,14 @@ export default function FeaturedProjectSection({ projects }: { projects: Feature
             aria-roledescription={multiple ? "slide" : undefined}
             aria-label={multiple ? `${safeIndex + 1} of ${count}` : undefined}
           >
-            <ProjectCard project={projects[safeIndex]} priority={safeIndex === 0} />
+            <ProjectCard project={projects[safeIndex]} priority={safeIndex === 0} index={safeIndex} />
           </motion.div>
         </AnimatePresence>
       </div>
 
       {multiple && (
-        <div className="mt-4 flex items-center gap-4">
-          <span className="w-14 flex-none text-sm font-medium tabular-nums text-brand-ink/50" aria-hidden="true">
-            {String(safeIndex + 1).padStart(2, "0")}
-            <span className="text-brand-ink/30"> / {String(count).padStart(2, "0")}</span>
-          </span>
-
-          <div className="flex flex-1 items-center gap-2" role="group" aria-label="Choose a project">
+        <div className="mt-5 flex items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-stretch gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="group" aria-label="Choose a project">
             {projects.map((p, i) => {
               const active = i === safeIndex;
               return (
@@ -307,21 +319,22 @@ export default function FeaturedProjectSection({ projects }: { projects: Feature
                   onClick={() => goTo(i)}
                   aria-label={`Show ${p.name} (${i + 1} of ${count})`}
                   aria-current={active ? "true" : undefined}
-                  className="group flex h-6 flex-1 items-center focus-visible:outline-none"
+                  className={`group relative flex min-w-[8.5rem] flex-1 flex-col gap-2 rounded-xl px-3.5 pb-3 pt-2.5 text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${active ? "bg-brand-gold/10" : "hover:bg-brand-ink/[0.04]"}`}
                 >
-                  <span className="relative block h-[3px] w-full overflow-hidden rounded-full bg-brand-ink/15 transition-all duration-300 group-hover:h-[5px] group-focus-visible:ring-2 group-focus-visible:ring-brand-gold">
+                  <span className="flex items-baseline gap-2">
+                    <span className={`text-[11px] font-semibold tabular-nums transition-colors ${active ? "text-brand-gold" : "text-brand-ink/35"}`}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className={`truncate text-sm font-semibold transition-colors ${active ? "text-heading" : "text-brand-ink/55 group-hover:text-heading"}`}>{p.name}</span>
+                  </span>
+                  <span className="relative block h-[2px] w-full overflow-hidden rounded-full bg-brand-ink/12">
                     {i < safeIndex && <span className="absolute inset-0 rounded-full bg-brand-gold/70" />}
                     {active &&
-                      (reduce || !multiple ? (
+                      (reduce ? (
                         <span className="absolute inset-0 rounded-full bg-brand-gold" />
                       ) : (
                         <span
                           key={`${p.id}-${safeIndex}`}
                           className="fp-fill absolute inset-0 rounded-full bg-brand-gold"
-                          style={{
-                            animationDuration: `${AUTOPLAY_MS}ms`,
-                            animationPlayState: playing ? "running" : "paused",
-                          }}
+                          style={{ animationDuration: `${AUTOPLAY_MS}ms`, animationPlayState: playing ? "running" : "paused" }}
                           onAnimationEnd={next}
                         />
                       ))}
