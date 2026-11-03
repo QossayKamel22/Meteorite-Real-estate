@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { BarChart3, Building2, Clapperboard, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
 
@@ -26,6 +27,7 @@ const GROUPS = [
   { label: "Access", items: [{ href: "/admin/users", label: "Users", icon: Users }] },
 ];
 const NAV = GROUPS.flatMap((g) => g.items);
+const itemIndex = (href: string) => NAV.findIndex((n) => n.href === href);
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/admin") return pathname === "/admin";
@@ -34,6 +36,7 @@ function isActive(pathname: string, href: string): boolean {
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const reduce = useReducedMotion();
 
   return (
     <>
@@ -47,17 +50,24 @@ export default function AdminSidebar() {
                 {g.items.map(({ href, label, icon: Icon }) => {
                   const active = isActive(pathname, href);
                   return (
-                    <li key={href}>
+                    <motion.li key={href} initial={{ opacity: 0, x: reduce ? 0 : -14 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.05 * itemIndex(href), ease: [0.22, 1, 0.36, 1] }}>
                       <Link prefetch={false}
                         href={href}
-                        className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                          active ? "bg-brand-navy text-white" : "text-brand-ink/65 hover:bg-brand-paper hover:text-heading"
+                        className={`group relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-300 ${
+                          active ? "text-white" : "text-brand-ink/65 hover:text-heading"
                         }`}
                       >
-                        <Icon size={16} strokeWidth={1.75} />
-                        {label}
+                        {active ? (
+                          <motion.span layoutId="admin-nav-pill" transition={{ type: "spring", stiffness: 380, damping: 32 }} className="absolute inset-0 rounded-xl bg-brand-navy shadow-[0_10px_24px_-12px_rgba(13,16,49,0.7)] ring-1 ring-brand-gold/30">
+                            <span aria-hidden="true" className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-brand-gold shadow-[0_0_10px_1px_rgba(219,204,59,0.7)]" />
+                          </motion.span>
+                        ) : (
+                          <span aria-hidden="true" className="absolute inset-0 rounded-xl bg-brand-ink/0 transition-colors duration-300 group-hover:bg-brand-ink/[0.05]" />
+                        )}
+                        <Icon size={16} strokeWidth={1.75} className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? "text-brand-gold" : ""}`} />
+                        <span className="relative">{label}</span>
                       </Link>
-                    </li>
+                    </motion.li>
                   );
                 })}
               </ul>

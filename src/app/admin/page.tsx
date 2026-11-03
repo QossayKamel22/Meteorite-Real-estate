@@ -3,11 +3,7 @@ import Link from "next/link";
 import {
   BarChart3,
   Eye,
-  IdCard,
-  LayoutDashboard,
   ShieldCheck,
-  TrendingUp,
-  UserX,
   Users as UsersIcon,
 } from "lucide-react";
 import { getStatsList } from "@/lib/site-stats";
@@ -16,7 +12,8 @@ import { getCertificates } from "@/lib/certificates-data";
 import { listUsers } from "@/lib/users-data";
 import { getAnalyticsSummary } from "@/lib/analytics-data";
 import { BreakdownPie, SignupsChart, StatsBarChart } from "@/components/AdminOverviewCharts";
-import SectionHeading from "@/components/SectionHeading";
+import AdminStatCard from "@/components/AdminStatCard";
+import AdminWelcome from "@/components/AdminWelcome";
 
 export const metadata: Metadata = { title: "Overview · Admin" };
 export const dynamic = "force-dynamic";
@@ -43,33 +40,6 @@ function buildSignupSeries(createdAtDates: string[]): { date: string; count: num
     });
   }
   return series;
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: {
-  icon: typeof UsersIcon;
-  label: string;
-  value: number | string;
-  href: string;
-}) {
-  return (
-    <Link prefetch={false}
-      href={href}
-      className="glass shimmer-border rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-    >
-      <div className="flex items-center justify-between">
-        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20">
-          <Icon size={16} strokeWidth={1.75} />
-        </span>
-      </div>
-      <p className="mt-4 text-2xl font-semibold tracking-tight text-heading">{value}</p>
-      <p className="mt-0.5 text-sm text-brand-ink/55">{label}</p>
-    </Link>
-  );
 }
 
 export default async function AdminOverviewPage() {
@@ -102,16 +72,7 @@ export default async function AdminOverviewPage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden bg-brand-navy py-10 sm:py-12">
-        <div className="glow-field" />
-        <div className="grain-overlay" />
-        <div className="relative mx-auto flex max-w-6xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-          <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20">
-            <LayoutDashboard size={20} strokeWidth={1.75} />
-          </span>
-          <SectionHeading kicker="Admin" title="Overview" theme="light" as="h1" titleClassName="text-2xl font-semibold tracking-tight text-white sm:text-3xl" />
-        </div>
-      </section>
+      <AdminWelcome />
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
@@ -125,12 +86,12 @@ export default async function AdminOverviewPage() {
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          <StatCard icon={Eye} label="Visits (all time)" value={analytics.totalAllTime} href="/admin" />
-          <StatCard icon={TrendingUp} label="Visits today" value={analytics.totalToday} href="/admin" />
-          <StatCard icon={UsersIcon} label="Total users" value={users.length} href="/admin/users" />
-          <StatCard icon={ShieldCheck} label="Admins" value={adminCount} href="/admin/users" />
-          <StatCard icon={UserX} label="Disabled accounts" value={disabledCount} href="/admin/users" />
-          <StatCard icon={IdCard} label="Team members" value={agents.length} href="/admin/team" />
+          <AdminStatCard icon="eye" label="Visits (all time)" index={0} value={analytics.totalAllTime} href="/admin" />
+          <AdminStatCard icon="trend" label="Visits today" index={1} value={analytics.totalToday} href="/admin" />
+          <AdminStatCard icon="users" label="Total users" index={2} value={users.length} href="/admin/users" />
+          <AdminStatCard icon="shield" label="Admins" index={3} value={adminCount} href="/admin/users" />
+          <AdminStatCard icon="disabled" label="Disabled accounts" index={4} value={disabledCount} href="/admin/users" />
+          <AdminStatCard icon="team" label="Team members" index={5} value={agents.length} href="/admin/team" />
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">

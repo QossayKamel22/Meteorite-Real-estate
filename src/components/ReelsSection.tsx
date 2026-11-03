@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Play } from "lucide-react";
+import Particles from "@/components/Particles";
 import { FacebookIcon, InstagramIcon, TikTokIcon, YouTubeIcon } from "@/components/SocialIcons";
 import { PLATFORM_LABEL, reelEmbedSrc, type Reel, type ReelPlatform, type SocialAccounts } from "@/lib/reels-shared";
 
@@ -248,6 +249,20 @@ export default function ReelsSection({ reels, accounts }: { reels: Reel[]; accou
         if (e.key === "ArrowLeft") step(-1);
       }}
     >
+      {/* a living backdrop: the night city drifting slowly, a blurred glow of whichever reel is in focus, a few gold motes */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <Image src="/brand/hero/dubai-night-skyline.jpg" alt="" fill sizes="100vw" className={`object-cover opacity-30 ${reduce ? "" : "ken-burns"}`} />
+        <AnimatePresence initial={false}>
+          {list[Math.min(active, list.length - 1)]?.cover && (
+            <motion.div key={list[Math.min(active, list.length - 1)].id} initial={{ opacity: 0 }} animate={{ opacity: 0.4 }} exit={{ opacity: 0 }} transition={{ duration: 1.2, ease: EASE }} className="absolute inset-0">
+              <Image src={list[Math.min(active, list.length - 1)].cover} alt="" fill sizes="50vw" unoptimized className="scale-125 object-cover blur-3xl" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#0d1031_0%,rgba(13,16,49,0.55)_30%,rgba(13,16,49,0.55)_70%,#0d1031_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(5,6,24,0.7)_100%)]" />
+      </div>
+      <Particles />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent" />
 
       <motion.div initial={{ opacity: 0, y: reduce ? 0 : 24 }} animate={inView ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, ease: EASE }} className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
