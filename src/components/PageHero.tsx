@@ -50,7 +50,7 @@ export default function PageHero({ image, kicker, title, text, chips, children }
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, reduce ? 1 : 0.2]);
 
   return (
-    <section ref={ref} className="relative isolate overflow-hidden bg-brand-navy py-20 sm:py-28">
+    <section ref={ref} className="relative isolate -mt-16 overflow-hidden bg-brand-navy pb-20 pt-36 sm:pb-28 sm:pt-44">
       <motion.div aria-hidden="true" style={{ y }} className="absolute -inset-x-4 -top-8 bottom-0 -z-20">
         <Image src={image} alt="" fill priority sizes="100vw" className={`object-cover opacity-75 ${reduce ? "" : "ken-burns"}`} />
       </motion.div>

@@ -13,7 +13,8 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   // On the home page the header floats over the hero film until the visitor scrolls.
-  const overHero = usePathname() === "/" && !scrolled && !open;
+  const path = usePathname();
+  const overHero = ["/", "/about-us", "/media", "/contact-us", "/for-sale", "/for-rent"].includes(path) && !scrolled && !open;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
