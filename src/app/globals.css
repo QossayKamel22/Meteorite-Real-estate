@@ -614,3 +614,13 @@ body {
     animation: none;
   }
 }
+
+/* The dashed ring that turns slowly round a category icon on hover. */
+.tile-ring {
+  animation: stat-orbit 9s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile-ring {
+    animation: none;
+  }
+}
