@@ -18,6 +18,7 @@ import SocialEmbed from "@/components/SocialEmbed";
 import SectionHeading from "@/components/SectionHeading";
 import DubaiSeries from "@/components/DubaiSeries";
 import MediaVideo from "@/components/MediaVideo";
+import PageHero from "@/components/PageHero";
 import MediaHeading from "@/components/MediaHeading";
 import MediaPostCard from "@/components/MediaPostCard";
 import TourTiles from "@/components/TourTiles";
@@ -92,31 +93,13 @@ export default async function MediaPage() {
 
   return (
     <div>
-      <section className="relative overflow-hidden bg-brand-navy py-20 sm:py-24">
-        <div className="glow-field" />
-        <div className="grain-overlay" />
-        <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold">
-              <PlayCircle size={26} strokeWidth={1.75} />
-            </div>
-          </Reveal>
-          <SectionHeading
-            kicker="Media"
-            title="News, updates & social"
-            as="h1"
-            align="center"
-            theme="light"
-            className="mt-5"
-          />
-          <Reveal delay={0.25}>
-            <p className="mt-4 text-base leading-relaxed text-white/65">
-              The latest from our team, plus video tours hosted alongside full listing details on
-              our verified Bayut portfolio.
-            </p>
-          </Reveal>
-        </div>
-      </section>
+      <PageHero
+        image="/brand/hero/dubai-dusk-silhouette.jpg"
+        kicker="Media"
+        title="News, updates & social"
+        text="The latest from our team — podcasts, posts, posters and video tours, with full listing details on our verified Bayut portfolio."
+        chips={[{ label: "Podcast episodes" }, { label: "Posts & posters" }, { label: "Video tours" }]}
+      />
 
       <nav className="sticky top-16 z-30 border-b border-brand-line bg-surface/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">

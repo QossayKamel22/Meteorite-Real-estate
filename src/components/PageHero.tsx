@@ -42,7 +42,7 @@ function Chip({ chip, index, still }: { chip: HeroChip; index: number; still: bo
  * grade, meteorites crossing the sky, a headline that rises word by word and a row of chips
  * (numbers count up). Shared by For Sale and For Rent, each with its own picture.
  */
-export default function PageHero({ image, kicker, title, text, chips }: { image: string; kicker: string; title: string; text: string; chips: HeroChip[] }) {
+export default function PageHero({ image, kicker, title, text, chips, children }: { image: string; kicker: string; title: string; text: string; chips: HeroChip[]; children?: React.ReactNode }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -63,7 +63,7 @@ export default function PageHero({ image, kicker, title, text, chips }: { image:
         <span className="shooting-star left-[66%] top-[20%]" style={{ animationDelay: "7s", animationDuration: "10s" }} />
       </div>
 
-      <motion.div style={{ opacity: fade }} className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+      <motion.div style={{ opacity: fade }} className="relative mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8">
         <div className="flex items-center justify-center gap-2.5">
           <motion.span initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.9, ease: EASE }} style={{ transformOrigin: "right" }} className="h-px w-10 bg-brand-gold" />
           <span className="text-sm font-semibold uppercase tracking-[0.28em] text-brand-gold">{kicker}</span>
@@ -78,7 +78,8 @@ export default function PageHero({ image, kicker, title, text, chips }: { image:
             <Chip key={c.label} chip={c} index={i} still={reduce} />
           ))}
         </ul>
-        {!reduce && (
+        {children}
+        {!reduce && !children && (
           <motion.span aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: 1, y: [0, 8, 0] }} transition={{ opacity: { delay: 1.6 }, y: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1.6 } }} className="mt-10 inline-block text-white/45">
             <ChevronDown size={22} />
           </motion.span>

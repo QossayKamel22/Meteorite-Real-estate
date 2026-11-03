@@ -86,12 +86,30 @@ function Stat({ value, label, index, show, still }: { value: number; label: stri
  * up to its value inside a ring that draws itself, with a spark orbiting the ring and a
  * soft gold light that travels across the band as you scroll past it.
  */
-export default function StatsShowcase({ stats }: { stats: { label: string; value: number }[] }) {
+export default function StatsShowcase({ stats, embedded = false }: { stats: { label: string; value: number }[]; embedded?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLElement>(null);
   const show = useInView(ref, { once: true, amount: 0.3 });
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const lightX = useTransform(scrollYProgress, [0, 1], ["-30%", "110%"]);
+
+  if (embedded) {
+    return (
+      <section ref={ref} id="stats" aria-label="Track record" className="mt-12">
+        <div className="mx-auto flex items-center justify-center gap-3">
+          <span className="h-px w-10 bg-brand-gold/60" />
+          <span className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-gold">Track Record</span>
+          <span className="h-px w-10 bg-brand-gold/60" />
+        </div>
+        <MaskWords text="Numbers built over 20 years" show={show} delay={0.1} className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl" />
+        <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 lg:grid-cols-4">
+          {stats.map((s, i) => (
+            <Stat key={s.label} value={s.value} label={s.label} index={i} show={show} still={reduce} />
+          ))}
+        </ul>
+      </section>
+    );
+  }
 
   return (
     <section ref={ref} id="stats" className="relative isolate overflow-hidden bg-brand-navy py-16 sm:py-20">
