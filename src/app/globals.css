@@ -599,3 +599,18 @@ body {
     animation: none;
   }
 }
+
+/* The spark that circles each ring in the "Numbers" band. */
+.stat-orbit {
+  animation: stat-orbit 16s linear infinite;
+}
+@keyframes stat-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stat-orbit {
+    animation: none;
+  }
+}
