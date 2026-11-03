@@ -103,7 +103,7 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
           )}
           {leader.profileUrl && (
             <motion.div variants={rise}>
-              <a href={leader.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold">
+              <a href={leader.profileUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-gold-ink">
                 View full leadership profile <ArrowUpRight size={15} />
               </a>
             </motion.div>

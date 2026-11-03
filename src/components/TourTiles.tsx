@@ -42,7 +42,7 @@ function Tile({ tour, index, show, still }: { tour: Tour; index: number; show: b
         className="group relative flex h-full min-h-[11rem] flex-col justify-between overflow-hidden rounded-3xl border border-brand-line bg-surface p-6 transition-[border-color,box-shadow] duration-300 hover:border-brand-gold/60 hover:shadow-[0_26px_56px_-26px_rgba(219,204,59,0.6)]"
       >
         <span aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), rgba(219,204,59,0.18), transparent 65%)" }} />
-        <Icon aria-hidden="true" strokeWidth={1} className="pointer-events-none absolute -bottom-6 -right-6 h-36 w-36 text-brand-gold/[0.07] transition-all duration-700 group-hover:-rotate-6 group-hover:scale-110 group-hover:text-brand-gold/[0.14]" />
+        <Icon aria-hidden="true" strokeWidth={1} className="pointer-events-none absolute -bottom-6 -right-6 h-36 w-36 text-brand-gold/[0.07] transition-all duration-700 group-hover:-rotate-6 group-hover:scale-110 group-hover:text-gold-ink/[0.14]" />
         <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-brand-gold to-brand-gold-soft transition-transform duration-500 group-hover:scale-x-100" />
 
         <span className="relative flex h-14 w-14 items-center justify-center">

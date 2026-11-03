@@ -57,7 +57,7 @@ export default function ContactAside({ address, poBox, orn, brokerCard, mapSrc }
             <p className="text-sm font-medium text-brand-ink/80">{address}</p>
             <p className="mt-1 text-xs text-brand-ink/65">P.O. Box: {poBox}</p>
           </div>
-          <button type="button" onClick={copy} aria-label="Copy the office address" className="flex h-9 flex-none items-center gap-1.5 rounded-full border border-brand-line px-3 text-xs font-semibold text-heading transition-colors hover:border-brand-gold hover:text-brand-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold">
+          <button type="button" onClick={copy} aria-label="Copy the office address" className="flex h-9 flex-none items-center gap-1.5 rounded-full border border-brand-line px-3 text-xs font-semibold text-heading transition-colors hover:border-brand-gold hover:text-gold-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold">
             {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
             {copied ? "Copied" : "Copy"}
           </button>

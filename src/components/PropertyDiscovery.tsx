@@ -52,7 +52,7 @@ function Tile({ cat, index, show, still }: { cat: (typeof categories)[number]; i
 
         <div className="relative flex items-center gap-3.5">
           <span className="relative flex h-11 w-11 flex-none items-center justify-center">
-            <svg viewBox="0 0 44 44" aria-hidden="true" className="tile-ring absolute inset-0 h-full w-full text-brand-gold/0 transition-colors duration-300 group-hover:text-brand-gold">
+            <svg viewBox="0 0 44 44" aria-hidden="true" className="tile-ring absolute inset-0 h-full w-full text-brand-gold/0 transition-colors duration-300 group-hover:text-gold-ink">
               <circle cx="22" cy="22" r="20.5" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 5" />
             </svg>
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-gold/15 text-gold-ink transition-all duration-300 group-hover:scale-105 group-hover:bg-brand-gold group-hover:text-brand-navy">
@@ -69,7 +69,7 @@ function Tile({ cat, index, show, still }: { cat: (typeof categories)[number]; i
           <a href={cat.forSale} target="_blank" rel="noopener noreferrer" className="group/p flex items-center justify-center gap-1 rounded-full bg-brand-navy px-3 py-2 text-white transition-colors hover:bg-brand-navy-light dark:bg-white/10 dark:hover:bg-white/20">
             For sale <ArrowUpRight size={13} className="transition-transform duration-300 group-hover/p:-translate-y-0.5 group-hover/p:translate-x-0.5" />
           </a>
-          <a href={cat.forRent} target="_blank" rel="noopener noreferrer" className="group/p flex items-center justify-center gap-1 rounded-full border border-brand-line px-3 py-2 text-heading transition-colors hover:border-brand-gold hover:text-brand-gold">
+          <a href={cat.forRent} target="_blank" rel="noopener noreferrer" className="group/p flex items-center justify-center gap-1 rounded-full border border-brand-line px-3 py-2 text-heading transition-colors hover:border-brand-gold hover:text-gold-ink">
             For rent <ArrowUpRight size={13} className="transition-transform duration-300 group-hover/p:-translate-y-0.5 group-hover/p:translate-x-0.5" />
           </a>
         </div>
@@ -144,7 +144,7 @@ export default function PropertyDiscovery() {
 
       <motion.div initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 0.9 }} className="mt-5 flex flex-col gap-2 text-xs text-brand-ink/62 sm:flex-row sm:items-center sm:justify-between">
         <p>Links open Bayut in a new tab. Prices and availability are managed live there.</p>
-        <Link prefetch={false} href="/for-sale" className="group text-sm font-semibold text-heading transition-colors hover:text-brand-gold">
+        <Link prefetch={false} href="/for-sale" className="group text-sm font-semibold text-heading transition-colors hover:text-gold-ink">
           More about buying with Meteorite <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
         </Link>
       </motion.div>

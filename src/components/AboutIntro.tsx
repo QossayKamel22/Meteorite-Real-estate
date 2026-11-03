@@ -78,7 +78,7 @@ export default function AboutIntro() {
               {company.legalTagline}
             </motion.p>
             <motion.div initial={{ opacity: 0 }} animate={shown ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 0.85 }}>
-              <Link prefetch={false} href="/about-us" className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-heading transition-colors hover:text-brand-gold">
+              <Link prefetch={false} href="/about-us" className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-heading transition-colors hover:text-gold-ink">
                 Read our full story
                 <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">→</span>
               </Link>

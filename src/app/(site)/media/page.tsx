@@ -262,7 +262,7 @@ export default async function MediaPage() {
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <p className="text-center text-xs text-brand-ink/45">
           Looking for something specific?{" "}
-          <Link prefetch={false} href="/contact-us" className="font-medium text-heading hover:text-brand-gold">
+          <Link prefetch={false} href="/contact-us" className="font-medium text-heading hover:text-gold-ink">
             Contact us
           </Link>{" "}
           and we&apos;ll send you a private tour, or{" "}
@@ -270,7 +270,7 @@ export default async function MediaPage() {
             href={`https://wa.me/${company.phoneE164.replace("+", "")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-heading hover:text-brand-gold"
+            className="font-medium text-heading hover:text-gold-ink"
           >
             WhatsApp our team
           </a>

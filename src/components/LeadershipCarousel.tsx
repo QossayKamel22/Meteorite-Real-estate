@@ -108,7 +108,7 @@ function Leader({ leader, first }: { leader: Agent; first: boolean }) {
               href={leader.profileUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-brand-gold"
+              className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-heading hover:text-gold-ink"
             >
               View full leadership profile
               <ArrowUpRight size={15} />

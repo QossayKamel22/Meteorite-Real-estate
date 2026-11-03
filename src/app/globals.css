@@ -151,6 +151,22 @@ body {
   backdrop-filter: none;
 }
 
+/* The account menu opens in its own panel, so it keeps the page's normal colours even while the header is clear. */
+.glass-nav.over-hero [data-menu] {
+  --brand-ink: #10131f;
+  --heading: #0d1031;
+  --brand-paper: #faf9f6;
+  --brand-line: #e7e5df;
+  --surface: #ffffff;
+}
+[data-theme="dark"] .glass-nav.over-hero [data-menu] {
+  --brand-ink: #eceae0;
+  --heading: #f6f4ea;
+  --brand-paper: #12142c;
+  --brand-line: rgba(255, 255, 255, 0.1);
+  --surface: #12142c;
+}
+
 .glass-nav {
   background: var(--glass-nav-bg);
   backdrop-filter: blur(18px) saturate(180%);
@@ -774,10 +790,11 @@ body {
   }
 }
 
-/* Gold used as text on a light page needs more weight than the brand gold; on the dark theme it is the brand gold itself. */
-.text-gold-ink {
-  color: #8a7b00;
-}
-[data-theme="dark"] .text-gold-ink {
-  color: var(--brand-gold);
+/* Gold used as text on a light page needs more weight than the brand gold; on the dark theme it is the brand gold itself.
+   Declared as a utility so hover: and group-hover: variants work with it. */
+@utility text-gold-ink {
+  color: #756900;
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    color: var(--brand-gold);
+  }
 }

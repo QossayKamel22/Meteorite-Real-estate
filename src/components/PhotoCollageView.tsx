@@ -91,7 +91,7 @@ export default function PhotoCollageView({ people, companyName }: { people: Pers
               Every photo here is our own — the skyline we work in every day, and the people you&apos;ll actually speak with. No stock photography, no stand-ins.
             </motion.p>
             <motion.div initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 0.8 }}>
-              <Link prefetch={false} href="/about-us" className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-heading transition-colors hover:text-brand-gold">
+              <Link prefetch={false} href="/about-us" className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-heading transition-colors hover:text-gold-ink">
                 Meet the full team
                 <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">→</span>
               </Link>

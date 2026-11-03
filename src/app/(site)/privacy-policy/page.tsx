@@ -162,15 +162,15 @@ export default function PrivacyPolicyPage() {
             <p className="mt-4 text-sm leading-relaxed text-brand-ink/70">
               For anything about this policy, or to request access to or deletion of your data,
               contact us at{" "}
-              <a href={`mailto:${company.email}`} className="font-semibold text-heading hover:text-brand-gold">
+              <a href={`mailto:${company.email}`} className="font-semibold text-heading hover:text-gold-ink">
                 {company.email}
               </a>{" "}
               or{" "}
-              <a href={`tel:${company.phoneE164}`} className="font-semibold text-heading hover:text-brand-gold">
+              <a href={`tel:${company.phoneE164}`} className="font-semibold text-heading hover:text-gold-ink">
                 {company.phoneDisplay}
               </a>
               , or use our{" "}
-              <Link prefetch={false} href="/contact-us" className="font-semibold text-heading hover:text-brand-gold">
+              <Link prefetch={false} href="/contact-us" className="font-semibold text-heading hover:text-gold-ink">
                 Contact Us
               </Link>{" "}
               page.

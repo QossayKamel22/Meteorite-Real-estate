@@ -58,10 +58,10 @@ export default function MediaPostCard({ post, delay, featured = false }: { post:
           )
         )}
         <div className="relative flex flex-1 flex-col p-5">
-          <h3 className="text-base font-semibold text-heading transition-colors duration-300 group-hover:text-brand-gold">{post.title}</h3>
+          <h3 className="text-base font-semibold text-heading transition-colors duration-300 group-hover:text-gold-ink">{post.title}</h3>
           {post.body && <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
           {post.kind === "social" && post.url && (
-            <a href={post.url} target="_blank" rel="noopener noreferrer" className="group/l mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-gold hover:underline">
+            <a href={post.url} target="_blank" rel="noopener noreferrer" className="group/l mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-ink hover:underline">
               View on {post.platform ? PLATFORM_LABEL[post.platform] : "social media"}
               <ExternalLink size={13} className="transition-transform duration-300 group-hover/l:-translate-y-0.5 group-hover/l:translate-x-0.5" />
             </a>

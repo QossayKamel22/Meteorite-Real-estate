@@ -81,7 +81,7 @@ export default function ReviewCard({ t }: { t: Testimonial }) {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={quoteId}
-          className="relative mt-2 self-start text-sm font-semibold text-[#8a7b00] hover:underline dark:text-brand-gold"
+          className="relative mt-2 self-start text-sm font-semibold text-[#756900] hover:underline dark:text-brand-gold"
         >
           {open ? "Show less" : "Read more"}
         </button>
