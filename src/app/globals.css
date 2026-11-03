@@ -746,3 +746,17 @@ body {
     animation: none;
   }
 }
+
+/* The gold light that circles a pinned post's edge, and the sheen on its badge. */
+.featured-spin {
+  animation: stat-orbit 7s linear infinite;
+}
+@keyframes badge-sheen {
+  0%, 55% { left: -50%; }
+  100% { left: 140%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .featured-spin {
+    animation: none;
+  }
+}

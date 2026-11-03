@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import { isServedImage } from "@/lib/image-url";
 import Link from "next/link";
 import {
-  Building2,
-  ExternalLink,
   Headphones,
-  Home,
   Image as ImageIcon,
   Pin,
   PlayCircle,
   Share2,
   Sparkles,
-  Store,
-  Warehouse,
 } from "lucide-react";
 import { company, externalListings } from "@/lib/content";
 import { getPosterSeries } from "@/lib/poster-series";
@@ -25,6 +18,9 @@ import SocialEmbed from "@/components/SocialEmbed";
 import SectionHeading from "@/components/SectionHeading";
 import DubaiSeries from "@/components/DubaiSeries";
 import MediaVideo from "@/components/MediaVideo";
+import MediaHeading from "@/components/MediaHeading";
+import MediaPostCard from "@/components/MediaPostCard";
+import TourTiles from "@/components/TourTiles";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -35,10 +31,10 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const categories = [
-  { label: "Apartments & Studios", icon: Building2, href: externalListings.bayutForSale + "&category=apartment" },
-  { label: "Villas", icon: Home, href: externalListings.bayutForSale + "&category=villa" },
-  { label: "Townhouses", icon: Warehouse, href: externalListings.bayutForSale + "&category=townhouse" },
-  { label: "Commercial", icon: Store, href: externalListings.bayutForSale + "&category=commercial" },
+  { key: "apartment", label: "Apartments & Studios", href: externalListings.bayutForSale + "&category=apartment" },
+  { key: "villa", label: "Villas", href: externalListings.bayutForSale + "&category=villa" },
+  { key: "townhouse", label: "Townhouses", href: externalListings.bayutForSale + "&category=townhouse" },
+  { key: "commercial", label: "Commercial", href: externalListings.bayutForSale + "&category=commercial" },
 ];
 
 const PLATFORM_LABEL: Record<string, string> = {
@@ -48,60 +44,6 @@ const PLATFORM_LABEL: Record<string, string> = {
   youtube: "YouTube",
   other: "Social",
 };
-
-function PostCard({ post, delay, featured = false }: { post: MediaPost; delay: number; featured?: boolean }) {
-  return (
-    <Reveal delay={delay}>
-      <article
-        className={`glass shimmer-border group relative flex h-full flex-col overflow-hidden rounded-3xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${
-          featured ? "ring-1 ring-brand-gold/40" : ""
-        }`}
-      >
-        {featured && (
-          <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-brand-navy/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-gold backdrop-blur">
-            <Pin size={10} /> Pinned
-          </span>
-        )}
-        {post.video ? (
-          <MediaVideo url={post.video} poster={post.image} />
-        ) : (
-          post.image && (
-            <div className={`relative w-full overflow-hidden bg-brand-paper ${post.portrait ? "aspect-[4/5]" : "aspect-[4/3]"}`}>
-              <Image
-                src={post.image}
-                unoptimized={isServedImage(post.image)}
-                alt={post.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes="(min-width: 1024px) 33vw, 50vw"
-              />
-              {post.kind === "social" && post.platform && (
-                <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
-                  {PLATFORM_LABEL[post.platform]}
-                </span>
-              )}
-            </div>
-          )
-        )}
-        <div className="flex flex-1 flex-col p-5">
-          <h3 className="text-base font-semibold text-heading">{post.title}</h3>
-          {post.body && <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-brand-ink/65">{post.body}</p>}
-          {post.kind === "social" && post.url && (
-            <a
-              href={post.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-gold hover:underline"
-            >
-              View on {post.platform ? PLATFORM_LABEL[post.platform] : "social media"}
-              <ExternalLink size={13} />
-            </a>
-          )}
-        </div>
-      </article>
-    </Reveal>
-  );
-}
 
 // Each of these posts can carry a sizeable base64 image/poster — capping how
 // many render on one page keeps the page's payload bounded no matter how
@@ -252,10 +194,10 @@ export default async function MediaPage() {
 
       {pinnedPosts.length > 0 && (
         <section id="featured" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-          <SectionHeading kicker="Featured" title="Pinned highlights" />
+          <MediaHeading kicker="Featured" title="Pinned highlights" />
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {pinnedPosts.map((post, i) => (
-              <PostCard key={post.id} post={post} delay={i * 0.06} featured />
+              <MediaPostCard key={post.id} post={post} delay={i * 0.06} featured />
             ))}
           </div>
         </section>
@@ -263,10 +205,10 @@ export default async function MediaPage() {
 
       {posts.length > 0 && (
         <section id="posts" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-          {(pinnedPosts.length > 0 || podcasts.length > 0) && <SectionHeading kicker="More" title="Latest posts" />}
+          {(pinnedPosts.length > 0 || podcasts.length > 0) && <MediaHeading kicker="More" title="Latest posts" />}
           <div className={`grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 ${(pinnedPosts.length > 0 || podcasts.length > 0) ? "mt-6" : ""}`}>
             {posts.map((post, i) => (
-              <PostCard key={post.id} post={post} delay={i * 0.06} />
+              <MediaPostCard key={post.id} post={post} delay={i * 0.06} />
             ))}
           </div>
         </section>
@@ -288,38 +230,14 @@ export default async function MediaPage() {
         </section>
       )}
 
-      <section id="tours" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-        <SectionHeading as="h3" title="Property video tours" />
-        <Reveal delay={0.2}>
-          <p className="mt-1 text-sm text-brand-ink/60">
-            Each listing has its own walkthrough video, hosted alongside its full details on our
-            verified Bayut portfolio — browse by category to find one.
-          </p>
-        </Reveal>
-        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((cat, i) => (
-            <Reveal key={cat.label} delay={i * 0.07}>
-              <a
-                href={cat.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass shimmer-border group flex h-full flex-col justify-between rounded-3xl p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-gold/15 text-brand-gold ring-1 ring-brand-gold/20 transition-transform duration-300 group-hover:scale-110">
-                  <cat.icon size={20} strokeWidth={1.75} />
-                </div>
-                <h3 className="mt-4 text-lg font-semibold text-heading">{cat.label}</h3>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-brand-ink/60 group-hover:text-brand-gold">
-                  Watch tours{" "}
-                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </span>
-              </a>
-            </Reveal>
-          ))}
-        </div>
-
+      <section id="tours" className="mx-auto max-w-6xl scroll-mt-28 px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
+        <MediaHeading
+          as="h3"
+          kicker="Walkthroughs"
+          title="Property video tours"
+          note="Each listing has its own walkthrough video, hosted alongside its full details on our verified Bayut portfolio — browse by category to find one."
+        />
+        <TourTiles tours={categories.map((c) => ({ key: c.key, label: c.label, href: c.href }))} />
       </section>
 
       <section id="follow" className="relative scroll-mt-28 overflow-hidden bg-brand-navy py-20 sm:py-24">
