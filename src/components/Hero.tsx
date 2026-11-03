@@ -37,10 +37,11 @@ export default function Hero({
 }) {
   const reduceMotion = useReducedMotion();
   const [slide, setSlide] = useState(0);
+  const [prev, setPrev] = useState(-1);
   const many = images.length > 1 && !reduceMotion;
   useEffect(() => {
     if (!many) return;
-    const t = window.setInterval(() => setSlide((s) => (s + 1) % images.length), SLIDE_MS);
+    const t = window.setInterval(() => setSlide((s) => { setPrev(s); return (s + 1) % images.length; }), SLIDE_MS);
     return () => window.clearInterval(t);
   }, [many, images.length]);
 
@@ -87,8 +88,7 @@ export default function Hero({
             priority={i === 0}
             loading={i === 0 ? "eager" : "lazy"}
             sizes="100vw"
-            className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${i === slide ? "opacity-90" : "opacity-0"} ${reduceMotion ? "" : "ken-burns"}`}
-            style={reduceMotion ? undefined : { animationDelay: `${-(i * 9)}s` }}
+            className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${i === slide ? "opacity-90" : "opacity-0"} ${reduceMotion || (i !== slide && i !== prev) ? "" : "ken-burns"}`}
           />
         ))}
         {!reduceMotion && <div className="light-sweep" />}

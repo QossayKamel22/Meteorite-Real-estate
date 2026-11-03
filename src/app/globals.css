@@ -338,8 +338,7 @@ body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
@@ -815,4 +814,10 @@ body {
   .mask-rise {
     animation: none;
   }
+}
+
+/* Set by <PauseOffscreen> on looping animations that are not on screen, so they stop costing frames. */
+[data-paused="true"],
+[data-paused="true"] * {
+  animation-play-state: paused !important;
 }
