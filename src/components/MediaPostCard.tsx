@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { motion, useInView, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ExternalLink, Pin } from "lucide-react";
 import { isServedImage } from "@/lib/image-url";
 import type { MediaPost } from "@/lib/media-posts-data";
@@ -12,53 +12,30 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const PLATFORM_LABEL: Record<string, string> = { instagram: "Instagram", facebook: "Facebook", twitter: "X", youtube: "YouTube", other: "Social" };
 
 /**
- * A Media post. It rises in, its picture is unveiled by a curtain, and it leans toward the
- * pointer with a gold glow beneath. Pinned ("featured") posts also carry a slowly turning gold
- * light around their edge and a shimmering badge.
+ * A Media post, kept quiet: it fades up into place, its picture settles from a slight zoom, and
+ * on hover the card lifts a little while a fine gold line draws across its top. Pinned posts
+ * differ only by a gold hairline frame and a small "Pinned" label.
  */
 export default function MediaPostCard({ post, delay, featured = false }: { post: MediaPost; delay: number; featured?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLDivElement>(null);
   const show = useInView(ref, { once: true, amount: 0.2 });
-  const px = useMotionValue(0);
-  const py = useMotionValue(0);
-  const rx = useSpring(useTransform(py, [-0.5, 0.5], [3.5, -3.5]), { stiffness: 200, damping: 20 });
-  const ry = useSpring(useTransform(px, [-0.5, 0.5], [-4.5, 4.5]), { stiffness: 200, damping: 20 });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: reduce ? 0 : 46, scale: reduce ? 1 : 0.95 }}
-      animate={show ? { opacity: 1, y: 0, scale: 1 } : undefined}
+      initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+      animate={show ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.9, delay, ease: EASE }}
-      className="relative h-full [perspective:900px]"
+      className="relative h-full"
     >
-      {featured && !reduce && (
-        <span aria-hidden="true" className="pointer-events-none absolute -inset-[2px] overflow-hidden rounded-[1.6rem]">
-          <span className="featured-spin absolute left-1/2 top-1/2 aspect-square w-[160%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_0deg,transparent_0deg,rgba(219,204,59,0.9)_50deg,transparent_110deg)]" />
-        </span>
-      )}
-      <motion.article
-        onPointerMove={(e) => {
-          if (reduce) return;
-          const r = e.currentTarget.getBoundingClientRect();
-          px.set((e.clientX - r.left) / r.width - 0.5);
-          py.set((e.clientY - r.top) / r.height - 0.5);
-          e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
-          e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
-        }}
-        onPointerLeave={() => {
-          px.set(0);
-          py.set(0);
-        }}
-        style={reduce ? undefined : { rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-        className={`glass group relative flex h-full flex-col overflow-hidden rounded-3xl transition-shadow duration-300 hover:shadow-[0_28px_60px_-28px_rgba(219,204,59,0.5)] ${featured ? "bg-surface" : "shimmer-border"}`}
+      <article
+        className={`glass group relative flex h-full flex-col overflow-hidden rounded-3xl transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(13,16,49,0.55)] ${featured ? "bg-surface ring-1 ring-brand-gold/40" : "shimmer-border"}`}
       >
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(219,204,59,0.14), transparent 65%)" }} />
+        <span aria-hidden="true" className="absolute inset-x-0 top-0 z-20 h-px origin-left scale-x-0 bg-gradient-to-r from-brand-gold to-brand-gold-soft transition-transform duration-700 group-hover:scale-x-100" />
         {featured && (
-          <span className="absolute right-3 top-3 z-20 flex items-center gap-1 overflow-hidden rounded-full bg-brand-navy/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-gold backdrop-blur">
-            <span aria-hidden="true" className="absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-white/30 blur-[2px] [animation:badge-sheen_3.6s_ease-in-out_infinite]" />
-            <Pin size={10} className="relative" /> <span className="relative">Pinned</span>
+          <span className="absolute right-3 top-3 z-20 flex items-center gap-1 rounded-full bg-brand-navy/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-gold backdrop-blur">
+            <Pin size={10} /> Pinned
           </span>
         )}
         {post.video ? (
@@ -67,12 +44,12 @@ export default function MediaPostCard({ post, delay, featured = false }: { post:
           post.image && (
             <div className={`relative w-full overflow-hidden bg-brand-paper ${post.portrait ? "aspect-[4/5]" : "aspect-[4/3]"}`}>
               <motion.div
-                initial={{ clipPath: reduce ? "inset(0 0 0 0)" : "inset(0 0 100% 0)" }}
-                animate={show ? { clipPath: "inset(0 0 0% 0)" } : undefined}
-                transition={{ duration: reduce ? 0 : 1.1, delay: delay + 0.15, ease: EASE }}
+                initial={{ scale: reduce ? 1 : 1.08, opacity: reduce ? 1 : 0 }}
+                animate={show ? { scale: 1, opacity: 1 } : undefined}
+                transition={{ duration: reduce ? 0 : 1.3, delay: delay + 0.1, ease: EASE }}
                 className="absolute inset-0"
               >
-                <Image src={post.image} unoptimized={isServedImage(post.image)} alt={post.title} fill className="object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.07]" sizes="(min-width: 1024px) 33vw, 50vw" />
+                <Image src={post.image} unoptimized={isServedImage(post.image)} alt={post.title} fill className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]" sizes="(min-width: 1024px) 33vw, 50vw" />
               </motion.div>
               {post.kind === "social" && post.platform && (
                 <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur">{PLATFORM_LABEL[post.platform]}</span>
@@ -90,7 +67,7 @@ export default function MediaPostCard({ post, delay, featured = false }: { post:
             </a>
           )}
         </div>
-      </motion.article>
+      </article>
     </motion.div>
   );
 }

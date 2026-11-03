@@ -760,3 +760,16 @@ body {
     animation: none;
   }
 }
+
+/* The thin line under the partner spotlight fills over one turn of the tour. */
+.partner-fill {
+  animation: partner-fill linear forwards;
+}
+@keyframes partner-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
