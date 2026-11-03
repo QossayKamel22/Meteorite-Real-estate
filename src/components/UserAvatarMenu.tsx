@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Heart, LogOut, ShieldCheck } from "lucide-react";
 import { useAuth, type AuthUser } from "@/lib/auth-context";
 
 // Apple-style pastel avatar palette — picked deterministically per user.
@@ -65,8 +66,15 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
     function onClickOutside(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false);
     }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
     document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClickOutside);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open]);
 
   if (loading) {
@@ -129,54 +137,53 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
         onClick={() => setOpen((v) => !v)}
         aria-label="Account menu"
         aria-expanded={open}
-        className="flex items-center justify-center rounded-full transition-transform hover:scale-105"
+        className="flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
       >
         <Avatar user={user} />
       </button>
 
-      {open && (
-        <div
-          role="menu"
-          className="glass shimmer-border absolute right-0 top-full mt-2 w-56 rounded-2xl p-2"
-        >
-          <div className="flex items-center gap-3 border-b border-brand-line/70 px-2 pb-3 pt-1">
-            <Avatar user={user} size={32} />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-heading">
-                {user.name ?? "Account"}
-              </p>
-              {user.email && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="menu"
+            initial={{ opacity: 0, scale: 0.95, y: -6 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: -4 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: "top right" }}
+            className="absolute right-0 top-full z-50 mt-2.5 w-60 overflow-hidden rounded-2xl border border-brand-line bg-surface/95 p-1.5 shadow-[0_24px_50px_-20px_rgba(13,16,49,0.45)] backdrop-blur-xl"
+          >
+            <div className="flex items-center gap-3 px-2.5 py-2.5">
+              <Avatar user={user} size={34} />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold leading-tight text-heading">{user.name ?? "Account"}</p>
+                {user.email && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
+              </div>
             </div>
-          </div>
-          <Link prefetch={false}
-            href="/favorites"
-            onClick={() => setOpen(false)}
-            className="mt-2 block rounded-lg px-2 py-2 text-sm font-medium text-brand-ink/80 hover:bg-brand-paper"
-          >
-            Saved properties
-          </Link>
-          {role === "admin" && (
-            <Link prefetch={false}
-              href="/admin"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-brand-gold hover:bg-brand-gold/10"
-            >
-              <ShieldCheck size={14} />
-              Admin dashboard
+            <div className="my-1 h-px bg-brand-line" />
+            <Link prefetch={false} href="/favorites" role="menuitem" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-brand-ink/80 transition-colors hover:bg-brand-paper hover:text-heading">
+              <Heart size={15} className="text-brand-ink/45" /> Saved properties
             </Link>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              signOut();
-            }}
-            className="mt-0.5 block w-full rounded-lg px-2 py-2 text-left text-sm font-medium text-brand-ink/80 hover:bg-brand-paper"
-          >
-            Sign out
-          </button>
-        </div>
-      )}
+            {role === "admin" && (
+              <Link prefetch={false} href="/admin" role="menuitem" onClick={() => setOpen(false)} className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-semibold text-brand-gold transition-colors hover:bg-brand-gold/10">
+                <ShieldCheck size={15} /> Admin dashboard
+              </Link>
+            )}
+            <div className="my-1 h-px bg-brand-line" />
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                signOut();
+              }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm font-medium text-brand-ink/70 transition-colors hover:bg-red-500/10 hover:text-red-600"
+            >
+              <LogOut size={15} /> Sign out
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
