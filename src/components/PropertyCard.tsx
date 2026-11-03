@@ -21,7 +21,7 @@ function formatPrice(p: Property): { amount: string; per: string } {
  * zoom, the card leans toward the pointer with a gold glow beneath it, and the enquiry button
  * slides its arrow out on hover.
  */
-export default function PropertyCard({ property, delay = 0 }: { property: Property; delay?: number }) {
+export default function PropertyCard({ property, delay = 0, animateLayout = false }: { property: Property; delay?: number; animateLayout?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLElement>(null);
   const show = useInView(ref, { once: true, amount: 0.2 });
@@ -34,7 +34,7 @@ export default function PropertyCard({ property, delay = 0 }: { property: Proper
 
   return (
     <motion.div
-      layout={!reduce}
+      layout={animateLayout && !reduce}
       initial={{ opacity: 0, y: reduce ? 0 : 44, scale: reduce ? 1 : 0.95 }}
       animate={show ? { opacity: 1, y: 0, scale: 1 } : undefined}
       exit={{ opacity: 0, scale: 0.92 }}
@@ -77,12 +77,12 @@ export default function PropertyCard({ property, delay = 0 }: { property: Proper
             {price.per && <span className="text-xs font-medium text-brand-ink/65">{price.per}</span>}
           </p>
           <h3 className="mt-1 line-clamp-2 text-sm font-medium text-brand-ink/80">{property.title}</h3>
-          <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-ink/55">
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-ink/66">
             <MapPin size={12} className="flex-none text-brand-gold" />
             <span className="truncate">{property.location}</span>
           </p>
 
-          <div className="mt-4 flex items-center gap-4 border-t border-brand-line pt-4 text-xs text-brand-ink/60">
+          <div className="mt-4 flex items-center gap-4 border-t border-brand-line pt-4 text-xs text-brand-ink/70">
             <span className="flex items-center gap-1.5"><BedDouble size={14} className="text-brand-gold/80" /> {property.isStudio ? "Studio" : property.bedrooms}</span>
             <span className="flex items-center gap-1.5"><Bath size={14} className="text-brand-gold/80" /> {property.bathrooms}</span>
             <span className="flex items-center gap-1.5"><Ruler size={14} className="text-brand-gold/80" /> {property.sizeSqft.toLocaleString()} sqft</span>

@@ -18,6 +18,8 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   const reduce = useReducedMotion() ?? false;
   const [type, setType] = useState("All");
   const [sort, setSort] = useState<Sort>("featured");
+  // Cards only measure and glide once the visitor changes the filter or sort; before that it would just cost the first paint.
+  const [touched, setTouched] = useState(false);
   const types = useMemo(() => ["All", ...Array.from(new Set(properties.map((p) => p.type)))], [properties]);
   const shown = useMemo(() => {
     const list = type === "All" ? properties : properties.filter((p) => p.type === type);
@@ -27,7 +29,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   }, [properties, type, sort]);
 
   if (properties.length === 0) {
-    return <p className="rounded-3xl border border-dashed border-brand-line p-10 text-center text-sm text-brand-ink/55">{emptyText}</p>;
+    return <p className="rounded-3xl border border-dashed border-brand-line p-10 text-center text-sm text-brand-ink/66">{emptyText}</p>;
   }
 
   return (
@@ -42,7 +44,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
                   key={t}
                   type="button"
                   aria-pressed={on}
-                  onClick={() => setType(t)}
+                  onClick={() => { setTouched(true); setType(t); }}
                   className={`relative rounded-full px-4 py-1.5 text-sm font-medium ring-1 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${on ? "text-brand-navy ring-brand-gold" : "text-brand-ink/70 ring-brand-line hover:text-heading hover:ring-brand-gold/50"}`}
                 >
                   {on && <motion.span layoutId="type-pill" transition={{ type: "spring", stiffness: 380, damping: 30 }} className="absolute inset-0 rounded-full bg-brand-gold" />}
@@ -54,10 +56,10 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
         ) : (
           <span />
         )}
-        <label className="flex items-center gap-2 text-sm text-brand-ink/60">
+        <label className="flex items-center gap-2 text-sm text-brand-ink/70">
           <ArrowDownUp size={15} className="text-brand-gold" />
           <span className="sr-only">Sort listings</span>
-          <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="rounded-full border border-brand-line bg-surface px-3.5 py-1.5 text-sm font-medium text-heading outline-none transition-colors focus:border-brand-gold">
+          <select value={sort} onChange={(e) => { setTouched(true); setSort(e.target.value as Sort); }} className="rounded-full border border-brand-line bg-surface px-3.5 py-1.5 text-sm font-medium text-heading outline-none transition-colors focus:border-brand-gold">
             {SORTS.map((s) => (
               <option key={s.key} value={s.key}>{s.label}</option>
             ))}
@@ -65,14 +67,14 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
         </label>
       </div>
 
-      <motion.div layout={!reduce} className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <motion.div layout={touched && !reduce} className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <AnimatePresence mode="popLayout">
           {shown.map((p, i) => (
-            <PropertyCard key={p.id} property={p} delay={Math.min(i, 7) * 0.06} />
+            <PropertyCard key={p.id} property={p} delay={Math.min(i, 7) * 0.06} animateLayout={touched} />
           ))}
         </AnimatePresence>
       </motion.div>
-      {shown.length === 0 && <p className="mt-6 text-center text-sm text-brand-ink/55">Nothing of that type right now.</p>}
+      {shown.length === 0 && <p className="mt-6 text-center text-sm text-brand-ink/66">Nothing of that type right now.</p>}
     </LayoutGroup>
   );
 }

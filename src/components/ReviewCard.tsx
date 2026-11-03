@@ -32,7 +32,7 @@ function StarRow({ rating, show }: { rating: number; show: boolean }) {
 
 function GoogleBadge() {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-brand-ink/60 shadow-sm ring-1 ring-black/5 dark:bg-white/10 dark:text-white/75 dark:shadow-none dark:ring-white/15">
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-brand-ink/70 shadow-sm ring-1 ring-black/5 dark:bg-white/10 dark:text-white/75 dark:shadow-none dark:ring-white/15">
       <GoogleMark />
       Google Review
     </span>

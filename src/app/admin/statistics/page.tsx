@@ -17,7 +17,7 @@ export default async function AdminStatisticsPage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Homepage Statistics</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             Shown on the Homepage and About Us stat sections.
           </p>
         </div>

@@ -203,7 +203,7 @@ export default async function MediaPage() {
             <div>
               <SectionHeading kicker="Poster series" title="Dubai, in frames" />
               <Reveal delay={0.15}>
-                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-brand-ink/60">
+                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-brand-ink/70">
                   From the Marina to the Burj Al Arab — the posters we share across our channels. Hover to fan them out, tap one to view it full screen or download it.
                 </p>
               </Reveal>
@@ -243,7 +243,7 @@ export default async function MediaPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <p className="text-center text-xs text-brand-ink/45">
+        <p className="text-center text-xs text-brand-ink/62">
           Looking for something specific?{" "}
           <Link prefetch={false} href="/contact-us" className="font-medium text-heading hover:text-gold-ink">
             Contact us

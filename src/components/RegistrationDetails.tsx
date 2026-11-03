@@ -27,7 +27,7 @@ function Row({ f, index, show, still }: { f: Field; index: number; show: boolean
       transition={{ duration: 0.8, delay: 0.45 + index * 0.14, ease: EASE }}
       className={`group relative rounded-2xl border border-transparent px-4 py-3 transition-colors duration-300 hover:border-brand-gold/30 hover:bg-brand-gold/[0.06] ${f.wide ? "sm:col-span-2" : ""}`}
     >
-      <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-ink/62">{f.label}</dt>
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-ink/72">{f.label}</dt>
       <dd className="mt-1 flex items-center gap-2 overflow-hidden text-[15px] font-medium text-brand-ink/85">
         <motion.span
           initial={{ clipPath: still ? "inset(0 0 0 0)" : "inset(0 100% 0 0)" }}
@@ -37,7 +37,7 @@ function Row({ f, index, show, still }: { f: Field; index: number; show: boolean
           {f.value}
         </motion.span>
         {f.copy && (
-          <button type="button" onClick={copy} aria-label={`Copy ${f.label}`} className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-brand-ink/55 opacity-0 transition-all hover:text-brand-gold focus-visible:opacity-100 group-hover:opacity-100">
+          <button type="button" onClick={copy} aria-label={`Copy ${f.label}`} className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-brand-ink/66 opacity-0 transition-all hover:text-brand-gold focus-visible:opacity-100 group-hover:opacity-100">
             {copied ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
           </button>
         )}

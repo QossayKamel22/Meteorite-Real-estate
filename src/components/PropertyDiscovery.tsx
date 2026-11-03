@@ -103,7 +103,7 @@ export default function PropertyDiscovery() {
             <span className="text-sm font-semibold uppercase tracking-[0.2em] text-gold-ink">Live Inventory</span>
           </div>
           <MaskWords text="Explore our current listings" show={show} delay={0.1} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl" />
-          <motion.p initial={{ opacity: 0, y: reduce ? 0 : 16 }} animate={show ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, delay: 0.5, ease: EASE }} className="mt-3 text-[15px] leading-relaxed text-brand-ink/60">
+          <motion.p initial={{ opacity: 0, y: reduce ? 0 : 16 }} animate={show ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, delay: 0.5, ease: EASE }} className="mt-3 text-[15px] leading-relaxed text-brand-ink/70">
             Our full, always-current portfolio lives on Bayut, our verified listing partner. Pick a category, or open our agency profile.
           </motion.p>
         </div>
@@ -142,7 +142,7 @@ export default function PropertyDiscovery() {
         ))}
       </ul>
 
-      <motion.div initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 0.9 }} className="mt-5 flex flex-col gap-2 text-xs text-brand-ink/62 sm:flex-row sm:items-center sm:justify-between">
+      <motion.div initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 0.9 }} className="mt-5 flex flex-col gap-2 text-xs text-brand-ink/72 sm:flex-row sm:items-center sm:justify-between">
         <p>Links open Bayut in a new tab. Prices and availability are managed live there.</p>
         <Link prefetch={false} href="/for-sale" className="group text-sm font-semibold text-heading transition-colors hover:text-gold-ink">
           More about buying with Meteorite <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>

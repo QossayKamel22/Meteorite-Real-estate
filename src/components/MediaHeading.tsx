@@ -19,7 +19,7 @@ export default function MediaHeading({ kicker, title, note, as = "h2" }: { kicke
       </div>
       <MaskWords as={as} text={title} show={show} delay={0.1} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl" />
       {note && (
-        <motion.p initial={{ opacity: 0, y: reduce ? 0 : 14 }} animate={show ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, delay: 0.5, ease: EASE }} className="mt-3 max-w-xl text-[15px] leading-relaxed text-brand-ink/60">
+        <motion.p initial={{ opacity: 0, y: reduce ? 0 : 14 }} animate={show ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, delay: 0.5, ease: EASE }} className="mt-3 max-w-xl text-[15px] leading-relaxed text-brand-ink/70">
           {note}
         </motion.p>
       )}

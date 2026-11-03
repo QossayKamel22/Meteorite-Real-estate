@@ -114,7 +114,7 @@ function MediaForm({
           type="button"
           onClick={() => set("kind", "post")}
           className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-            form.kind === "post" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/60"
+            form.kind === "post" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/70"
           }`}
         >
           Photo post
@@ -123,7 +123,7 @@ function MediaForm({
           type="button"
           onClick={() => set("kind", "social")}
           className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-            form.kind === "social" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/60"
+            form.kind === "social" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/70"
           }`}
         >
           Social media link
@@ -132,7 +132,7 @@ function MediaForm({
           type="button"
           onClick={() => set("kind", "podcast")}
           className={`flex-1 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
-            form.kind === "podcast" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/60"
+            form.kind === "podcast" ? "border-brand-gold bg-brand-gold/10 text-heading" : "border-brand-line text-brand-ink/70"
           }`}
         >
           Podcast embed
@@ -140,7 +140,7 @@ function MediaForm({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-brand-ink/60">Title *</label>
+        <label className="block text-xs font-medium text-brand-ink/70">Title *</label>
         <input
           required
           value={form.title}
@@ -153,7 +153,7 @@ function MediaForm({
         <>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-brand-ink/60">Platform</label>
+              <label className="block text-xs font-medium text-brand-ink/70">Platform</label>
               <select
                 value={form.platform}
                 onChange={(e) => set("platform", e.target.value as MediaPlatform)}
@@ -167,7 +167,7 @@ function MediaForm({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-brand-ink/60">
+              <label className="block text-xs font-medium text-brand-ink/70">
                 {form.kind === "podcast" ? "Post permalink" : "Link *"}
               </label>
               <input
@@ -187,7 +187,7 @@ function MediaForm({
           </div>
           {form.kind === "podcast" && (
             <div>
-              <label className="block text-xs font-medium text-brand-ink/60">Section</label>
+              <label className="block text-xs font-medium text-brand-ink/70">Section</label>
               <input
                 list="podcast-sections"
                 value={form.section}
@@ -206,7 +206,7 @@ function MediaForm({
             </div>
           )}
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">
+            <label className="block text-xs font-medium text-brand-ink/70">
               {form.kind === "podcast" ? "Video link (recommended)" : "Video link (optional)"}
             </label>
             <input
@@ -231,7 +231,7 @@ function MediaForm({
         <>
           <ImageUploadField label="Photo (optional if a video is added)" value={form.image} onChange={(dataUrl) => set("image", dataUrl)} shape="wide" maxDimension={1000} />
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">Video link (optional)</label>
+            <label className="block text-xs font-medium text-brand-ink/70">Video link (optional)</label>
             <input
               type="url"
               value={form.video}
@@ -244,7 +244,7 @@ function MediaForm({
       )}
 
       <div>
-        <label className="block text-xs font-medium text-brand-ink/60">
+        <label className="block text-xs font-medium text-brand-ink/70">
           {form.kind === "post" ? "Text" : "Caption (optional)"}
         </label>
         <textarea
@@ -403,7 +403,7 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
                       {p.pinned && <Pin size={12} className="mr-1 inline text-brand-gold" />}
                       {p.title}
                     </p>
-                    <p className="truncate text-xs text-brand-ink/55">
+                    <p className="truncate text-xs text-brand-ink/66">
                       {p.kind === "social" && `Social · ${p.platform}`}
                       {p.kind === "podcast" && `Podcast · ${p.platform}${p.section ? ` · ${p.section}` : ""}`}
                       {p.kind === "post" && "Photo post"}
@@ -489,7 +489,7 @@ export default function AdminMediaPanel({ posts }: { posts: MediaPost[] }) {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading"
         >
           <Plus size={15} /> Add post
         </button>

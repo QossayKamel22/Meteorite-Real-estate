@@ -74,7 +74,7 @@ export default function AdminCeoMessageForm({ message }: { message: CeoMessage }
 
       <div>
         <div className="flex items-center justify-between">
-          <label className="block text-xs font-medium text-brand-ink/60">Message</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Message</label>
           <span
             className={`text-xs font-medium ${overLimit ? "text-red-600" : "text-brand-ink/40"}`}
           >
@@ -94,7 +94,7 @@ export default function AdminCeoMessageForm({ message }: { message: CeoMessage }
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Signed as</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Signed as</label>
           <input
             value={form.signerTitle}
             maxLength={60}
@@ -103,7 +103,7 @@ export default function AdminCeoMessageForm({ message }: { message: CeoMessage }
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Company</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Company</label>
           <input
             value={form.company}
             maxLength={80}

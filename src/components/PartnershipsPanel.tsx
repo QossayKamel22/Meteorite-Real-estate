@@ -42,7 +42,7 @@ export default function PartnershipsPanel() {
           <motion.span initial={{ scaleX: 0 }} animate={show ? { scaleX: 1 } : undefined} transition={{ duration: 0.8, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-8 bg-brand-gold" />
         </div>
         <MaskWords text="Registered with the following developers" show={show} delay={0.1} className="mx-auto mt-3 max-w-2xl text-2xl font-semibold tracking-tight text-heading sm:text-3xl" />
-        <motion.p initial={{ opacity: 0, y: reduce ? 0 : 12 }} animate={show ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, delay: 0.5, ease: EASE }} className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-brand-ink/60">
+        <motion.p initial={{ opacity: 0, y: reduce ? 0 : 12 }} animate={show ? { opacity: 1, y: 0 } : undefined} transition={{ duration: 0.9, delay: 0.5, ease: EASE }} className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-brand-ink/70">
           Our registrations span Dubai&apos;s leading master developers.
         </motion.p>
       </div>
@@ -65,7 +65,7 @@ export default function PartnershipsPanel() {
           </motion.li>
         ))}
       </ul>
-      <p className="mt-6 text-center text-xs text-brand-ink/62">
+      <p className="mt-6 text-center text-xs text-brand-ink/72">
         <span className="text-sm font-semibold tabular-nums text-gold-ink">{n}</span> registered developer partnerships across Dubai
       </p>
     </div>

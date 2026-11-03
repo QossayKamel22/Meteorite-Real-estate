@@ -19,7 +19,7 @@ import {
 } from "@/lib/reels-shared";
 
 const inputClass = "mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold";
-const labelClass = "block text-xs font-medium text-brand-ink/60";
+const labelClass = "block text-xs font-medium text-brand-ink/70";
 const iconBtn = "flex h-8 w-8 flex-none items-center justify-center rounded-full text-brand-ink/50 hover:bg-brand-paper hover:text-heading disabled:opacity-30";
 const ICONS: Record<ReelPlatform, (p: { size?: number }) => React.ReactElement> = { tiktok: TikTokIcon, instagram: InstagramIcon, youtube: YouTubeIcon, facebook: FacebookIcon };
 
@@ -233,7 +233,7 @@ export default function AdminReelsPanel({ reels, accounts }: { reels: Reel[]; ac
                   {r.cover ? <Image src={r.cover} alt="" fill sizes="44px" className="object-cover" unoptimized /> : <Icon size={22} />}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-ink/60"><Icon size={14} /> {PLATFORM_LABEL[r.platform]}{!r.visible && <span className="text-brand-ink/40">· Hidden</span>}</div>
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-ink/70"><Icon size={14} /> {PLATFORM_LABEL[r.platform]}{!r.visible && <span className="text-brand-ink/40">· Hidden</span>}</div>
                   <input
                     aria-label={`Title of reel ${i + 1}`}
                     value={draft}

@@ -18,7 +18,7 @@ export default async function AdminUsersPage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Users</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             Everyone who has signed in with Google. Grant or revoke admin access, or disable an
             account entirely.
           </p>

@@ -65,7 +65,7 @@ export default function AdminGoogleReviewsForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Rating shown next to the Google icon (1–5)</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Rating shown next to the Google icon (1–5)</label>
           <input
             type="number"
             min={1}
@@ -77,7 +77,7 @@ export default function AdminGoogleReviewsForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Number of reviews shown next to the Google icon</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Number of reviews shown next to the Google icon</label>
           <input
             type="number"
             min={0}
@@ -96,7 +96,7 @@ export default function AdminGoogleReviewsForm({
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-brand-ink/60">Google reviews link</label>
+        <label className="block text-xs font-medium text-brand-ink/70">Google reviews link</label>
         <input
           type="url"
           value={form.url}

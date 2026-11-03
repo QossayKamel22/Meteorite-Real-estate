@@ -85,7 +85,7 @@ export default function AdminSidebar() {
               key={href}
               href={href}
               className={`flex flex-none items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors ${
-                active ? "bg-brand-navy text-white" : "bg-brand-paper text-brand-ink/60"
+                active ? "bg-brand-navy text-white" : "bg-brand-paper text-brand-ink/70"
               }`}
             >
               <Icon size={13} strokeWidth={1.75} />

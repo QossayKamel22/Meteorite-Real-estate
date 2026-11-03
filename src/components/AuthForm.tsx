@@ -92,7 +92,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       <h1 className="text-3xl font-semibold tracking-tight text-heading">
         {isLogin ? "Sign in" : "Create your account"}
       </h1>
-      <p className="mt-2 text-sm text-brand-ink/60">
+      <p className="mt-2 text-sm text-brand-ink/70">
         {isLogin ? "New here?" : "Already have an account?"}{" "}
         <Link prefetch={false}
           href={isLogin ? "/register" : "/login"}

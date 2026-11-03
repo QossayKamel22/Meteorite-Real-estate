@@ -70,7 +70,7 @@ export default function PageHero({ image, kicker, title, text, chips, children }
           <motion.span initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.9, ease: EASE }} style={{ transformOrigin: "left" }} className="h-px w-10 bg-brand-gold" />
         </div>
         <MaskWords as="h1" text={title} show delay={0.15} className="mt-5 text-4xl font-semibold leading-[1.08] tracking-tight text-white [text-shadow:0_2px_30px_rgba(0,0,0,0.5)] sm:text-6xl" />
-        <motion.p initial={{ opacity: 0, y: reduce ? 0 : 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.7, ease: EASE }} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
+        <motion.p initial={{ opacity: 1, y: reduce ? 0 : 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.7, ease: EASE }} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-white/70 sm:text-lg">
           {text}
         </motion.p>
         <ul className="mt-8 flex flex-wrap items-center justify-center gap-3">

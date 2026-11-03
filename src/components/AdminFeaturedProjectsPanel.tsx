@@ -109,7 +109,7 @@ export default function AdminFeaturedProjectsPanel({ projects }: { projects: Fea
                     {p.location && <span className="font-normal text-brand-ink/50"> — {p.location}</span>}
                     {!p.visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                   </p>
-                  <p className="truncate text-xs text-brand-ink/55">
+                  <p className="truncate text-xs text-brand-ink/66">
                     {p.facts.length} fact{p.facts.length === 1 ? "" : "s"} · {p.image ? "photo" : "no photo"} · {p.linkUrl}
                   </p>
                 </div>
@@ -161,7 +161,7 @@ export default function AdminFeaturedProjectsPanel({ projects }: { projects: Fea
           type="button"
           onClick={() => setAdding(true)}
           disabled={atLimit}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading disabled:cursor-not-allowed disabled:opacity-40"
+          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Plus size={15} /> {atLimit ? `Limit of ${MAX_PROJECTS} projects reached` : "Add project"}
         </button>

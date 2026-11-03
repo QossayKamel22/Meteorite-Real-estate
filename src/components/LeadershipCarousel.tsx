@@ -75,7 +75,7 @@ function Leader({ leader, first }: { leader: Agent; first: boolean }) {
         <motion.h2 variants={rise} className="mt-3 text-3xl font-semibold tracking-tight text-heading sm:text-4xl">
           {leader.name}
         </motion.h2>
-        <motion.p variants={rise} className="mt-1 text-base font-medium text-brand-ink/60">{leader.title}</motion.p>
+        <motion.p variants={rise} className="mt-1 text-base font-medium text-brand-ink/70">{leader.title}</motion.p>
 
         {bio.map((p, i) => (
           <motion.p
@@ -87,7 +87,7 @@ function Leader({ leader, first }: { leader: Agent; first: boolean }) {
           </motion.p>
         ))}
         {background.map((p, i) => (
-          <motion.p key={`g${i}`} variants={rise} className="mt-4 max-w-2xl text-base leading-relaxed text-brand-ink/60">
+          <motion.p key={`g${i}`} variants={rise} className="mt-4 max-w-2xl text-base leading-relaxed text-brand-ink/70">
             {p}
           </motion.p>
         ))}
@@ -204,7 +204,7 @@ export default function LeadershipCarousel({ leaders, message }: { leaders: Agen
                     </span>
                     <span className="hidden min-w-0 sm:block">
                       <span className="block truncate text-sm font-semibold text-heading">{l.name.split(" ").slice(0, 2).join(" ")}</span>
-                      <span className="block truncate text-[11px] text-brand-ink/55">{l.title}</span>
+                      <span className="block truncate text-[11px] text-brand-ink/66">{l.title}</span>
                     </span>
                   </button>
                 );

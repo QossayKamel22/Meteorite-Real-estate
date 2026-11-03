@@ -68,7 +68,7 @@ export default function ErrorPanel({
   return (
     <div className="mx-auto flex min-h-[50vh] max-w-lg flex-col items-center justify-center px-6 py-20 text-center">
       <h1 className="text-2xl font-semibold tracking-tight text-heading">{title}</h1>
-      <p className="mt-3 text-[15px] leading-relaxed text-brand-ink/60">{message}</p>
+      <p className="mt-3 text-[15px] leading-relaxed text-brand-ink/70">{message}</p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"

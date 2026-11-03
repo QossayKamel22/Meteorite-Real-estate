@@ -111,7 +111,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    // Starting Firebase pulls in ~100 KB of script and an iframe; wait until the page has settled so it never competes with what the visitor is looking at.
+    let unsubscribe: (() => void) | undefined;
+    const start = () => { unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       // While suppressed, registerWithEmail owns `user`/`role` entirely (and
       // sets them itself once the display name is in place) — if this
       // listener also called setUser here with the pre-rename user, every
@@ -131,8 +133,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setActionLoading(false);
       }
       setLoading(false);
-    });
-    return unsubscribe;
+    }); };
+    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const handle = idle ? idle(start, { timeout: 2500 }) : window.setTimeout(start, 1200);
+    return () => {
+      if (idle) (window as unknown as { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback?.(handle);
+      else window.clearTimeout(handle);
+      unsubscribe?.();
+    };
   }, []);
 
   const signInWithGoogle = async () => {

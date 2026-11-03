@@ -13,7 +13,7 @@ export default async function PosterBand() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading kicker="Poster series" title="Dubai, in frames" />
           <Reveal delay={0.15}>
-            <p className="max-w-sm text-sm leading-relaxed text-brand-ink/60">Tap a poster to see it full screen. The band pauses when you point at it.</p>
+            <p className="max-w-sm text-sm leading-relaxed text-brand-ink/70">Tap a poster to see it full screen. The band pauses when you point at it.</p>
           </Reveal>
         </div>
       </div>

@@ -97,7 +97,7 @@ export default function AdminPosterSeriesPanel({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-semibold text-heading">{title}</h2>
-          <p className="text-xs text-brand-ink/55">{hint}</p>
+          <p className="text-xs text-brand-ink/66">{hint}</p>
         </div>
         <button
           type="button"

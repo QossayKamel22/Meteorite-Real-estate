@@ -70,7 +70,7 @@ function TestimonialForm({
     <form onSubmit={handleSubmit} className="mt-4 space-y-3 rounded-xl bg-brand-paper p-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Name *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Name *</label>
           <input
             required
             value={form.name}
@@ -79,7 +79,7 @@ function TestimonialForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Role *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Role *</label>
           <input
             required
             value={form.role}
@@ -89,7 +89,7 @@ function TestimonialForm({
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Quote *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Quote *</label>
           <textarea
             required
             value={form.quote}
@@ -99,7 +99,7 @@ function TestimonialForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Source</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Source</label>
           <select
             value={form.source}
             onChange={(e) => set("source", e.target.value as FormState["source"])}
@@ -110,7 +110,7 @@ function TestimonialForm({
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Rating</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Rating</label>
           <div className="mt-1.5 flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
               <button
@@ -265,7 +265,7 @@ export default function AdminTestimonialsPanel({ testimonials }: { testimonials:
                       {t.name} <span className="font-normal text-brand-ink/50">— {t.role}</span>
                       {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                     </p>
-                    <p className="truncate text-xs text-brand-ink/55">
+                    <p className="truncate text-xs text-brand-ink/66">
                       {"★".repeat(t.rating ?? 5)}
                       {"☆".repeat(5 - (t.rating ?? 5))} · {t.source === "google" ? "Google" : "Direct"} ·{" "}
                       {t.quote}
@@ -324,7 +324,7 @@ export default function AdminTestimonialsPanel({ testimonials }: { testimonials:
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading"
         >
           <Plus size={15} /> Add testimonial
         </button>

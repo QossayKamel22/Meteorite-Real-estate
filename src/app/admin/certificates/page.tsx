@@ -17,7 +17,7 @@ export default async function AdminCertificatesPage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Certificates</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             Shown in the About Us &quot;Our Certificate&quot; section.
           </p>
         </div>

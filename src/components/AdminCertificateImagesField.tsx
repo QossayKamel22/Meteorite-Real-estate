@@ -56,7 +56,7 @@ export default function AdminCertificateImagesField({
 
   return (
     <div>
-      <label className="block text-xs font-medium text-brand-ink/60">Certificate images * (newest first)</label>
+      <label className="block text-xs font-medium text-brand-ink/70">Certificate images * (newest first)</label>
 
       <ul className="mt-2 grid gap-3 sm:grid-cols-2">
         {images.map((src, i) => (
@@ -112,7 +112,7 @@ export default function AdminCertificateImagesField({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={loading}
-              className="flex aspect-[3/2] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-brand-line text-sm font-medium text-brand-ink/60 transition-colors hover:border-brand-gold hover:text-heading disabled:opacity-60"
+              className="flex aspect-[3/2] w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-brand-line text-sm font-medium text-brand-ink/70 transition-colors hover:border-brand-gold hover:text-heading disabled:opacity-60"
             >
               {loading ? <Loader2 size={18} className="animate-spin text-brand-gold" /> : <ImagePlus size={18} />}
               {images.length === 0 ? "Upload image" : "Add another image"}

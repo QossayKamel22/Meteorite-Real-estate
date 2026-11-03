@@ -42,7 +42,7 @@ export default function AdminStatCard({ icon, label, value, href, index = 0 }: {
           </span>
         </span>
         <p className="mt-4 text-3xl font-semibold tabular-nums tracking-tight text-heading">{target === null ? value : (show && !reduce ? n : target).toLocaleString("en-US")}</p>
-        <p className="mt-0.5 text-sm text-brand-ink/55">{label}</p>
+        <p className="mt-0.5 text-sm text-brand-ink/66">{label}</p>
         <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-brand-gold to-brand-gold-soft transition-transform duration-500 group-hover:scale-x-100" />
       </Link>
     </motion.div>

@@ -44,7 +44,7 @@ export default function LeadershipMessage({ paragraphs, signerTitle, company }: 
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mt-5 max-w-xl space-y-2 text-[15px] leading-relaxed text-brand-ink/60"
+          className="mx-auto mt-5 max-w-xl space-y-2 text-[15px] leading-relaxed text-brand-ink/70"
         >
           {rest.map((p, i) => (
             <p key={i}>{p}</p>
@@ -52,7 +52,7 @@ export default function LeadershipMessage({ paragraphs, signerTitle, company }: 
         </motion.div>
       )}
       {(signerTitle || company) && (
-        <p className="mt-6 text-sm text-brand-ink/55">
+        <p className="mt-6 text-sm text-brand-ink/66">
           {signerTitle && <span className="font-semibold text-heading">{signerTitle}</span>}
           {signerTitle && company && <span aria-hidden="true"> · </span>}
           {company}

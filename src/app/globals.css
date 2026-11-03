@@ -798,3 +798,21 @@ body {
     color: var(--brand-gold);
   }
 }
+
+/* A heading word rising out of its mask; plays on load without waiting for scripts. */
+.mask-rise {
+  animation: mask-rise 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes mask-rise {
+  from {
+    transform: translateY(115%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mask-rise {
+    animation: none;
+  }
+}

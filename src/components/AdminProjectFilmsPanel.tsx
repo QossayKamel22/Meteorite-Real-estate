@@ -19,7 +19,7 @@ import {
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold";
-const labelClass = "block text-xs font-medium text-brand-ink/60";
+const labelClass = "block text-xs font-medium text-brand-ink/70";
 const iconBtn =
   "flex h-8 w-8 flex-none items-center justify-center rounded-full text-brand-ink/50 hover:bg-brand-paper hover:text-heading disabled:opacity-30";
 
@@ -222,7 +222,7 @@ export default function AdminProjectFilmsPanel({ config }: { config: ProjectFilm
                     {f.title || "New project"}
                     {!f.visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                   </p>
-                  <p className="truncate text-xs text-brand-ink/55">
+                  <p className="truncate text-xs text-brand-ink/66">
                     {f.shape === "portrait" ? "Portrait video" : "Landscape video"} · {f.images.length} image{f.images.length === 1 ? "" : "s"}
                   </p>
                 </button>
@@ -332,7 +332,7 @@ export default function AdminProjectFilmsPanel({ config }: { config: ProjectFilm
                       ))}
                       {f.images.length < MAX_FILM_IMAGES && (
                         <li>
-                          <button type="button" disabled={busy} onClick={() => { targetId.current = f.id; galleryInput.current?.click(); }} className="flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-brand-line text-[11px] font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading disabled:opacity-60">
+                          <button type="button" disabled={busy} onClick={() => { targetId.current = f.id; galleryInput.current?.click(); }} className="flex aspect-square w-full flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-brand-line text-[11px] font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading disabled:opacity-60">
                             {busy ? <Loader2 size={16} className="animate-spin text-brand-gold" /> : <ImagePlus size={16} />}
                             {busy ? "Uploading…" : "Add images"}
                           </button>
@@ -347,7 +347,7 @@ export default function AdminProjectFilmsPanel({ config }: { config: ProjectFilm
         })}
       </ul>
 
-      <button type="button" onClick={add} disabled={list.length >= MAX_FILMS} className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading disabled:cursor-not-allowed disabled:opacity-40">
+      <button type="button" onClick={add} disabled={list.length >= MAX_FILMS} className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading disabled:cursor-not-allowed disabled:opacity-40">
         <Plus size={15} /> {list.length >= MAX_FILMS ? `Limit of ${MAX_FILMS} projects reached` : "Add project"}
       </button>
 

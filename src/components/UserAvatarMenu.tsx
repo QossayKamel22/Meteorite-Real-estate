@@ -122,7 +122,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
         <button
           type="button"
           onClick={() => signOut()}
-          className="flex-none text-xs font-semibold text-brand-ink/60 hover:text-heading"
+          className="flex-none text-xs font-semibold text-brand-ink/70 hover:text-heading"
         >
           Sign out
         </button>

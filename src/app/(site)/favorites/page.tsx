@@ -13,7 +13,7 @@ export default function FavoritesPage() {
     <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8">
       <SectionHeading kicker="Saved" title="Your saved properties" as="h1" />
       <Reveal delay={0.2}>
-      <p className="mt-4 text-base leading-relaxed text-brand-ink/60">
+      <p className="mt-4 text-base leading-relaxed text-brand-ink/70">
         Saved on this device only — favorites aren&apos;t synced across devices until a real
         account backend is connected.
       </p>
@@ -21,7 +21,7 @@ export default function FavoritesPage() {
 
       {hydrated && favorites.length === 0 && (
         <div className="mt-10 rounded-2xl border border-dashed border-brand-line p-10 text-center">
-          <p className="text-brand-ink/60">You haven&apos;t saved any properties yet.</p>
+          <p className="text-brand-ink/70">You haven&apos;t saved any properties yet.</p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <Link prefetch={false}
               href="/for-sale"

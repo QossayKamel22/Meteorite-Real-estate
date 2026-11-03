@@ -130,7 +130,7 @@ export default function PhotoCollageView({ people, companyName }: { people: Pers
               ))}
             </div>
 
-            <motion.p initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 1.3 }} className="mt-4 text-center text-xs text-brand-ink/58">
+            <motion.p initial={{ opacity: 0 }} animate={show ? { opacity: 1 } : undefined} transition={{ duration: 0.8, delay: 1.3 }} className="mt-4 text-center text-xs text-brand-ink/68">
               {companyName} — {people.length} of our team, in Dubai
             </motion.p>
           </div>

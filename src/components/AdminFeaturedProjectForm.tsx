@@ -13,7 +13,7 @@ import {
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold";
-const labelClass = "block text-xs font-medium text-brand-ink/60";
+const labelClass = "block text-xs font-medium text-brand-ink/70";
 
 type FormState = FeaturedProjectInput;
 

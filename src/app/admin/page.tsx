@@ -81,7 +81,7 @@ export default async function AdminOverviewPage() {
           </span>
           <div>
             <h2 className="text-base font-semibold text-heading">Site traffic</h2>
-            <p className="text-sm text-brand-ink/55">Best-effort visit tracking, aggregated per day.</p>
+            <p className="text-sm text-brand-ink/66">Best-effort visit tracking, aggregated per day.</p>
           </div>
         </div>
 
@@ -134,7 +134,7 @@ export default async function AdminOverviewPage() {
           </span>
           <div>
             <h2 className="text-base font-semibold text-heading">Users</h2>
-            <p className="text-sm text-brand-ink/55">Accounts, roles, and sign-in activity.</p>
+            <p className="text-sm text-brand-ink/66">Accounts, roles, and sign-in activity.</p>
           </div>
         </div>
 
@@ -171,7 +171,7 @@ export default async function AdminOverviewPage() {
           </span>
           <div>
             <h2 className="text-base font-semibold text-heading">Site content</h2>
-            <p className="text-sm text-brand-ink/55">Homepage stats and certificates, at a glance.</p>
+            <p className="text-sm text-brand-ink/66">Homepage stats and certificates, at a glance.</p>
           </div>
         </div>
 
@@ -199,7 +199,7 @@ export default async function AdminOverviewPage() {
             </span>
             <div className="mt-6">
               <p className="text-2xl font-semibold tracking-tight text-heading">{certificates.length}</p>
-              <p className="mt-0.5 text-sm text-brand-ink/55">Certificate(s) shown on About Us</p>
+              <p className="mt-0.5 text-sm text-brand-ink/66">Certificate(s) shown on About Us</p>
             </div>
           </Link>
         </div>

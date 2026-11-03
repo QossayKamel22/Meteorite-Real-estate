@@ -12,7 +12,7 @@ const MAX = 800;
 const field =
   "peer w-full rounded-xl border border-brand-line bg-surface px-4 pb-2.5 pt-6 text-[15px] outline-none transition-[border-color,box-shadow] duration-300 placeholder-transparent focus:border-brand-gold focus:shadow-[0_0_0_4px_rgba(219,204,59,0.14)]";
 const floating =
-  "pointer-events-none absolute left-4 top-4 origin-left text-[15px] text-brand-ink/62 transition-all duration-300 peer-focus:-translate-y-2.5 peer-focus:scale-[0.78] peer-focus:text-gold-ink peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:scale-[0.78]";
+  "pointer-events-none absolute left-4 top-4 origin-left text-[15px] text-brand-ink/72 transition-all duration-300 peer-focus:-translate-y-2.5 peer-focus:scale-[0.78] peer-focus:text-gold-ink peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:scale-[0.78]";
 
 /**
  * The contact form: floating labels, topic chips that tag the enquiry, a counter ring
@@ -121,7 +121,7 @@ export default function ContactForm() {
           <Send size={15} className="transition-transform duration-300 group-hover:translate-x-0.5" />
         </motion.span>
       </button>
-      <p className="text-xs text-brand-ink/62">
+      <p className="text-xs text-brand-ink/72">
         Opens your email app addressed to {company.email}. For an instant reply, use WhatsApp or call us directly.
       </p>
     </form>

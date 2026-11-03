@@ -17,7 +17,7 @@ export default async function AdminReelsPage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Reels</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             The reel wall on the homepage: videos from TikTok, Instagram, YouTube and Facebook. Paste a link to add one.
           </p>
         </div>

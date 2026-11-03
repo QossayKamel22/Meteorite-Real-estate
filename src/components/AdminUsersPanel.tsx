@@ -59,7 +59,7 @@ export default function AdminUsersPanel({ users, currentUid }: { users: AppUser[
   }
 
   if (users.length === 0) {
-    return <p className="text-sm text-brand-ink/55">No one has signed in yet.</p>;
+    return <p className="text-sm text-brand-ink/66">No one has signed in yet.</p>;
   }
 
   return (
@@ -81,7 +81,7 @@ export default function AdminUsersPanel({ users, currentUid }: { users: AppUser[
               type="button"
               onClick={() => setRoleFilter(f)}
               className={`rounded-full px-3.5 py-2 text-xs font-semibold capitalize transition-colors ${
-                roleFilter === f ? "bg-brand-navy text-white" : "bg-brand-paper text-brand-ink/60"
+                roleFilter === f ? "bg-brand-navy text-white" : "bg-brand-paper text-brand-ink/70"
               }`}
             >
               {f}
@@ -121,7 +121,7 @@ export default function AdminUsersPanel({ users, currentUid }: { users: AppUser[
                 <p className="truncate text-sm font-semibold text-heading">
                   {u.name ?? "Unnamed"} {isSelf && <span className="text-brand-ink/40">(you)</span>}
                 </p>
-                <p className="truncate text-xs text-brand-ink/55">
+                <p className="truncate text-xs text-brand-ink/66">
                   {u.email ?? "—"} · {u.provider} · Joined{" "}
                   {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"} · Active{" "}
                   {timeAgo(u.lastLoginAt)}

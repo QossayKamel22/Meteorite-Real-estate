@@ -30,7 +30,7 @@ export default function ContactUsPage() {
           <Reveal>
             <div className="glass shimmer-border rounded-3xl p-7 sm:p-9">
               <h2 className="text-2xl font-semibold tracking-tight text-heading">Send us a message</h2>
-              <p className="mb-6 mt-1.5 text-sm text-brand-ink/55">Tell us what you&apos;re looking for and we&apos;ll point you to the right person.</p>
+              <p className="mb-6 mt-1.5 text-sm text-brand-ink/66">Tell us what you&apos;re looking for and we&apos;ll point you to the right person.</p>
               <ContactForm />
             </div>
           </Reveal>

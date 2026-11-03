@@ -136,7 +136,7 @@ function PropertyForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Title *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Title *</label>
           <input
             required
             value={form.title}
@@ -146,7 +146,7 @@ function PropertyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Purpose *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Purpose *</label>
           <select
             value={form.purpose}
             onChange={(e) => set("purpose", e.target.value as "sale" | "rent")}
@@ -158,7 +158,7 @@ function PropertyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Type *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Type *</label>
           <input
             required
             value={form.type}
@@ -169,7 +169,7 @@ function PropertyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">
+          <label className="block text-xs font-medium text-brand-ink/70">
             Price (AED) *{form.purpose === "rent" ? " / " : ""}
           </label>
           <div className="mt-1 flex gap-2">
@@ -195,7 +195,7 @@ function PropertyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Size (sqft) *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Size (sqft) *</label>
           <input
             required
             type="number"
@@ -207,7 +207,7 @@ function PropertyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Bedrooms</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Bedrooms</label>
           <input
             type="number"
             min={0}
@@ -216,7 +216,7 @@ function PropertyForm({
             onChange={(e) => set("bedrooms", e.target.value)}
             className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold disabled:opacity-50"
           />
-          <label className="mt-1.5 flex items-center gap-1.5 text-xs text-brand-ink/60">
+          <label className="mt-1.5 flex items-center gap-1.5 text-xs text-brand-ink/70">
             <input
               type="checkbox"
               checked={form.isStudio}
@@ -228,7 +228,7 @@ function PropertyForm({
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Bathrooms *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Bathrooms *</label>
           <input
             required
             type="number"
@@ -240,7 +240,7 @@ function PropertyForm({
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Location *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Location *</label>
           <input
             required
             value={form.location}
@@ -250,7 +250,7 @@ function PropertyForm({
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Description</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Description</label>
           <textarea
             value={form.description}
             onChange={(e) => set("description", e.target.value)}
@@ -260,7 +260,7 @@ function PropertyForm({
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Amenities (one per line)</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Amenities (one per line)</label>
           <textarea
             value={form.amenities}
             onChange={(e) => set("amenities", e.target.value)}
@@ -270,7 +270,7 @@ function PropertyForm({
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">
+          <label className="block text-xs font-medium text-brand-ink/70">
             Original listing link (optional)
           </label>
           <input
@@ -336,7 +336,7 @@ function BayutImportPanel({
           <X size={16} className="text-brand-ink/50" />
         </button>
       </div>
-      <p className="mt-2 text-xs leading-relaxed text-brand-ink/55">
+      <p className="mt-2 text-xs leading-relaxed text-brand-ink/66">
         Bayut blocks automated fetching, so this can&apos;t pull a listing on its own. Instead:
         open the listing on bayut.com, right-click → <strong>View Page Source</strong> (or press
         ⌘+Option+U / Ctrl+U), select all (⌘/Ctrl+A) on that source page, copy it, and paste it
@@ -543,7 +543,7 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-heading">{p.title}</p>
-                    <p className="truncate text-xs text-brand-ink/55">
+                    <p className="truncate text-xs text-brand-ink/66">
                       {formatPrice(p)} · {p.type} · {p.location}
                       {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                     </p>
@@ -620,14 +620,14 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
           <button
             type="button"
             onClick={openBlankAddForm}
-            className="flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+            className="flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading"
           >
             <Plus size={15} /> Add property
           </button>
           <button
             type="button"
             onClick={() => setImporting(true)}
-            className="flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+            className="flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading"
           >
             <ClipboardPaste size={15} /> Import from Bayut
           </button>

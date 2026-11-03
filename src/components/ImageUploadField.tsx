@@ -38,7 +38,7 @@ export default function ImageUploadField({
 
   return (
     <div>
-      <label className="block text-xs font-medium text-brand-ink/60">{label}</label>
+      <label className="block text-xs font-medium text-brand-ink/70">{label}</label>
       <div className="mt-1.5 flex items-center gap-3">
         <div
           className={`relative flex-none overflow-hidden border border-brand-line bg-background ${

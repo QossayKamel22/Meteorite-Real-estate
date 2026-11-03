@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -23,6 +24,24 @@ export default function MaskWords({
 }) {
   const reduce = useReducedMotion();
   const MotionTag = motion[Tag];
+  // A heading that is on screen from the start (a page hero) rises with a plain CSS animation, which
+  // runs before any JavaScript has loaded; waiting for hydration would hold the page's biggest text back.
+  const [instant] = useState(show);
+  if (instant) {
+    const words = text.split(" ");
+    return (
+      <Tag className={className} aria-label={text}>
+        {words.map((w, i) => (
+          <span key={i} aria-hidden="true" className="inline-block overflow-hidden pb-[0.12em] align-bottom">
+            <span className="mask-rise inline-block" style={{ animationDelay: `${delay + i * 0.07}s` }}>
+              {w}
+              {i < words.length - 1 ? "\u00A0" : ""}
+            </span>
+          </span>
+        ))}
+      </Tag>
+    );
+  }
   return (
     <MotionTag className={className} aria-label={text}>
       {text.split(" ").map((w, i) => (

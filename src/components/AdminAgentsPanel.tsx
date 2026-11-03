@@ -115,7 +115,7 @@ function AgentForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Name *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Name *</label>
           <input
             required
             value={form.name}
@@ -124,7 +124,7 @@ function AgentForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Title *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Title *</label>
           <input
             required
             value={form.title}
@@ -133,7 +133,7 @@ function AgentForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Email *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Email *</label>
           <input
             required
             type="email"
@@ -143,7 +143,7 @@ function AgentForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Phone</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Phone</label>
           <input
             value={form.phone}
             onChange={(e) => set("phone", e.target.value)}
@@ -151,7 +151,7 @@ function AgentForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Profile URL</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Profile URL</label>
           <input
             value={form.profileUrl}
             onChange={(e) => set("profileUrl", e.target.value)}
@@ -161,12 +161,12 @@ function AgentForm({
       </div>
 
       <details className="pt-1" open={Boolean(form.bio)}>
-        <summary className="cursor-pointer text-xs font-medium text-brand-ink/60">
+        <summary className="cursor-pointer text-xs font-medium text-brand-ink/70">
           Leadership profile (optional) — anyone with a Bio here appears in the Leadership carousel on the homepage and About Us
         </summary>
         <div className="mt-3 space-y-3">
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">
+            <label className="block text-xs font-medium text-brand-ink/70">
               Bio — leave a blank line between paragraphs. The first paragraph is shown larger.
             </label>
             <textarea
@@ -177,7 +177,7 @@ function AgentForm({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">Background (optional extra paragraph)</label>
+            <label className="block text-xs font-medium text-brand-ink/70">Background (optional extra paragraph)</label>
             <textarea
               value={form.background}
               onChange={(e) => set("background", e.target.value)}
@@ -186,7 +186,7 @@ function AgentForm({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-brand-ink/60">
+            <label className="block text-xs font-medium text-brand-ink/70">
               Credentials — short badges, one per line
             </label>
             <textarea
@@ -337,7 +337,7 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-heading">{agent.name}</p>
-                  <p className="truncate text-xs text-brand-ink/55">
+                  <p className="truncate text-xs text-brand-ink/66">
                     {agent.title} · {agent.email}
                     {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
                   </p>
@@ -395,7 +395,7 @@ export default function AdminAgentsPanel({ agents }: { agents: Agent[] }) {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading"
         >
           <Plus size={15} /> Add agent
         </button>

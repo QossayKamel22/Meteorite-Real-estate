@@ -19,7 +19,7 @@ export default async function AdminMediaPage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Media</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             Shown on the Media page. Link to an existing social media post, or publish a photo and
             text directly.
           </p>

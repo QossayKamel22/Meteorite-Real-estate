@@ -37,7 +37,7 @@ export default async function AdminHomepagePage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Homepage</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             The hero copy, CEO message, featured project and client testimonials shown on the homepage.
           </p>
         </div>
@@ -71,7 +71,7 @@ export default async function AdminHomepagePage() {
             CEO message
           </h2>
         </div>
-        <p className="mt-2 text-sm text-brand-ink/55">
+        <p className="mt-2 text-sm text-brand-ink/66">
           The signed message shown on the homepage below the leadership section. Up to 200 words.
         </p>
         <div className="mt-6">
@@ -84,7 +84,7 @@ export default async function AdminHomepagePage() {
           <Clapperboard size={16} className="text-brand-gold" />
           <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">Featured developments</h2>
         </div>
-        <p className="mt-2 text-sm text-brand-ink/55">
+        <p className="mt-2 text-sm text-brand-ink/66">
           Video projects shown right after &quot;Faces &amp; Places&quot;. Only the project name is required —
           add a video (it plays by itself), text, key facts, a poster and images, or leave any of them out.
           Add, reorder, hide or delete projects.
@@ -101,7 +101,7 @@ export default async function AdminHomepagePage() {
             Featured projects
           </h2>
         </div>
-        <p className="mt-2 text-sm text-brand-ink/55">
+        <p className="mt-2 text-sm text-brand-ink/66">
           The editorial project panel on the homepage, below the listings. Add as many projects as you
           like — with two or more it becomes a swipeable carousel that advances by itself. The order
           below is the order on the site.
@@ -118,7 +118,7 @@ export default async function AdminHomepagePage() {
             Testimonials
           </h2>
         </div>
-        <p className="mt-2 text-sm text-brand-ink/55">
+        <p className="mt-2 text-sm text-brand-ink/66">
           Shown in the hero rotator and the &quot;What our clients say&quot; section on the homepage,
           which shows the first 6 (use the arrows to choose which) and reveals the rest with a
           &quot;See more reviews&quot; button. Long reviews are shortened with a &quot;Read more&quot; button. Don&apos;t invent quotes — only add real client feedback.

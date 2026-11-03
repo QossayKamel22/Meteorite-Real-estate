@@ -68,7 +68,7 @@ export default function Hero({
   }
 
   const rise = (delay: number) => ({
-    initial: { opacity: 0, y: reduceMotion ? 0 : 18 },
+    initial: { opacity: 1, y: reduceMotion ? 0 : 18 },
     animate: { opacity: 1, y: 0 },
     transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] as const },
   });
@@ -85,7 +85,7 @@ export default function Hero({
             aria-hidden={i === slide ? undefined : true}
             fill
             priority={i === 0}
-            loading="eager"
+            loading={i === 0 ? "eager" : "lazy"}
             sizes="100vw"
             className={`object-cover transition-opacity duration-[1800ms] ease-in-out ${i === slide ? "opacity-90" : "opacity-0"} ${reduceMotion ? "" : "ken-burns"}`}
             style={reduceMotion ? undefined : { animationDelay: `${-(i * 9)}s` }}

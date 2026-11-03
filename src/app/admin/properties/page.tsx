@@ -17,7 +17,7 @@ export default async function AdminPropertiesPage() {
         </span>
         <div>
           <h1 className="text-xl font-semibold tracking-tight text-heading">Properties</h1>
-          <p className="text-sm text-brand-ink/55">
+          <p className="text-sm text-brand-ink/66">
             Shown on the For Sale and For Rent pages. Seeded from the company&apos;s real,
             currently-live Bayut listings — add, edit, hide, or remove as inventory changes.
           </p>

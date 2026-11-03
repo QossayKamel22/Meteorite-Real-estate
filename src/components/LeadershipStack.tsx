@@ -91,7 +91,7 @@ function Row({ leader, index }: { leader: Agent; index: number }) {
             </motion.p>
           ))}
           {background.map((p, i) => (
-            <motion.p key={`g${i}`} variants={rise} className="mt-2 max-w-2xl text-sm leading-relaxed text-brand-ink/60">{p}</motion.p>
+            <motion.p key={`g${i}`} variants={rise} className="mt-2 max-w-2xl text-sm leading-relaxed text-brand-ink/70">{p}</motion.p>
           ))}
 
           {leader.credentials && leader.credentials.length > 0 && (

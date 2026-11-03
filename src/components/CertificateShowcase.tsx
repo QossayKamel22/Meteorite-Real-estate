@@ -130,7 +130,7 @@ export default function CertificateShowcase({ cert, first, index }: { cert: Cert
               </motion.li>
             ))}
           </ul>
-          {cert.issuer && <p className="relative mt-3 pl-14 text-xs text-brand-ink/62">Issued by {cert.issuer}. Click the certificate to view full size.</p>}
+          {cert.issuer && <p className="relative mt-3 pl-14 text-xs text-brand-ink/72">Issued by {cert.issuer}. Click the certificate to view full size.</p>}
         </div>
       </div>
     </div>

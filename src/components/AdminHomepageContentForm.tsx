@@ -46,7 +46,7 @@ export default function AdminHomepageContentForm({ content }: { content: Homepag
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-xs font-medium text-brand-ink/60">Badge text</label>
+        <label className="block text-xs font-medium text-brand-ink/70">Badge text</label>
         <input
           value={form.heroBadge}
           maxLength={80}
@@ -59,7 +59,7 @@ export default function AdminHomepageContentForm({ content }: { content: Homepag
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-brand-ink/60">Headline</label>
+        <label className="block text-xs font-medium text-brand-ink/70">Headline</label>
         <input
           value={form.heroHeadline}
           maxLength={120}
@@ -69,7 +69,7 @@ export default function AdminHomepageContentForm({ content }: { content: Homepag
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-brand-ink/60">Subheadline</label>
+        <label className="block text-xs font-medium text-brand-ink/70">Subheadline</label>
         <textarea
           value={form.heroSubheadline}
           maxLength={320}

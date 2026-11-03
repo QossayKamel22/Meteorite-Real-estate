@@ -106,7 +106,7 @@ function CertificateForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">Title *</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Title *</label>
           <input
             required
             value={form.title}
@@ -115,7 +115,7 @@ function CertificateForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Issuer</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Issuer</label>
           <input
             value={form.issuer}
             onChange={(e) => set("issuer", e.target.value)}
@@ -123,7 +123,7 @@ function CertificateForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">License No.</label>
+          <label className="block text-xs font-medium text-brand-ink/70">License No.</label>
           <input
             value={form.licenseNo}
             onChange={(e) => set("licenseNo", e.target.value)}
@@ -131,7 +131,7 @@ function CertificateForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Registration date</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Registration date</label>
           <input
             value={form.registrationDate}
             onChange={(e) => set("registrationDate", e.target.value)}
@@ -140,7 +140,7 @@ function CertificateForm({
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-brand-ink/60">Expiry date</label>
+          <label className="block text-xs font-medium text-brand-ink/70">Expiry date</label>
           <input
             value={form.expiryDate}
             onChange={(e) => set("expiryDate", e.target.value)}
@@ -149,7 +149,7 @@ function CertificateForm({
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs font-medium text-brand-ink/60">
+          <label className="block text-xs font-medium text-brand-ink/70">
             Activities (one per line)
           </label>
           <textarea
@@ -299,7 +299,7 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-heading">{cert.title}</p>
-                  <p className="truncate text-xs text-brand-ink/55">
+                  <p className="truncate text-xs text-brand-ink/66">
                     {cert.licenseNo ? `License #${cert.licenseNo}` : cert.issuer ?? "—"}
                     {cert.images.length > 1 && <span> · {cert.images.length} images</span>}
                     {!visible && <span className="ml-1.5 font-semibold text-brand-ink/40">· Hidden</span>}
@@ -358,7 +358,7 @@ export default function AdminCertificatesPanel({ certificates }: { certificates:
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/60 hover:border-brand-gold hover:text-heading"
+          className="mt-4 flex items-center gap-1.5 rounded-full border border-dashed border-brand-line px-4 py-2 text-sm font-medium text-brand-ink/70 hover:border-brand-gold hover:text-heading"
         >
           <Plus size={15} /> Add certificate
         </button>

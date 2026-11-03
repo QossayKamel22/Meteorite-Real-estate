@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { MediaPlatform } from "@/lib/media-posts-data";
 
 declare global {
@@ -46,8 +46,19 @@ function loadScriptOnce(id: string, src: string, isReady: () => boolean): Promis
 /** Renders an official inline embed (Instagram / Facebook / X) for a public post permalink. */
 export default function SocialEmbed({ platform, url }: { platform: MediaPlatform; url: string }) {
   const ref = useRef<HTMLDivElement>(null);
+  // The platform scripts are heavy, so each embed only starts loading when it is about to be seen.
+  const [near, setNear] = useState(false);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el || near) return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setNear(true), { rootMargin: "500px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [near]);
+
+  useEffect(() => {
+    if (!near) return;
     let cancelled = false;
 
     async function render() {
@@ -71,7 +82,7 @@ export default function SocialEmbed({ platform, url }: { platform: MediaPlatform
     return () => {
       cancelled = true;
     };
-  }, [platform, url]);
+  }, [platform, url, near]);
 
   if (platform === "instagram") {
     return (
