@@ -62,7 +62,8 @@ function toMediaPost(id: string, data: Record<string, unknown>): MediaPost {
 // itself) grows without bound as more posts pile up over time.
 const PUBLIC_FETCH_LIMIT = 60;
 
-const SEED_POSTS: { id: string; marker: string; title: string; body: string; image: string }[] = [
+const SEED_POSTS: { id: string; marker: string; title: string; body: string; image: string; pinned?: boolean }[] = [
+  { id: "poster-uae-flag-day", marker: "uaeFlagDay2026", title: "UAE Flag Day — 3 November", body: "The flag Sheikh Zayed raised will fly high, God willing. Happy Flag Day, UAE.", image: "/brand/posters/uae-flag-day.jpg", pinned: true },
   { id: "poster-saad-abdullah-soboh", marker: "teamPostersSeeded", title: "Meet our CEO — Saad Abdullah Soboh", body: "CEO and Founder of Meteorite Real Estate, an accredited RERA / Dubai Land Department broker.", image: "/brand/posters/saad-abdullah-soboh.jpg" },
   { id: "poster-meher-samir-zamily", marker: "teamPostersSeeded-meher", title: "Meet our team — Meher Samir M Zamily", body: "Sales Manager: selling, buying (ready and off-plan property) and leasing.", image: "/brand/posters/meher-samir-zamily.jpg" },
 ];
@@ -78,7 +79,7 @@ async function seedPostersOnce(): Promise<void> {
       {
         collection: COLLECTION,
         id: p.id,
-        data: { kind: "post", title: p.title, body: p.body, image: p.image, portrait: true, visible: true, createdAt: new Date().toISOString() },
+        data: { kind: "post", title: p.title, body: p.body, image: p.image, portrait: true, visible: true, ...(p.pinned ? { pinned: true } : {}), createdAt: new Date().toISOString() },
         requireAbsent: true,
       },
     ]);
