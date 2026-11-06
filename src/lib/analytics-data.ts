@@ -38,15 +38,15 @@ export async function recordPageView(path: string): Promise<void> {
   }
 }
 
-export type DailyPoint = { date: string; count: number };
+export type DailyPoint = { date: string; iso: string; count: number };
 export type CategoryBreakdown = { name: string; value: number };
 
-const TREND_DAYS = 14;
+const TREND_DAYS = 30;
 
 export async function getAnalyticsSummary(): Promise<{
   totalAllTime: number;
   totalToday: number;
-  last14Days: DailyPoint[];
+  last30Days: DailyPoint[];
   breakdown: CategoryBreakdown[];
 }> {
   const days: string[] = [];
@@ -58,7 +58,7 @@ export async function getAnalyticsSummary(): Promise<{
     days.push(d.toISOString().slice(0, 10));
   }
 
-  // A single batched read instead of 15 separate getDoc round trips.
+  // A single batched read instead of 31 separate getDoc round trips.
   const [totalsDoc, ...dailyDocs] = await batchGetDocs([
     { collection: TOTALS_COLLECTION, id: TOTALS_DOC },
     ...days.map((d) => ({ collection: DAILY_COLLECTION, id: d })),
@@ -66,7 +66,8 @@ export async function getAnalyticsSummary(): Promise<{
 
   const totals = (totalsDoc?.data ?? {}) as Record<string, number>;
 
-  const last14Days = days.map((date, i) => ({
+  const last30Days = days.map((date, i) => ({
+    iso: date,
     date: new Date(date).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
     count: Number((dailyDocs[i]?.data as Record<string, number> | undefined)?.total ?? 0),
   }));
@@ -78,8 +79,8 @@ export async function getAnalyticsSummary(): Promise<{
 
   return {
     totalAllTime: Number(totals.total ?? 0),
-    totalToday: last14Days[last14Days.length - 1]?.count ?? 0,
-    last14Days,
+    totalToday: last30Days[last30Days.length - 1]?.count ?? 0,
+    last30Days,
     breakdown,
   };
 }

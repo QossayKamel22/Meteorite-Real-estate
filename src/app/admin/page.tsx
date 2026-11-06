@@ -12,6 +12,9 @@ import { getCertificates } from "@/lib/certificates-data";
 import { listUsers } from "@/lib/users-data";
 import { getAnalyticsSummary } from "@/lib/analytics-data";
 import { BreakdownPie, SignupsChart, StatsBarChart } from "@/components/AdminOverviewCharts";
+import { Suspense } from "react";
+import AdminTrafficPanel from "@/components/AdminTrafficPanel";
+import AdminContentHealth from "@/components/AdminContentHealth";
 import AdminStatCard from "@/components/AdminStatCard";
 import AdminWelcome from "@/components/AdminWelcome";
 
@@ -108,24 +111,14 @@ export default async function AdminOverviewPage() {
           ))}
         </div>
 
-        <div className="mt-4 grid gap-6 lg:grid-cols-3">
-          <div className="glass shimmer-border rounded-3xl p-6 transition-shadow duration-300 hover:shadow-2xl sm:p-8 lg:col-span-2">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
-              Site visits, last {DAYS_WINDOW} days
-            </h3>
-            <div className="mt-4">
-              <SignupsChart data={analytics.last14Days} name="Page views" gradientId="visitsFill" color="#5E5CE6" />
-            </div>
-          </div>
+        <div className="mt-4">
+          <AdminTrafficPanel days={analytics.last30Days} sections={analytics.breakdown} />
+        </div>
 
-          <div className="glass shimmer-border rounded-3xl p-6 transition-shadow duration-300 hover:shadow-2xl sm:p-8">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-ink/50">
-              Visits by section
-            </h3>
-            <div className="mt-2">
-              <BreakdownPie data={analytics.breakdown} />
-            </div>
-          </div>
+        <div className="mt-6">
+          <Suspense fallback={<div className="glass h-40 animate-pulse rounded-3xl" />}>
+            <AdminContentHealth />
+          </Suspense>
         </div>
 
         <div className="mt-12 flex items-center gap-3">
