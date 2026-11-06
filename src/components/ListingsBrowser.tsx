@@ -4,7 +4,7 @@ import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Scale, Search, X } from "lucide-react";
+import { Scale, Search, SlidersHorizontal, X } from "lucide-react";
 import type { Property } from "@/lib/properties-data";
 import { isServedImage } from "@/lib/image-url";
 import PropertyCard from "@/components/PropertyCard";
@@ -90,6 +90,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   const [sort, setSort] = useState<Sort>("featured");
   const [picked, setPicked] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [more, setMore] = useState(false);
   const deferredQ = useDeferredValue(q);
 
   const types = useMemo(() => Array.from(new Set(properties.map((p) => p.type))), [properties]);
@@ -130,13 +131,27 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
 
   return (
     <>
-      <div className="rounded-2xl border border-brand-line bg-surface p-3 shadow-sm sm:p-4">
-        <label className="relative block">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <label className="relative block flex-1">
           <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-ink/45" />
           <span className="sr-only">Search listings</span>
-          <input value={q} onChange={(e) => setQ(e.target.value)} type="search" placeholder="Search by area, building or title" className={`${field} pl-10 font-normal`} />
+          <input value={q} onChange={(e) => setQ(e.target.value)} type="search" placeholder="Search by area or building" className={`${field} pl-10 font-normal`} />
         </label>
-        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-[1fr_1fr_1fr_auto]">
+        <div className="flex items-center gap-2">
+          <div role="group" aria-label="Bedrooms" className="flex flex-1 overflow-hidden rounded-xl border border-brand-line bg-surface sm:flex-none">
+            {BEDS.map((b) => (
+              <button key={b} type="button" aria-pressed={b === beds} onClick={() => setBeds(b)} className={`flex-1 px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-gold sm:flex-none ${b === beds ? "bg-brand-gold text-brand-navy" : "text-brand-ink/72 hover:bg-brand-paper hover:text-heading"}`}>
+                {b === "Any" ? "All" : b}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => setMore((v) => !v)} aria-expanded={more} aria-label="More filters" className={`flex h-[2.6rem] w-[2.6rem] flex-none items-center justify-center rounded-xl border transition-colors ${more || type !== "All" || maxPrice > 0 || sort !== "featured" ? "border-brand-gold bg-brand-gold/15 text-gold-ink" : "border-brand-line bg-surface text-brand-ink/70 hover:border-brand-gold"}`}>
+            <SlidersHorizontal size={17} />
+          </button>
+        </div>
+      </div>
+      {more && (
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {types.length > 1 && (
             <select aria-label="Property type" value={type} onChange={(e) => setType(e.target.value)} className={field}>
               <option value="All">All types</option>
@@ -149,21 +164,14 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
               {prices.map((v) => <option key={v} value={v}>Up to AED {v.toLocaleString("en-US")}</option>)}
             </select>
           )}
-          <select aria-label="Sort listings" value={sort} onChange={(e) => setSort(e.target.value as Sort)} className={`${field} ${types.length > 1 && prices.length > 0 ? "col-span-2 lg:col-span-1" : ""}`}>
+          <select aria-label="Sort listings" value={sort} onChange={(e) => setSort(e.target.value as Sort)} className={field}>
             {SORTS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
           </select>
-          <div role="group" aria-label="Bedrooms" className="col-span-2 flex overflow-hidden rounded-xl border border-brand-line lg:col-span-1">
-            {BEDS.map((b) => (
-              <button key={b} type="button" aria-pressed={b === beds} onClick={() => setBeds(b)} className={`flex-1 px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-gold ${b === beds ? "bg-brand-gold text-brand-navy" : "text-brand-ink/72 hover:bg-brand-paper hover:text-heading"}`}>
-                {b === "Any" ? "Any beds" : b}
-              </button>
-            ))}
-          </div>
         </div>
-      </div>
+      )}
       <div className="mt-3 flex items-center justify-between text-xs text-brand-ink/60" aria-live="polite">
         <span>{shown.length} of {properties.length} listing{properties.length === 1 ? "" : "s"}</span>
-        {filtered && <button type="button" onClick={() => { setType("All"); setBeds("Any"); setMaxPrice(0); setQ(""); }} className="text-sm font-semibold text-gold-ink underline">Clear filters</button>}
+        {(filtered || sort !== "featured") && <button type="button" onClick={() => { setType("All"); setBeds("Any"); setMaxPrice(0); setQ(""); setSort("featured"); }} className="text-sm font-semibold text-gold-ink underline">Clear filters</button>}
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
