@@ -21,7 +21,7 @@ export default async function AboutUsPage() {
   return (
     <div>
       <PageHero
-        image="/brand/hero/burj-khalifa-storm.jpg"
+        image="/brand/hero/burj-khalifa-tower.jpg"
         kicker="About Us"
         title={company.name}
         text={company.legalTagline}

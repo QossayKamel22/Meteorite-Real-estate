@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { BarChart3, Building2, Clapperboard, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, Inbox, Building2, Clapperboard, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
 
 const GROUPS = [
-  { label: "", items: [{ href: "/admin", label: "Overview", icon: LayoutDashboard }] },
+  { label: "", items: [{ href: "/admin", label: "Overview", icon: LayoutDashboard }, { href: "/admin/messages", label: "Messages", icon: Inbox }] },
   {
     label: "Content",
     items: [
@@ -34,7 +34,7 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href);
 }
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ unread = 0 }: { unread?: number }) {
   const pathname = usePathname();
   const reduce = useReducedMotion();
 
@@ -66,6 +66,7 @@ export default function AdminSidebar() {
                         )}
                         <Icon size={16} strokeWidth={1.75} className={`relative transition-transform duration-300 group-hover:scale-110 ${active ? "text-brand-gold" : ""}`} />
                         <span className="relative">{label}</span>
+                        {href === "/admin/messages" && unread > 0 && <span className="relative ml-auto rounded-full bg-brand-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-brand-navy">{unread}</span>}
                       </Link>
                     </motion.li>
                   );
@@ -90,6 +91,7 @@ export default function AdminSidebar() {
             >
               <Icon size={13} strokeWidth={1.75} />
               {label}
+              {href === "/admin/messages" && unread > 0 && <span className="rounded-full bg-brand-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-brand-navy">{unread}</span>}
             </Link>
           );
         })}

@@ -90,6 +90,7 @@ export async function POST(request: Request) {
 
   revalidatePath("/for-sale");
   revalidatePath("/for-rent");
+  revalidatePath("/property/[id]", "page");
 
   return NextResponse.json({ ok: true, id });
 }

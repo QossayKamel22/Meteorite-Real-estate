@@ -4,9 +4,9 @@ import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, Send } from "lucide-react";
 import { company } from "@/lib/content";
+import { TOPICS } from "@/lib/messages-shared";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const TOPICS = ["Buy", "Rent", "Sell", "List my property", "Something else"];
 const MAX = 800;
 
 const field =
@@ -19,16 +19,18 @@ const floating =
  * for the message and a paper plane that takes off when you send. It still opens your
  * email app addressed to the office — nothing is stored by the site.
  */
-export default function ContactForm() {
+export default function ContactForm({ source = "/contact-us", presetMessage = "" }: { source?: string; presetMessage?: string }) {
   const reduce = useReducedMotion() ?? false;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(presetMessage);
+  const [phone, setPhone] = useState("");
+  const [website, setWebsite] = useState("");
   const [topic, setTopic] = useState<string>("");
   const [error, setError] = useState("");
-  const [state, setState] = useState<"idle" | "flying" | "sent">("idle");
+  const [state, setState] = useState<"idle" | "flying" | "sent" | "failed">("idle");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !message.trim()) {
       setError("Please enter your name and a message.");
@@ -40,14 +42,31 @@ export default function ContactForm() {
     }
     setError("");
     setState("flying");
-    const tag = topic ? ` [${topic}]` : "";
-    const subject = encodeURIComponent(`Enquiry${tag} from ${name} via meteoriterealestate.com`);
-    const body = encodeURIComponent(`${message}\n\n${topic ? `Interested in: ${topic}\n` : ""}From: ${name} (${email})`);
-    window.setTimeout(() => {
-      window.location.href = `mailto:${company.email}?subject=${subject}&body=${body}`;
+    try {
+      const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, email, phone, topic, message, source, website }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Couldn't send right now. Please try again.");
+        setState("failed");
+        return;
+      }
+      await new Promise((r) => window.setTimeout(r, reduce ? 0 : 700));
       setState("sent");
-      window.setTimeout(() => setState("idle"), 5000);
-    }, reduce ? 0 : 900);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+      setTopic("");
+    } catch {
+      setError("Couldn't send right now. Please try again, or use WhatsApp.");
+      setState("failed");
+    }
+  }
+
+  function openEmailApp() {
+    const subject = encodeURIComponent(`Enquiry${topic ? ` [${topic}]` : ""} from ${name || "the website"}`);
+    const body = encodeURIComponent(`${message}\n\nFrom: ${name} (${email}${phone ? `, ${phone}` : ""})`);
+    window.location.href = `mailto:${company.email}?subject=${subject}&body=${body}`;
   }
 
   const used = Math.min(1, message.length / MAX);
@@ -85,6 +104,14 @@ export default function ContactForm() {
         <label htmlFor="email" className={floating}>Email address</label>
       </div>
       <div className="relative">
+        <input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder=" " autoComplete="tel" className={field} />
+        <label htmlFor="phone" className={floating}>Phone / WhatsApp (optional)</label>
+      </div>
+      {/* a trap for bots: people never see or fill this */}
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+        <label>Website<input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} /></label>
+      </div>
+      <div className="relative">
         <textarea id="message" value={message} onChange={(e) => setMessage(e.target.value.slice(0, MAX))} rows={5} required placeholder=" " className={`${field} resize-none`} />
         <label htmlFor="message" className={floating}>Your message</label>
         <svg viewBox="0 0 24 24" className="absolute bottom-3 right-3 h-6 w-6 -rotate-90" aria-hidden="true">
@@ -101,7 +128,7 @@ export default function ContactForm() {
         )}
         {state === "sent" && !error && (
           <motion.p key="sent" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} role="status" className="flex items-center gap-2 text-sm font-medium text-emerald-600">
-            <CheckCircle2 size={16} /> Your email app is open — press send there to reach us.
+            <CheckCircle2 size={16} /> Thank you — your message is with our team. We will get back to you soon.
           </motion.p>
         )}
       </AnimatePresence>
@@ -112,7 +139,7 @@ export default function ContactForm() {
         className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-brand-navy px-7 py-3.5 text-[15px] font-semibold text-white transition-all duration-300 hover:shadow-[0_18px_40px_-16px_rgba(13,16,49,0.8)] disabled:cursor-wait sm:w-auto dark:bg-brand-gold dark:text-brand-navy"
       >
         <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-white/30 opacity-0 blur-[2px] transition-all duration-700 group-hover:left-[130%] group-hover:opacity-100" />
-        <span className="relative">{state === "flying" ? "Sending…" : "Send via email"}</span>
+        <span className="relative">{state === "flying" ? "Sending…" : "Send message"}</span>
         <motion.span
           className="relative"
           animate={state === "flying" && !reduce ? { x: 90, y: -34, rotate: -18, opacity: 0, scale: 0.7 } : { x: 0, y: 0, rotate: 0, opacity: 1, scale: 1 }}
@@ -122,7 +149,11 @@ export default function ContactForm() {
         </motion.span>
       </button>
       <p className="text-xs text-brand-ink/72">
-        Opens your email app addressed to {company.email}. For an instant reply, use WhatsApp or call us directly.
+        {state === "failed" ? (
+          <button type="button" onClick={openEmailApp} className="font-semibold text-gold-ink underline">Send it from your email app instead</button>
+        ) : (
+          <>For an instant reply, use WhatsApp or call us directly.</>
+        )}
       </p>
     </form>
   );

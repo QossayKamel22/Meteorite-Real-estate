@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import AdminHeader from "@/components/AdminHeader";
 import AdminSidebar from "@/components/AdminSidebar";
+import { getMessages } from "@/lib/messages-data";
 import { getSessionUser } from "@/lib/session";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
@@ -14,11 +15,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) redirect("/login?redirect=/admin");
   if (!user.admin) redirect("/");
 
+  const unread = (await getMessages(100).catch(() => [])).filter((m) => !m.read).length;
+
   return (
     <div className="flex min-h-full flex-col bg-brand-paper">
       <AdminHeader />
       <div className="flex flex-1 flex-col lg:flex-row">
-        <AdminSidebar />
+        <AdminSidebar unread={unread} />
         <main className="min-w-0 flex-1">{children}</main>
       </div>
     </div>

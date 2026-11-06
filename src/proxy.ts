@@ -109,6 +109,6 @@ export const config = {
     "/api/img/:path*",
     "/api/film/drive/:id",
     "/api/film/file/:path*",
-    "/((?!(?:about-us|contact-us|for-sale|for-rent|media|privacy-policy|login|register|favorites|create-property|admin|api|_next|brand)(?:/|$)|robots\\.txt$|sitemap\\.xml$|favicon\\.ico$|icon\\.png$|$).+)",
+    "/((?!(?:about-us|contact-us|for-sale|for-rent|media|privacy-policy|login|register|favorites|create-property|property|admin|api|_next|brand)(?:/|$)|robots\\.txt$|sitemap\\.xml$|favicon\\.ico$|icon\\.png$|$).+)",
   ],
 };

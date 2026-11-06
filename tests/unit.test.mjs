@@ -304,3 +304,16 @@ test("hero images: bundled or uploaded pictures only, bounded list", () => {
   for (const src of ["https://evil.com/a.jpg", "/brand/../x.jpg", "javascript:1", "/brand/binghatti/../x.jpg", "/api/img/agent/abc"]) assert.equal(parseHeroImages({ items: [{ src, alt: "x" }] }).ok, false, src);
   assert.equal(parseHeroImages({ items: Array(MAX_HERO_IMAGES + 1).fill(DEFAULT_HERO_IMAGES[0]) }).ok, false);
 });
+
+const { parseContactInput } = await import(R+"messages-shared.ts");
+test("contact form: validates, trims, and refuses bots", () => {
+  const ok = parseContactInput({ name: "  Sara   Ali ", email: "sara@example.com", phone: "+971 50 123 4567", topic: "Buy", message: "I want a 2BR in Marina", source: "/property/abc" });
+  assert.equal(ok.ok, true); assert.equal(ok.value.name, "Sara Ali"); assert.equal(ok.value.topic, "Buy"); assert.equal(ok.value.source, "/property/abc");
+  assert.equal(parseContactInput({ name: "x", email: "bad", message: "hello there" }).ok, false);
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hi" }).ok, false);
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", website: "http://spam" }).spam, true);
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "see http://a.io http://b.io http://c.io" }).spam, true);
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", topic: "Hack", source: "https://evil.com" }).value.topic, "");
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", source: "https://evil.com" }).value.source, "");
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", phone: "abc" }).ok, false);
+});

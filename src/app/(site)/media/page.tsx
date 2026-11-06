@@ -94,7 +94,7 @@ export default async function MediaPage() {
   return (
     <div>
       <PageHero
-        image="/brand/hero/dubai-dusk-silhouette.jpg"
+        image="/brand/hero/podcast-studio.jpg"
         kicker="Media"
         title="News, updates & social"
         text="The latest from our team — podcasts, posts, posters and video tours, with full listing details on our verified Bayut portfolio."

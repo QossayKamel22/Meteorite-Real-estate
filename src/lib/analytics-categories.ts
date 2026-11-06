@@ -17,6 +17,7 @@ export type CategoryKey = (typeof CATEGORY_KEYS)[number];
 export function categorize(path: string): CategoryKey {
   if (path === "/") return "home";
   if (path.startsWith("/about-us")) return "aboutUs";
+  if (path.startsWith("/property/")) return "propertyDetail";
   if (path.startsWith("/for-sale/")) return "propertyDetail";
   if (path.startsWith("/for-sale")) return "forSale";
   if (path.startsWith("/for-rent/")) return "propertyDetail";

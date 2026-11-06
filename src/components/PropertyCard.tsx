@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useInView, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { ArrowUpRight, BedDouble, Bath, MapPin, Ruler } from "lucide-react";
 import { isServedImage } from "@/lib/image-url";
@@ -76,7 +77,9 @@ export default function PropertyCard({ property, delay = 0, animateLayout = fals
             <span className="bg-gradient-to-r from-heading to-heading bg-clip-text text-lg font-semibold tracking-tight text-heading transition-colors duration-300 group-hover:text-gold-ink">{price.amount}</span>
             {price.per && <span className="text-xs font-medium text-brand-ink/65">{price.per}</span>}
           </p>
-          <h3 className="mt-1 line-clamp-2 text-sm font-medium text-brand-ink/80">{property.title}</h3>
+          <h3 className="mt-1 line-clamp-2 text-sm font-medium text-brand-ink/80">
+            <Link prefetch={false} href={`/property/${property.id}`} className="after:absolute after:inset-0 after:z-[5] hover:text-heading focus-visible:outline-none">{property.title}</Link>
+          </h3>
           <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-ink/66">
             <MapPin size={12} className="flex-none text-brand-gold" />
             <span className="truncate">{property.location}</span>
@@ -92,7 +95,7 @@ export default function PropertyCard({ property, delay = 0, animateLayout = fals
             href={`https://wa.me/${company.phoneE164.replace("+", "")}?text=${whatsappMessage}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="group/b relative mt-5 inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-full bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-brand-navy-light dark:bg-white/10 dark:hover:bg-brand-gold dark:hover:text-brand-navy"
+            className="group/b relative z-10 mt-5 inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-full bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-brand-navy-light dark:bg-white/10 dark:hover:bg-brand-gold dark:hover:text-brand-navy"
           >
             <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-white/25 opacity-0 blur-[2px] transition-all duration-700 group-hover/b:left-[130%] group-hover/b:opacity-100" />
             <span className="relative">Ask about this property</span>
