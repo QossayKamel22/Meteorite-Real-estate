@@ -22,6 +22,8 @@ export type Property = {
   description?: string;
   amenities?: string[];
   image: string;
+  /** More photos (uploaded through the admin, newest last). The main `image` is always shown first. */
+  gallery?: string[];
   /** Set only for listings imported from Bayut — links back to the original listing. */
   sourceUrl?: string;
   order: number;
@@ -288,6 +290,7 @@ function toProperty(id: string, data: Record<string, unknown>): Property {
     description: data.description as string | undefined,
     amenities: data.amenities as string[] | undefined,
     image: data.image as string,
+    gallery: Array.isArray(data.gallery) ? (data.gallery as unknown[]).filter((g): g is string => typeof g === "string") : undefined,
     sourceUrl: data.sourceUrl as string | undefined,
     order: (data.order as number) ?? 0,
     visible: data.visible as boolean | undefined,

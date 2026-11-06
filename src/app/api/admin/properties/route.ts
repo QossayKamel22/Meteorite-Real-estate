@@ -3,6 +3,18 @@ import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { getProperties, addProperty, type PropertyInput } from "@/lib/properties-data";
 
+const GALLERY_SRC = /^\/api\/img\/film\/[A-Za-z0-9_-]{1,64}$/;
+function parseGallery(v: unknown): string[] | string {
+  if (!Array.isArray(v)) return [];
+  if (v.length > 10) return "Up to 10 extra photos.";
+  const out: string[] = [];
+  for (const x of v) {
+    if (typeof x !== "string" || !GALLERY_SRC.test(x)) return "Each extra photo must be an uploaded image.";
+    out.push(x);
+  }
+  return out;
+}
+
 function parsePropertyInput(body: Record<string, unknown>): PropertyInput | string {
   const title = typeof body.title === "string" ? body.title.trim() : "";
   const location = typeof body.location === "string" ? body.location.trim() : "";
@@ -36,6 +48,8 @@ function parsePropertyInput(body: Record<string, unknown>): PropertyInput | stri
     ? body.amenities.filter((a): a is string => typeof a === "string" && a.trim().length > 0)
     : undefined;
   const isStudio = body.isStudio === true;
+  const gallery = parseGallery(body.gallery);
+  if (typeof gallery === "string") return gallery;
   const visible = typeof body.visible === "boolean" ? body.visible : true;
   const sourceUrl =
     typeof body.sourceUrl === "string" && body.sourceUrl.trim() ? body.sourceUrl.trim() : undefined;
@@ -53,6 +67,7 @@ function parsePropertyInput(body: Record<string, unknown>): PropertyInput | stri
     sizeSqft,
     isStudio,
     visible,
+    gallery,
     ...(purpose === "rent" && rentFrequency ? { rentFrequency } : {}),
     ...(description ? { description } : {}),
     ...(amenities && amenities.length ? { amenities } : {}),

@@ -1,5 +1,5 @@
 import { FIRESTORE_HOST, basePath, getAccessToken } from "@/lib/firestore-auth";
-import { categorize } from "@/lib/analytics-categories";
+import { categorize, detailDeltas } from "@/lib/analytics-categories";
 
 const DAILY_COLLECTION = "analyticsDaily";
 const TOTALS_COLLECTION = "analyticsTotals";
@@ -34,15 +34,19 @@ export async function handleTrackVisit(request: Request): Promise<Response> {
     // no body — fall back to "/"
   }
 
+  const details = detailDeltas(path, request.headers.get("user-agent") ?? "");
+  // Crawlers and uptime monitors are not visits.
+  if (!details) return Response.json({ ok: true });
   const deltas = { total: 1, [categorize(path)]: 1 };
+  const totalsDeltas = { ...deltas, ...details };
   const day = new Date().toISOString().slice(0, 10);
   try {
     const token = await getAccessToken();
     const base = basePath();
-    const write = (collection: string, id: string) => ({
+    const write = (collection: string, id: string, d: Record<string, number>) => ({
       update: { name: `${base}/${collection}/${id}` },
       updateMask: { fieldPaths: [] },
-      updateTransforms: Object.entries(deltas).map(([fieldPath, delta]) => ({
+      updateTransforms: Object.entries(d).map(([fieldPath, delta]) => ({
         fieldPath,
         increment: { integerValue: String(delta) },
       })),
@@ -51,7 +55,7 @@ export async function handleTrackVisit(request: Request): Promise<Response> {
       method: "POST",
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        writes: [write(DAILY_COLLECTION, day), write(TOTALS_COLLECTION, TOTALS_DOC)],
+        writes: [write(DAILY_COLLECTION, day, deltas), write(TOTALS_COLLECTION, TOTALS_DOC, totalsDeltas)],
       }),
     });
     if (!res.ok) console.error("track-visit commit failed", res.status);

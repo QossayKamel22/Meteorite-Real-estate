@@ -30,6 +30,7 @@ RERA-certified · Trusted since 2005 · Next.js 16 · TypeScript · Tailwind CSS
 - [Deployment (Cloudflare Workers)](#deployment-cloudflare-workers)
 - [Environment variables](#environment-variables)
 - [Project structure](#project-structure)
+- [Listings, messages and notifications](#listings-messages-and-notifications)
 - [Media, images and video](#media-images-and-video)
 - [Verified content policy](#verified-content-policy)
 - [Known gaps &amp; roadmap](#known-gaps--roadmap)
@@ -85,12 +86,13 @@ Every admin-only feature is reached from the same `/login` every visitor uses �
 |---|---|
 | **Overview** | Visits (all time, today, per day, per section), users, admins, team members; sign-in charts; homepage statistics; quick links to add content. The sidebar is grouped: Content, Company, Access |
 | **Homepage** | Hero pictures (the slideshow behind the headline), hero text, the CEO's message, Featured Developments (video projects with facts, images and offer sheets), the featured project, Google reviews summary and client testimonials |
-| **Properties** | Add/edit/delete/reorder/hide property listings shown on For Sale and For Rent |
+| **Properties** | Add/edit/delete/reorder/hide listings shown on For Sale and For Rent, each with a main photo and up to 10 more (they form the gallery on its own page) |
 | **Media** | The poster series (upload, reorder, delete) plus social post links, native photo posts and podcast embeds, with pinning |
 | **Reels** | Paste a TikTok / Instagram / YouTube / Facebook link to add a reel; title, cover, hide, reorder; your TikTok and YouTube account links (shown in the reel wall and the footer) |
 | **Statistics** | The homepage stat numbers, each with its own visibility toggle |
 | **Team** | The agent/leadership roster — photos, titles, contact details, Leadership bios, reorderable and independently hideable |
 | **Certificates** | Licensing/registration certificates (several images each) shown on About Us |
+| **Messages** | The enquiries sent from the Contact page and from property pages: unread marker, reply by email / WhatsApp / call, delete. New messages can notify the team (see Notifications) |
 | **Users** | Search/filter every signed-in account, promote or revoke admin access, disable accounts |
 
 `/admin` is protected twice — once by the edge middleware (`src/proxy.ts`) and again by a server-side check in the admin layout — so it never depends on either check alone.
@@ -256,6 +258,19 @@ src/
 public/brand/             logo, hero photo, CEO portrait — pulled from the live site
 docs/screenshots/         the images used in this README
 ```
+
+## Listings, messages and notifications
+
+- **Property pages** (`/property/<id>`): a gallery, price and specs, description, amenities, an enquiry form and similar listings. Listing cards link to them. They are ordinary cached server pages; the only client code is the gallery and the form. `src/proxy.ts` lists `property` among the known paths, so keep it there.
+- **Search, filters and compare** on For Sale / For Rent run in the browser on the listings already on the page (no extra requests). Up to three listings can be compared side by side.
+- **Saved properties:** the heart on a card is stored on the device and, once signed in, on the account (`favorites/<uid>` in Firestore, merged on sign-in). The Saved page shows the listings as cards.
+- **Contact messages** are stored in the `messages` collection (public `POST /api/contact`: hidden-field trap, link limit, per-address rate limit). They appear in Admin → Messages.
+- **Notifications:** set any of these as Worker secrets and the matching channel turns on by itself; with none set nothing is sent.
+  - Telegram: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
+  - Email through Resend: `RESEND_API_KEY` and `NOTIFY_EMAIL` (optional `NOTIFY_FROM`; without a verified domain Resend only delivers to the account owner's address)
+  - `npx wrangler secret put TELEGRAM_BOT_TOKEN`, etc.
+- **Analytics** (admin overview) also keep device split, hour of day (Dubai time), top pages and top listings on the running-totals document. Crawlers and monitors are not counted.
+- **Smooth mode:** weak devices (or a footer switch) turn off blur, glows and looping decoration (`html[data-lite="true"]`, see `LiteMode.tsx` and the end of `globals.css`).
 
 ## Media, images and video
 

@@ -3,6 +3,18 @@ import { revalidatePath } from "next/cache";
 import { hasTrustedOrigin, requireAdmin } from "@/lib/session";
 import { updateProperty, deleteProperty, moveProperty, type PropertyInput } from "@/lib/properties-data";
 
+const GALLERY_SRC = /^\/api\/img\/film\/[A-Za-z0-9_-]{1,64}$/;
+function parseGallery(v: unknown): string[] | string {
+  if (!Array.isArray(v)) return [];
+  if (v.length > 10) return "Up to 10 extra photos.";
+  const out: string[] = [];
+  for (const x of v) {
+    if (typeof x !== "string" || !GALLERY_SRC.test(x)) return "Each extra photo must be an uploaded image.";
+    out.push(x);
+  }
+  return out;
+}
+
 function parsePropertyPatch(body: Record<string, unknown>): Partial<PropertyInput> | string {
   const patch: Partial<PropertyInput> = {};
 
@@ -54,6 +66,11 @@ function parsePropertyPatch(body: Record<string, unknown>): Partial<PropertyInpu
     patch.amenities = body.amenities.filter((a): a is string => typeof a === "string" && a.trim().length > 0);
   }
   if (typeof body.isStudio === "boolean") patch.isStudio = body.isStudio;
+  if (body.gallery !== undefined) {
+    const g = parseGallery(body.gallery);
+    if (typeof g === "string") return g;
+    patch.gallery = g;
+  }
   if (typeof body.visible === "boolean") patch.visible = body.visible;
   if (typeof body.sourceUrl === "string") patch.sourceUrl = body.sourceUrl.trim() || undefined;
 

@@ -13,6 +13,8 @@ import { listUsers } from "@/lib/users-data";
 import { getAnalyticsSummary } from "@/lib/analytics-data";
 import { BreakdownPie, SignupsChart, StatsBarChart } from "@/components/AdminOverviewCharts";
 import { Suspense } from "react";
+import AdminAudiencePanel from "@/components/AdminAudiencePanel";
+import { getProperties } from "@/lib/properties-data";
 import AdminTrafficPanel from "@/components/AdminTrafficPanel";
 import AdminContentHealth from "@/components/AdminContentHealth";
 import AdminStatCard from "@/components/AdminStatCard";
@@ -53,6 +55,9 @@ export default async function AdminOverviewPage() {
     listUsers(),
     getAnalyticsSummary(),
   ]);
+
+  const allProps = analytics.topProperties.length ? await getProperties({ includeHidden: true }) : [];
+  const topProperties = analytics.topProperties.map((t) => ({ ...t, title: allProps.find((p) => p.id === t.id)?.title ?? "Listing" }));
 
   const adminCount = users.filter((u) => u.role === "admin").length;
   const disabledCount = users.filter((u) => u.disabled).length;
@@ -113,6 +118,10 @@ export default async function AdminOverviewPage() {
 
         <div className="mt-4">
           <AdminTrafficPanel days={analytics.last30Days} sections={analytics.breakdown} />
+        </div>
+
+        <div className="mt-6">
+          <AdminAudiencePanel devices={analytics.devices} hours={analytics.hours} topPages={analytics.topPages} topProperties={topProperties} />
         </div>
 
         <div className="mt-6">

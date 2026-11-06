@@ -3,6 +3,7 @@ import { hasTrustedOrigin } from "@/lib/session";
 import { getClientKey, isRateLimited } from "@/lib/rate-limit";
 import { parseContactInput } from "@/lib/messages-shared";
 import { addMessage } from "@/lib/messages-data";
+import { notifyNewMessage } from "@/lib/notify";
 
 /** The public contact form. Saved in the admin inbox; bots (hidden field, link stuffing) get a silent "ok". */
 export async function POST(request: Request) {
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
   if (!parsed.ok) return parsed.spam ? NextResponse.json({ ok: true }) : NextResponse.json({ error: parsed.error }, { status: 400 });
   try {
     await addMessage(parsed.value);
+    notifyNewMessage(parsed.value);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("contact message save failed", err);

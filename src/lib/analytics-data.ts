@@ -48,6 +48,10 @@ export async function getAnalyticsSummary(): Promise<{
   totalToday: number;
   last30Days: DailyPoint[];
   breakdown: CategoryBreakdown[];
+  devices: CategoryBreakdown[];
+  hours: number[];
+  topPages: CategoryBreakdown[];
+  topProperties: { id: string; value: number }[];
 }> {
   const days: string[] = [];
   const now = new Date();
@@ -77,10 +81,29 @@ export async function getAnalyticsSummary(): Promise<{
     value: Number(totals[key] ?? 0),
   })).filter((b) => b.value > 0);
 
+  const num = (k: string) => Number(totals[k] ?? 0);
+  const devices = (["mobile", "desktop", "tablet"] as const).map((d) => ({ name: d[0].toUpperCase() + d.slice(1), value: num(`dev_${d}`) })).filter((d) => d.value > 0);
+  const hours = Array.from({ length: 24 }, (_, h) => num(`h${String(h).padStart(2, "0")}`));
+  const PAGE_NAMES: Record<string, string> = { home: "Home", about_us: "About Us", for_sale: "For Sale", for_rent: "For Rent", media: "Media", contact_us: "Contact Us", favorites: "Saved", login: "Sign in", register: "Register", privacy_policy: "Privacy" };
+  const topPages = Object.entries(totals)
+    .filter(([k]) => k.startsWith("p_") && Number(totals[k]) > 0)
+    .map(([k, v]) => ({ name: PAGE_NAMES[k.slice(2)] ?? `/${k.slice(2).replace(/_/g, "-")}`, value: Number(v) }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 6);
+  const topProperties = Object.entries(totals)
+    .filter(([k]) => k.startsWith("pp_") && Number(totals[k]) > 0)
+    .map(([k, v]) => ({ id: k.slice(3).replace(/_/g, "-"), value: Number(v) }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
+
   return {
     totalAllTime: Number(totals.total ?? 0),
     totalToday: last30Days[last30Days.length - 1]?.count ?? 0,
     last30Days,
     breakdown,
+    devices,
+    hours,
+    topPages,
+    topProperties,
   };
 }

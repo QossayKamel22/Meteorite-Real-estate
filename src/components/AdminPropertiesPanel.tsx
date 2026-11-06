@@ -7,6 +7,7 @@ import { ChevronDown, ChevronUp, ClipboardPaste, ExternalLink, Eye, EyeOff, Penc
 import type { Property, PropertyInput } from "@/lib/properties-data";
 import { parseBayutText } from "@/lib/bayut-parser";
 import ImageUploadField from "@/components/ImageUploadField";
+import GalleryField from "@/components/GalleryField";
 
 type FormState = {
   title: string;
@@ -22,6 +23,7 @@ type FormState = {
   description: string;
   amenities: string;
   image: string;
+  gallery: string[];
   sourceUrl: string;
   visible: boolean;
 };
@@ -40,6 +42,7 @@ const EMPTY_FORM: FormState = {
   description: "",
   amenities: "",
   image: "",
+  gallery: [],
   sourceUrl: "",
   visible: true,
 };
@@ -59,6 +62,7 @@ function propertyToForm(p: Property): FormState {
     description: p.description ?? "",
     amenities: p.amenities?.join("\n") ?? "",
     image: p.image,
+    gallery: p.gallery ?? [],
     sourceUrl: p.sourceUrl ?? "",
     visible: p.visible !== false,
   };
@@ -82,6 +86,7 @@ function formToPayload(form: FormState): PropertyInput {
       .map((a) => a.trim())
       .filter(Boolean),
     image: form.image.trim(),
+    gallery: form.gallery,
     sourceUrl: form.sourceUrl.trim() || undefined,
     visible: form.visible,
   } as PropertyInput;
@@ -133,6 +138,7 @@ function PropertyForm({
         maxDimension={900}
       />
       {imageError && <p className="text-xs font-medium text-red-600">{imageError}</p>}
+      <GalleryField value={form.gallery} onChange={(g) => set("gallery", g)} />
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">

@@ -317,3 +317,16 @@ test("contact form: validates, trims, and refuses bots", () => {
   assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", source: "https://evil.com" }).value.source, "");
   assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", phone: "abc" }).ok, false);
 });
+
+const { deviceOf, detailDeltas } = await import(R+"analytics-categories.ts");
+test("analytics: device, hour (Dubai time), page keys; bots are skipped", () => {
+  assert.equal(deviceOf("Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari"), "mobile");
+  assert.equal(deviceOf("Mozilla/5.0 (iPad; CPU OS 17_0) Safari"), "tablet");
+  assert.equal(deviceOf("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/124"), "desktop");
+  assert.equal(deviceOf("Mozilla/5.0 (compatible; Googlebot/2.1)"), "bot");
+  assert.equal(deviceOf("Mozilla/5.0 HeadlessChrome/124"), "bot");
+  const d = detailDeltas("/for-sale", "Mozilla/5.0 (Macintosh) Chrome", new Date("2026-11-05T20:30:00Z"));
+  assert.deepEqual(d, { dev_desktop: 1, h00: 1, p_for_sale: 1 });
+  assert.deepEqual(detailDeltas("/property/ab-12", "iPhone", new Date("2026-11-05T05:00:00Z")), { dev_mobile: 1, h09: 1, pp_ab_12: 1 });
+  assert.equal(detailDeltas("/", "Googlebot"), null);
+});
