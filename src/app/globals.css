@@ -833,6 +833,10 @@ html[data-lite="true"] [class*="backdrop-blur"] {
   backdrop-filter: none !important;
 }
 html[data-lite="true"] .glass { background: rgba(var(--glass-tint), 0.94); }
+/* Dark glass (the hero cards, badges on photos) must stay dark in smooth mode, in the light theme too. */
+html[data-lite="true"] .glass.glass-dark,
+html[data-lite="true"] .glass-dark,
+html[data-lite="true"] .glass.force-dark { background: rgba(18, 21, 62, 0.92); }
 html[data-lite="true"] .glass-nav:not(.over-hero) { background: var(--background); }
 html[data-lite="true"] [class*="blur-3xl"],
 html[data-lite="true"] [class*="blur-[1"],
