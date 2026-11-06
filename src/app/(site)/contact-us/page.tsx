@@ -3,7 +3,7 @@ import { company } from "@/lib/content";
 import ContactForm from "@/components/ContactForm";
 import ContactHero, { type ContactAction } from "@/components/ContactHero";
 import FaqSection from "@/components/FaqSection";
-import { CONTACT_FAQ } from "@/lib/faq";
+import { getFaqs } from "@/lib/site-settings";
 import ContactAside from "@/components/ContactAside";
 import Reveal from "@/components/Reveal";
 import { pageMetadata } from "@/lib/seo";
@@ -22,7 +22,8 @@ const actions: ContactAction[] = [
   { key: "mail", label: "Email", value: company.email, href: `mailto:${company.email}` },
 ];
 
-export default function ContactUsPage() {
+export default async function ContactUsPage() {
+  const faqs = await getFaqs();
   return (
     <div>
       <ContactHero actions={actions} />
@@ -39,7 +40,7 @@ export default function ContactUsPage() {
 
           <ContactAside address={company.address} poBox={company.poBox} orn={company.orn} brokerCard={company.brokerCard} mapSrc={mapSrc} />
         </div>
-        <FaqSection title="Common questions" items={CONTACT_FAQ} />
+        {faqs.contact.length > 0 && <FaqSection title="Common questions" items={faqs.contact} />}
       </section>
     </div>
   );

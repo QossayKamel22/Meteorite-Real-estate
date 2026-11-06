@@ -189,6 +189,16 @@ export function listCollection(
   return listCollectionMemo(collection, opts?.orderBy ?? "", opts?.direction ?? "ASCENDING", opts?.limit ?? 0);
 }
 
+/** One page of a collection (for exports): documents plus the token for the next page, if any. Never memoised. */
+export async function listDocsPage(collection: string, opts: { pageSize: number; pageToken?: string }): Promise<{ docs: FsDoc[]; next: string | null }> {
+  const params = new URLSearchParams({ pageSize: String(opts.pageSize) });
+  if (opts.pageToken) params.set("pageToken", opts.pageToken);
+  const res = await fsFetch(`${FIRESTORE_HOST}/${basePath()}/${collection}?${params.toString()}`);
+  if (!res.ok) throw new Error(`Firestore listDocsPage(${collection}) failed: ${res.status}`);
+  const data = (await res.json()) as { documents?: { name: string; fields?: Record<string, FsValue> }[]; nextPageToken?: string };
+  return { docs: (data.documents ?? []).map(parseDoc), next: data.nextPageToken ?? null };
+}
+
 /** Counts documents in a collection (used to assign the next `order` index). */
 export async function countCollection(collection: string): Promise<number> {
   return (await listCollection(collection)).length;

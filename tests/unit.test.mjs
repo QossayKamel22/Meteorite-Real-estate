@@ -336,3 +336,16 @@ test("contact: viewing slot is validated", () => {
   assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", viewing: "tomorrow" }).value.viewing, "");
   assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", viewing: "2026-11-12 16:30" }).value.viewing, "");
 });
+
+const { parseFaqSet, parseViewing, DEFAULT_FAQ } = await import(R+"site-settings-shared.ts");
+test("settings: FAQ and viewing slots are validated", () => {
+  assert.equal(parseFaqSet(DEFAULT_FAQ).ok, true);
+  assert.deepEqual(parseFaqSet({ sale: [{ q: " A  b ", a: "c" }, { q: "", a: "" }], rent: [], contact: [] }).value.sale, [{ q: "A b", a: "c" }]);
+  assert.equal(parseFaqSet({ sale: [{ q: "only q", a: "" }], rent: [], contact: [] }).ok, false);
+  assert.equal(parseFaqSet({ sale: Array(13).fill({ q: "q", a: "a" }), rent: [], contact: [] }).ok, false);
+  assert.equal(parseFaqSet({ sale: "nope", rent: [], contact: [] }).ok, false);
+  assert.deepEqual(parseViewing({ times: ["12:00", "10:00", "10:00", "99:00"], days: 7, closedWeekdays: [5, 5, 9] }).value, { times: ["10:00", "12:00"], days: 7, closedWeekdays: [5] });
+  assert.equal(parseViewing({ times: [], days: 7 }).ok, false);
+  assert.equal(parseViewing({ times: ["10:00"], days: 40 }).ok, false);
+  assert.equal(parseViewing({ times: ["10:00"], days: 7, closedWeekdays: [0, 1, 2, 3, 4, 5, 6] }).ok, false);
+});

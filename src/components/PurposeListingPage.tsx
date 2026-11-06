@@ -3,13 +3,13 @@ import { getProperties, type Purpose } from "@/lib/properties-data";
 import PageHero from "@/components/PageHero";
 import ListingsBrowser from "@/components/ListingsBrowser";
 import FaqSection from "@/components/FaqSection";
-import { RENT_FAQ, SALE_FAQ } from "@/lib/faq";
+import { getFaqs } from "@/lib/site-settings";
 import BayutBanner from "@/components/BayutBanner";
 
 export default async function PurposeListingPage({ purpose }: { purpose: "for-sale" | "for-rent" }) {
   const isForSale = purpose === "for-sale";
   const dataPurpose: Purpose = isForSale ? "sale" : "rent";
-  const properties = await getProperties({ purpose: dataPurpose });
+  const [properties, faqs] = await Promise.all([getProperties({ purpose: dataPurpose }), getFaqs()]);
   const companyUrl = isForSale ? externalListings.bayutCompanyForSale : externalListings.bayutCompanyForRent;
 
   return (
@@ -36,7 +36,7 @@ export default async function PurposeListingPage({ purpose }: { purpose: "for-sa
           emptyText={`No ${isForSale ? "sale" : "rental"} listings published right now — check our full portfolio on Bayut below, or contact us directly.`}
         />
         <BayutBanner href={companyUrl} forSale={isForSale} credentials={[...credentials]} />
-        <FaqSection title={isForSale ? "Buying in Dubai: good to know" : "Renting in Dubai: good to know"} items={isForSale ? SALE_FAQ : RENT_FAQ} />
+        {(isForSale ? faqs.sale : faqs.rent).length > 0 && <FaqSection title={isForSale ? "Buying in Dubai: good to know" : "Renting in Dubai: good to know"} items={isForSale ? faqs.sale : faqs.rent} />}
       </section>
     </div>
   );

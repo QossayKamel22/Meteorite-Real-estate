@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { hasTrustedOrigin } from "@/lib/session";
-import { getClientKey, isRateLimited } from "@/lib/rate-limit";
+import { getClientKey } from "@/lib/rate-limit";
+import { isRateLimitedEdge } from "@/lib/rate-limit-edge";
 import { parseContactInput } from "@/lib/messages-shared";
 import { addMessage } from "@/lib/messages-data";
 import { notifyNewMessage } from "@/lib/notify";
@@ -8,7 +9,7 @@ import { notifyNewMessage } from "@/lib/notify";
 /** The public contact form. Saved in the admin inbox; bots (hidden field, link stuffing) get a silent "ok". */
 export async function POST(request: Request) {
   if (!hasTrustedOrigin(request)) return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
-  if (isRateLimited(`contact:${getClientKey(request)}`)) return NextResponse.json({ error: "Too many messages. Please try again in a few minutes." }, { status: 429 });
+  if (await isRateLimitedEdge(`contact:${getClientKey(request)}`, 6, 15 * 60)) return NextResponse.json({ error: "Too many messages. Please try again in a few minutes." }, { status: 429 });
   let body: unknown;
   try {
     body = await request.json();

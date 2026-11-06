@@ -271,6 +271,10 @@ docs/screenshots/         the images used in this README
   - Email through Resend: `RESEND_API_KEY` and `NOTIFY_EMAIL` (optional `NOTIFY_FROM`; without a verified domain Resend only delivers to the account owner's address)
   - `npx wrangler secret put TELEGRAM_BOT_TOKEN`, etc.
 - **Analytics** (admin overview) also keep device split, hour of day (Dubai time), top pages and top listings on the running-totals document. Crawlers and monitors are not counted.
+- **Rate limiting** of the contact form and sign-in provisioning uses the data centre's Cache API (`src/lib/rate-limit-edge.ts`): free, and it holds between requests, unlike a per-process counter.
+- **Backup:** Admin → Backup downloads one JSON file with every collection the admin manages (users and saved lists are left out). It is read page by page from `/api/admin/backup`, so no request carries the whole site; the overview reminds you when a week has passed. There is no automatic restore: ask for a script when you need one.
+- **Settings:** Admin → Settings edits the FAQ lists and the viewing slots (times, closed days, how far ahead); the defaults live in `src/lib/site-settings-shared.ts`.
+- **Smoke test:** `npm run smoke` checks the live site (pages, headers, protected routes, the contact API's validation) and runs automatically after `npm run deploy`. Point it elsewhere with `SMOKE_URL`.
 - **Smooth mode:** weak devices (or a footer switch) turn off blur, glows and looping decoration (`html[data-lite="true"]`, see `LiteMode.tsx` and the end of `globals.css`).
 
 ## Media, images and video

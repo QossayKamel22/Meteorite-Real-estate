@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { BarChart3, Inbox, Building2, Clapperboard, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
+import { BarChart3, DatabaseBackup, Inbox, Settings, Building2, Clapperboard, IdCard, Image as ImageIcon, LayoutDashboard, LayoutTemplate, ShieldCheck, Users } from "lucide-react";
 
 const GROUPS = [
   { label: "", items: [{ href: "/admin", label: "Overview", icon: LayoutDashboard }, { href: "/admin/messages", label: "Messages", icon: Inbox }] },
@@ -22,6 +22,8 @@ const GROUPS = [
       { href: "/admin/team", label: "Team", icon: IdCard },
       { href: "/admin/certificates", label: "Certificates", icon: ShieldCheck },
       { href: "/admin/statistics", label: "Statistics", icon: BarChart3 },
+      { href: "/admin/settings", label: "Settings", icon: Settings },
+      { href: "/admin/backup", label: "Backup", icon: DatabaseBackup },
     ],
   },
   { label: "Access", items: [{ href: "/admin/users", label: "Users", icon: Users }] },

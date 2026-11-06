@@ -8,6 +8,7 @@ import { getProperties, getProperty } from "@/lib/properties-data";
 import { isServedImage, SAFE_DOC_ID } from "@/lib/image-url";
 import { pageMetadata } from "@/lib/seo";
 import ViewingBooker from "@/components/ViewingBooker";
+import { getViewingSettings } from "@/lib/site-settings";
 import ContactForm from "@/components/ContactForm";
 import PropertyGallery from "@/components/PropertyGallery";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -39,7 +40,7 @@ export default async function PropertyPage({ params }: Props) {
   const p = await getProperty(id);
   if (!p || p.visible === false) notFound();
 
-  const all = await getProperties({ purpose: p.purpose });
+  const [all, slots] = await Promise.all([getProperties({ purpose: p.purpose }), getViewingSettings()]);
   const related = all.filter((x) => x.id !== p.id).slice(0, 3);
   const image = isServedImage(p.image) || p.image.startsWith("/") || p.image.startsWith("http") ? p.image : `/api/img/property/${p.id}`;
   const back = p.purpose === "rent" ? "/for-rent" : "/for-sale";
@@ -109,7 +110,7 @@ export default async function PropertyPage({ params }: Props) {
           )}
         </div>
         <aside className="space-y-6">
-          <ViewingBooker title={p.title} location={p.location} path={`/property/${p.id}`} />
+          <ViewingBooker title={p.title} location={p.location} path={`/property/${p.id}`} times={slots.times} days={slots.days} closedWeekdays={slots.closedWeekdays} />
           <div className="glass shimmer-border rounded-3xl p-6">
             <h2 className="text-lg font-semibold text-heading">Enquire about this property</h2>
             <p className="mb-5 mt-1 text-sm text-brand-ink/66">Leave your details and our team will come back to you.</p>

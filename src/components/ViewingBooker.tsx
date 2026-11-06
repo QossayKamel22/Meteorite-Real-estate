@@ -4,15 +4,15 @@ import { useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CalendarCheck, CheckCircle2, Loader2 } from "lucide-react";
 
-const TIMES = ["10:00", "12:00", "14:00", "16:00", "18:00"];
 const noSub = () => () => {};
 
-/** The next ten days, in Dubai time (UTC+4), as { value: "YYYY-MM-DD", day, date }. Computed in the browser, so a cached page never shows old days. */
-function nextDays() {
+/** The bookable days, in Dubai time (UTC+4), as { value: "YYYY-MM-DD", day, date }. Computed in the browser, so a cached page never shows old days. */
+function nextDays(count: number, closed: number[]) {
   const out: { value: string; day: string; date: string }[] = [];
   const base = Date.now() + 4 * 3600 * 1000;
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < count; i++) {
     const d = new Date(base + i * 86400000);
+    if (closed.includes(d.getUTCDay())) continue;
     out.push({
       value: d.toISOString().slice(0, 10),
       day: i === 0 ? "Today" : d.toLocaleDateString("en-GB", { weekday: "short", timeZone: "UTC" }),
@@ -26,9 +26,9 @@ function nextDays() {
  * "Book a viewing" on a listing: pick a day and a time, leave your details, and it arrives in the admin inbox
  * (and the team's notification) as a viewing request. The team confirms by phone or WhatsApp.
  */
-export default function ViewingBooker({ title, location, path }: { title: string; location: string; path: string }) {
+export default function ViewingBooker({ title, location, path, times, days: daysAhead, closedWeekdays }: { title: string; location: string; path: string; times: string[]; days: number; closedWeekdays: number[] }) {
   const isClient = useSyncExternalStore(noSub, () => true, () => false);
-  const days = isClient ? nextDays() : [];
+  const days = isClient ? nextDays(daysAhead, closedWeekdays) : [];
   const [day, setDay] = useState("");
   const [time, setTime] = useState("");
   const [name, setName] = useState("");
@@ -92,7 +92,7 @@ export default function ViewingBooker({ title, location, path }: { title: string
               )}
             </div>
             <div className="flex flex-wrap gap-2" role="group" aria-label="Time">
-              {TIMES.map((t) => (
+              {times.map((t) => (
                 <button key={t} type="button" aria-pressed={time === t} onClick={() => setTime(t)} className={`rounded-full border px-3.5 py-1.5 text-sm font-medium tabular-nums transition-colors ${time === t ? "border-brand-gold bg-brand-gold text-brand-navy" : "border-brand-line text-brand-ink/80 hover:border-brand-gold/60"}`}>{t}</button>
               ))}
             </div>

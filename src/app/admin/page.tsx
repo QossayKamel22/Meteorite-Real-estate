@@ -13,6 +13,7 @@ import { listUsers } from "@/lib/users-data";
 import { getAnalyticsSummary } from "@/lib/analytics-data";
 import { BreakdownPie, SignupsChart, StatsBarChart } from "@/components/AdminOverviewCharts";
 import { Suspense } from "react";
+import AdminBackupReminder from "@/components/AdminBackupReminder";
 import AdminAudiencePanel from "@/components/AdminAudiencePanel";
 import { getProperties } from "@/lib/properties-data";
 import AdminTrafficPanel from "@/components/AdminTrafficPanel";
@@ -92,6 +93,8 @@ export default async function AdminOverviewPage() {
             <p className="text-sm text-brand-ink/66">Best-effort visit tracking, aggregated per day.</p>
           </div>
         </div>
+
+        <AdminBackupReminder />
 
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <AdminStatCard icon="eye" label="Visits (all time)" index={0} value={analytics.totalAllTime} href="/admin" />

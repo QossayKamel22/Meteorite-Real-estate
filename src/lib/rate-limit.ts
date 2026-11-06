@@ -31,6 +31,9 @@ export function clearRateLimit(key: string): void {
 }
 
 export function getClientKey(request: Request): string {
+  // Behind Cloudflare the real address is in CF-Connecting-IP; X-Forwarded-For is only the fallback.
+  const cf = request.headers.get("cf-connecting-ip");
+  if (cf) return cf.trim();
   const forwarded = request.headers.get("x-forwarded-for");
   return forwarded?.split(",")[0].trim() ?? "unknown";
 }

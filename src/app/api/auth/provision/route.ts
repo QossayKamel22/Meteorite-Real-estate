@@ -3,7 +3,8 @@ import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
 import { authApiKey, authServiceAccount } from "@/lib/edge-auth-config";
 import { hasTrustedOrigin } from "@/lib/session";
 import { upsertUserOnSignIn } from "@/lib/users-data";
-import { isRateLimited, getClientKey } from "@/lib/rate-limit";
+import { getClientKey } from "@/lib/rate-limit";
+import { isRateLimitedEdge } from "@/lib/rate-limit-edge";
 
 /**
  * Called by the client right after Firebase sign-in (and right after the
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   const clientKey = getClientKey(request);
-  if (isRateLimited(clientKey)) {
+  if (await isRateLimitedEdge(`provision:${clientKey}`, 12, 10 * 60)) {
     return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
   }
 
