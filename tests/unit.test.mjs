@@ -330,3 +330,9 @@ test("analytics: device, hour (Dubai time), page keys; bots are skipped", () => 
   assert.deepEqual(detailDeltas("/property/ab-12", "iPhone", new Date("2026-11-05T05:00:00Z")), { dev_mobile: 1, h09: 1, pp_ab_12: 1 });
   assert.equal(detailDeltas("/", "Googlebot"), null);
 });
+
+test("contact: viewing slot is validated", () => {
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", viewing: "2026-11-12 16:00" }).value.viewing, "2026-11-12 16:00");
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", viewing: "tomorrow" }).value.viewing, "");
+  assert.equal(parseContactInput({ name: "x", email: "a@b.co", message: "hello there", viewing: "2026-11-12 16:30" }).value.viewing, "");
+});

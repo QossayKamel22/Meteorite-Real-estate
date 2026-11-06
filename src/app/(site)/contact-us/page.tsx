@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { company } from "@/lib/content";
 import ContactForm from "@/components/ContactForm";
 import ContactHero, { type ContactAction } from "@/components/ContactHero";
+import FaqSection from "@/components/FaqSection";
+import { CONTACT_FAQ } from "@/lib/faq";
 import ContactAside from "@/components/ContactAside";
 import Reveal from "@/components/Reveal";
 import { pageMetadata } from "@/lib/seo";
@@ -37,6 +39,7 @@ export default function ContactUsPage() {
 
           <ContactAside address={company.address} poBox={company.poBox} orn={company.orn} brokerCard={company.brokerCard} mapSrc={mapSrc} />
         </div>
+        <FaqSection title="Common questions" items={CONTACT_FAQ} />
       </section>
     </div>
   );

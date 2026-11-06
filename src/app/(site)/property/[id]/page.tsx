@@ -7,6 +7,7 @@ import { company } from "@/lib/content";
 import { getProperties, getProperty } from "@/lib/properties-data";
 import { isServedImage, SAFE_DOC_ID } from "@/lib/image-url";
 import { pageMetadata } from "@/lib/seo";
+import ViewingBooker from "@/components/ViewingBooker";
 import ContactForm from "@/components/ContactForm";
 import PropertyGallery from "@/components/PropertyGallery";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -107,7 +108,8 @@ export default async function PropertyPage({ params }: Props) {
             <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-ink hover:underline">View the original listing on Bayut <ArrowUpRight size={14} /></a>
           )}
         </div>
-        <aside>
+        <aside className="space-y-6">
+          <ViewingBooker title={p.title} location={p.location} path={`/property/${p.id}`} />
           <div className="glass shimmer-border rounded-3xl p-6">
             <h2 className="text-lg font-semibold text-heading">Enquire about this property</h2>
             <p className="mb-5 mt-1 text-sm text-brand-ink/66">Leave your details and our team will come back to you.</p>

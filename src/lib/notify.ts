@@ -10,12 +10,12 @@ const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt
  *  - Email (Resend): RESEND_API_KEY + NOTIFY_EMAIL (+ optional NOTIFY_FROM)
  * It never throws and never delays the visitor: it runs after the response is sent.
  */
-export function notifyNewMessage(m: { name: string; email: string; phone: string; topic: string; message: string; source: string }): void {
+export function notifyNewMessage(m: { name: string; email: string; phone: string; topic: string; message: string; source: string; viewing?: string }): void {
   const tasks: Promise<unknown>[] = [];
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chat = process.env.TELEGRAM_CHAT_ID;
   if (token && chat) {
-    const text = `📩 New enquiry — Meteorite Real Estate\n\n${m.name}${m.topic ? ` · ${m.topic}` : ""}\n${m.email}${m.phone ? `\n${m.phone}` : ""}${m.source ? `\nFrom: https://meteoriterealestate.com${m.source}` : ""}\n\n${m.message}\n\nOpen the inbox: https://meteoriterealestate.com/admin/messages`;
+    const text = `📩 New enquiry — Meteorite Real Estate\n\n${m.name}${m.topic ? ` · ${m.topic}` : ""}\n${m.email}${m.phone ? `\n${m.phone}` : ""}${m.viewing ? `\n🗓 Viewing: ${m.viewing}` : ""}${m.source ? `\nFrom: https://meteoriterealestate.com${m.source}` : ""}\n\n${m.message}\n\nOpen the inbox: https://meteoriterealestate.com/admin/messages`;
     tasks.push(
       fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
@@ -37,7 +37,7 @@ export function notifyNewMessage(m: { name: string; email: string; phone: string
           to: to.split(",").map((x) => x.trim()),
           reply_to: m.email,
           subject: `New enquiry from ${m.name}${m.topic ? ` (${m.topic})` : ""}`,
-          html: `<p><b>${esc(m.name)}</b> — <a href="mailto:${esc(m.email)}">${esc(m.email)}</a>${m.phone ? ` — ${esc(m.phone)}` : ""}</p><p>${esc(m.topic)}</p><p style="white-space:pre-wrap">${esc(m.message)}</p><p><a href="https://meteoriterealestate.com/admin/messages">Open the inbox</a></p>`,
+          html: `<p><b>${esc(m.name)}</b> — <a href="mailto:${esc(m.email)}">${esc(m.email)}</a>${m.phone ? ` — ${esc(m.phone)}` : ""}</p><p>${esc(m.topic)}${m.viewing ? ` — viewing ${esc(m.viewing)}` : ""}</p><p style="white-space:pre-wrap">${esc(m.message)}</p><p><a href="https://meteoriterealestate.com/admin/messages">Open the inbox</a></p>`,
         }),
         signal: AbortSignal.timeout(6000),
       })

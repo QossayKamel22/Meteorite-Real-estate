@@ -263,6 +263,7 @@ docs/screenshots/         the images used in this README
 
 - **Property pages** (`/property/<id>`): a gallery, price and specs, description, amenities, an enquiry form and similar listings. Listing cards link to them. They are ordinary cached server pages; the only client code is the gallery and the form. `src/proxy.ts` lists `property` among the known paths, so keep it there.
 - **Search, filters and compare** on For Sale / For Rent run in the browser on the listings already on the page (no extra requests). Up to three listings can be compared side by side.
+- **Help me choose** (two questions, three best matches), **Book a viewing** (a day and time slot arrive in Admin → Messages as a viewing request) and an **FAQ** (plain `<details>`, FAQPage markup; the answers are general points in `src/lib/faq.ts`: have them reviewed before relying on them). Cards can carry a *New / Price reduced / Exclusive* label, set per listing in Admin → Properties.
 - **Saved properties:** the heart on a card is stored on the device and, once signed in, on the account (`favorites/<uid>` in Firestore, merged on sign-in). The Saved page shows the listings as cards.
 - **Contact messages** are stored in the `messages` collection (public `POST /api/contact`: hidden-field trap, link limit, per-address rate limit). They appear in Admin → Messages.
 - **Notifications:** set any of these as Worker secrets and the matching channel turns on by itself; with none set nothing is sent.

@@ -15,6 +15,10 @@ function parseGallery(v: unknown): string[] | string {
   return out;
 }
 
+function parseBadge(v: unknown): "new" | "reduced" | "exclusive" | "" {
+  return v === "new" || v === "reduced" || v === "exclusive" ? v : "";
+}
+
 function parsePropertyPatch(body: Record<string, unknown>): Partial<PropertyInput> | string {
   const patch: Partial<PropertyInput> = {};
 
@@ -66,6 +70,7 @@ function parsePropertyPatch(body: Record<string, unknown>): Partial<PropertyInpu
     patch.amenities = body.amenities.filter((a): a is string => typeof a === "string" && a.trim().length > 0);
   }
   if (typeof body.isStudio === "boolean") patch.isStudio = body.isStudio;
+  if (body.badge !== undefined) patch.badge = parseBadge(body.badge) || undefined;
   if (body.gallery !== undefined) {
     const g = parseGallery(body.gallery);
     if (typeof g === "string") return g;

@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Scale, Search, SlidersHorizontal, X } from "lucide-react";
 import type { Property } from "@/lib/properties-data";
 import { isServedImage } from "@/lib/image-url";
+import HelpMeChoose from "@/components/HelpMeChoose";
 import PropertyCard from "@/components/PropertyCard";
 
 type Sort = "featured" | "low" | "high" | "size";
@@ -132,11 +133,14 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   return (
     <>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-1 items-center gap-2">
         <label className="relative block flex-1">
           <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-ink/45" />
           <span className="sr-only">Search listings</span>
           <input value={q} onChange={(e) => setQ(e.target.value)} type="search" placeholder="Search by area or building" className={`${field} pl-10 font-normal`} />
         </label>
+          <HelpMeChoose properties={properties} prices={prices} onApply={(m, b) => { setMaxPrice(m); setBeds(b as (typeof BEDS)[number]); }} />
+        </div>
         <div className="flex items-center gap-2">
           <div role="group" aria-label="Bedrooms" className="flex flex-1 overflow-hidden rounded-xl border border-brand-line bg-surface sm:flex-none">
             {BEDS.map((b) => (

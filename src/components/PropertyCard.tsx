@@ -60,6 +60,11 @@ function PropertyCardBase({ property, delay = 0, compare, onCompare }: { propert
           </motion.div>
           <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-navy/55 to-transparent" />
           <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white backdrop-blur">{property.type}</span>
+          {property.badge && (
+            <span className={`absolute left-3 top-12 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${property.badge === "reduced" ? "bg-red-500 text-white" : property.badge === "exclusive" ? "bg-brand-navy text-brand-gold ring-1 ring-brand-gold/60" : "bg-brand-gold text-brand-navy"}`}>
+              {property.badge === "reduced" ? "Price reduced" : property.badge === "exclusive" ? "Exclusive" : "New"}
+            </span>
+          )}
           <FavoriteButton id={property.id} className="absolute right-3 top-3 z-20 h-9 w-9 rounded-full bg-brand-navy/75 text-white backdrop-blur hover:bg-brand-navy" />
           {property.gallery && property.gallery.length > 0 && <span className="absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-medium text-white">+{property.gallery.length} photos</span>}
           <span className="pointer-events-none absolute inset-x-0 bottom-0 z-[6] flex translate-y-full items-center justify-center gap-1.5 bg-brand-gold/95 py-2 text-xs font-bold uppercase tracking-wider text-brand-navy transition-transform duration-300 group-hover:translate-y-0">

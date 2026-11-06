@@ -24,6 +24,7 @@ type FormState = {
   amenities: string;
   image: string;
   gallery: string[];
+  badge: string;
   sourceUrl: string;
   visible: boolean;
 };
@@ -43,6 +44,7 @@ const EMPTY_FORM: FormState = {
   amenities: "",
   image: "",
   gallery: [],
+  badge: "",
   sourceUrl: "",
   visible: true,
 };
@@ -63,6 +65,7 @@ function propertyToForm(p: Property): FormState {
     amenities: p.amenities?.join("\n") ?? "",
     image: p.image,
     gallery: p.gallery ?? [],
+    badge: p.badge ?? "",
     sourceUrl: p.sourceUrl ?? "",
     visible: p.visible !== false,
   };
@@ -87,6 +90,7 @@ function formToPayload(form: FormState): PropertyInput {
       .filter(Boolean),
     image: form.image.trim(),
     gallery: form.gallery,
+    badge: form.badge,
     sourceUrl: form.sourceUrl.trim() || undefined,
     visible: form.visible,
   } as PropertyInput;
@@ -139,6 +143,15 @@ function PropertyForm({
       />
       {imageError && <p className="text-xs font-medium text-red-600">{imageError}</p>}
       <GalleryField value={form.gallery} onChange={(g) => set("gallery", g)} />
+      <div>
+        <label className="block text-xs font-medium text-brand-ink/70">Label on the card</label>
+        <select value={form.badge} onChange={(e) => set("badge", e.target.value)} className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold sm:w-60">
+          <option value="">None</option>
+          <option value="new">New</option>
+          <option value="reduced">Price reduced</option>
+          <option value="exclusive">Exclusive</option>
+        </select>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="sm:col-span-2">

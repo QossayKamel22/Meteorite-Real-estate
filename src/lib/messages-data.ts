@@ -13,6 +13,7 @@ function toMessage(id: string, d: Record<string, unknown>): ContactMessage {
     topic: String(d.topic ?? ""),
     message: String(d.message ?? ""),
     source: String(d.source ?? ""),
+    viewing: String(d.viewing ?? ""),
     read: d.read === true,
     createdAt: String(d.createdAt ?? new Date(0).toISOString()),
   };

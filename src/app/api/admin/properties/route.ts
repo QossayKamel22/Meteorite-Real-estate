@@ -15,6 +15,10 @@ function parseGallery(v: unknown): string[] | string {
   return out;
 }
 
+function parseBadge(v: unknown): "new" | "reduced" | "exclusive" | "" {
+  return v === "new" || v === "reduced" || v === "exclusive" ? v : "";
+}
+
 function parsePropertyInput(body: Record<string, unknown>): PropertyInput | string {
   const title = typeof body.title === "string" ? body.title.trim() : "";
   const location = typeof body.location === "string" ? body.location.trim() : "";
@@ -68,6 +72,7 @@ function parsePropertyInput(body: Record<string, unknown>): PropertyInput | stri
     isStudio,
     visible,
     gallery,
+    badge: parseBadge(body.badge) || undefined,
     ...(purpose === "rent" && rentFrequency ? { rentFrequency } : {}),
     ...(description ? { description } : {}),
     ...(amenities && amenities.length ? { amenities } : {}),

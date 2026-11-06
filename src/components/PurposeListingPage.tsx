@@ -2,6 +2,8 @@ import { externalListings, credentials } from "@/lib/content";
 import { getProperties, type Purpose } from "@/lib/properties-data";
 import PageHero from "@/components/PageHero";
 import ListingsBrowser from "@/components/ListingsBrowser";
+import FaqSection from "@/components/FaqSection";
+import { RENT_FAQ, SALE_FAQ } from "@/lib/faq";
 import BayutBanner from "@/components/BayutBanner";
 
 export default async function PurposeListingPage({ purpose }: { purpose: "for-sale" | "for-rent" }) {
@@ -34,6 +36,7 @@ export default async function PurposeListingPage({ purpose }: { purpose: "for-sa
           emptyText={`No ${isForSale ? "sale" : "rental"} listings published right now — check our full portfolio on Bayut below, or contact us directly.`}
         />
         <BayutBanner href={companyUrl} forSale={isForSale} credentials={[...credentials]} />
+        <FaqSection title={isForSale ? "Buying in Dubai: good to know" : "Renting in Dubai: good to know"} items={isForSale ? SALE_FAQ : RENT_FAQ} />
       </section>
     </div>
   );

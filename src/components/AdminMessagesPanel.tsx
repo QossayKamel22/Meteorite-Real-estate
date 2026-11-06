@@ -69,7 +69,7 @@ export default function AdminMessagesPanel({ messages }: { messages: ContactMess
                   <span aria-hidden="true" className={`mt-1.5 h-2.5 w-2.5 flex-none rounded-full ${m.read ? "bg-brand-ink/15" : "bg-brand-gold shadow-[0_0_10px_2px_rgba(219,204,59,0.6)]"}`} />
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline justify-between gap-3">
-                      <span className={`truncate text-sm ${m.read ? "font-medium text-brand-ink/80" : "font-semibold text-heading"}`}>{m.name}{m.topic && <span className="ml-2 rounded-full bg-brand-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-ink">{m.topic}</span>}</span>
+                      <span className={`truncate text-sm ${m.read ? "font-medium text-brand-ink/80" : "font-semibold text-heading"}`}>{m.name}{m.viewing && <span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-emerald-600">🗓 {m.viewing}</span>}{m.topic && <span className="ml-2 rounded-full bg-brand-gold/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-ink">{m.topic}</span>}</span>
                       <span className="flex-none text-xs text-brand-ink/60">{ago(m.createdAt)}</span>
                     </span>
                     <span className={`mt-0.5 block text-sm text-brand-ink/66 ${isOpen ? "" : "line-clamp-1"}`}>{m.message}</span>
