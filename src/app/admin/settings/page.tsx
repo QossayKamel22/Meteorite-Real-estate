@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Settings } from "lucide-react";
 import { getFaqs, getViewingSettings } from "@/lib/site-settings";
+import { notifyChannels } from "@/lib/notify";
 import AdminSettingsPanel from "@/components/AdminSettingsPanel";
 
 export const metadata: Metadata = { title: "Settings · Admin" };
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
   const [faq, viewing] = await Promise.all([getFaqs(), getViewingSettings()]);
+  const channels = notifyChannels();
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex items-center gap-3">
@@ -18,7 +20,7 @@ export default async function AdminSettingsPage() {
         </div>
       </div>
       <div className="mt-6">
-        <AdminSettingsPanel faq={faq} viewing={viewing} />
+        <AdminSettingsPanel faq={faq} viewing={viewing} channels={channels} />
       </div>
     </div>
   );

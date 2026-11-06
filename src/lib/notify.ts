@@ -10,6 +10,11 @@ const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt
  *  - Email (Resend): RESEND_API_KEY + NOTIFY_EMAIL (+ optional NOTIFY_FROM)
  * It never throws and never delays the visitor: it runs after the response is sent.
  */
+/** Which channels have their secrets set (never the secrets themselves). */
+export function notifyChannels(): { telegram: boolean; email: boolean } {
+  return { telegram: Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID), email: Boolean(process.env.RESEND_API_KEY && process.env.NOTIFY_EMAIL) };
+}
+
 export function notifyNewMessage(m: { name: string; email: string; phone: string; topic: string; message: string; source: string; viewing?: string }): void {
   const tasks: Promise<unknown>[] = [];
   const token = process.env.TELEGRAM_BOT_TOKEN;

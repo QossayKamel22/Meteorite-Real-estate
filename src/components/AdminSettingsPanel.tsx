@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
+import { Bell, CheckCircle2, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { ALL_TIMES, DEFAULT_FAQ, FAQ_LIMITS, type FaqSet, type ViewingSettings } from "@/lib/site-settings-shared";
 
 const TABS = [
@@ -129,9 +129,44 @@ function ViewingEditor({ initial }: { initial: ViewingSettings }) {
   );
 }
 
-export default function AdminSettingsPanel({ faq, viewing }: { faq: FaqSet; viewing: ViewingSettings }) {
+function NotifyCard({ channels }: { channels: { telegram: boolean; email: boolean } }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const any = channels.telegram || channels.email;
+  async function test() {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch("/api/admin/notify-test", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      setMsg(res.ok ? { ok: true, text: "Test sent — check your Telegram / email in a few seconds." } : { ok: false, text: data.error ?? "Couldn't send." });
+    } catch {
+      setMsg({ ok: false, text: "Something went wrong." });
+    } finally {
+      setBusy(false);
+    }
+  }
+  const dot = (on: boolean) => <span className={`inline-block h-2.5 w-2.5 rounded-full ${on ? "bg-emerald-500" : "bg-brand-ink/20"}`} />;
+  return (
+    <div className="glass shimmer-border rounded-3xl p-5 sm:p-6">
+      <h2 className="flex items-center gap-2 text-base font-semibold text-heading"><Bell size={16} className="text-gold-ink" /> Notifications for new messages</h2>
+      <p className="mt-0.5 text-xs text-brand-ink/66">Each channel turns on by itself once its secrets are set on the Worker (see the README).</p>
+      <ul className="mt-3 space-y-1.5 text-sm text-heading">
+        <li className="flex items-center gap-2">{dot(channels.telegram)} Telegram {channels.telegram ? "is on" : "is not set up"}</li>
+        <li className="flex items-center gap-2">{dot(channels.email)} Email {channels.email ? "is on" : "is not set up"}</li>
+      </ul>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <button type="button" disabled={busy || !any} onClick={test} className="rounded-full bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-navy-light disabled:opacity-40 dark:bg-brand-gold dark:text-brand-navy">{busy ? "Sending…" : "Send a test"}</button>
+        <Note msg={msg} />
+      </div>
+    </div>
+  );
+}
+
+export default function AdminSettingsPanel({ faq, viewing, channels }: { faq: FaqSet; viewing: ViewingSettings; channels: { telegram: boolean; email: boolean } }) {
   return (
     <div className="space-y-6">
+      <NotifyCard channels={channels} />
       <ViewingEditor initial={viewing} />
       <FaqEditor initial={faq} />
     </div>
