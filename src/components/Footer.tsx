@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { company, socialLinks } from "@/lib/content";
+import { LiteToggle } from "@/components/LiteMode";
 import { getSocialAccounts } from "@/lib/social-accounts";
 
 const footerLinks = [
@@ -134,9 +135,12 @@ export default async function Footer() {
               Website designed &amp; developed by <span className="font-medium text-white/70">Qossay Kamel</span> for {company.name}.
             </p>
           </div>
-          <p>
-            RERA ORN {company.orn} · Broker Card #{company.brokerCard}
-          </p>
+          <div className="flex flex-col gap-2 sm:items-end">
+            <p>
+              RERA ORN {company.orn} · Broker Card #{company.brokerCard}
+            </p>
+            <LiteToggle />
+          </div>
         </div>
       </div>
     </footer>

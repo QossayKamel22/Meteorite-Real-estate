@@ -722,7 +722,6 @@ body {
     radial-gradient(40% 60% at 88% 90%, rgba(60, 70, 190, 0.45), transparent 70%),
     radial-gradient(35% 55% at 55% 0%, rgba(233, 221, 122, 0.12), transparent 70%);
   background-size: 140% 140%;
-  animation: cta-aurora 16s ease-in-out infinite alternate;
 }
 @keyframes cta-aurora {
   from {
@@ -820,4 +819,41 @@ body {
 [data-paused="true"],
 [data-paused="true"] * {
   animation-play-state: paused !important;
+}
+
+/* ---- Smooth mode (set by <LiteMode>) -------------------------------------------------
+   Switches off the effects that cost the most on a weak device: frosted-glass blur, soft blurred
+   glows, looping decorations and the grain layer. Colours, layout and content are unchanged. */
+html[data-lite="true"] .glass,
+html[data-lite="true"] .glass-dark,
+html[data-lite="true"] .glass-nav,
+html[data-lite="true"] .glass-podcast,
+html[data-lite="true"] [class*="backdrop-blur"] {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html[data-lite="true"] .glass { background: rgba(var(--glass-tint), 0.94); }
+html[data-lite="true"] .glass-nav:not(.over-hero) { background: var(--background); }
+html[data-lite="true"] [class*="blur-3xl"],
+html[data-lite="true"] [class*="blur-[1"],
+html[data-lite="true"] .glow-field,
+html[data-lite="true"] .glow-field-podcast,
+html[data-lite="true"] .grain-overlay,
+html[data-lite="true"] .particle,
+html[data-lite="true"] .light-sweep,
+html[data-lite="true"] .shooting-star {
+  display: none !important;
+}
+html[data-lite="true"] .ken-burns,
+html[data-lite="true"] .cta-aurora,
+html[data-lite="true"] .marquee-track,
+html[data-lite="true"] .stat-orbit,
+html[data-lite="true"] .tile-ring,
+html[data-lite="true"] .seal-spin,
+html[data-lite="true"] .skyline-drift,
+html[data-lite="true"] .float-y,
+html[data-lite="true"] .featured-spin,
+html[data-lite="true"] .cta-pulse,
+html[data-lite="true"] .pin-ripple {
+  animation: none !important;
 }

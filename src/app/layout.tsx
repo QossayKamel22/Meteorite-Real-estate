@@ -5,6 +5,7 @@ import "./globals.css";
 import { FavoritesProvider } from "@/lib/favorites-context";
 import { AuthProvider } from "@/lib/auth-context";
 import ThemeProvider from "@/components/ThemeProvider";
+import LiteMode from "@/components/LiteMode";
 import PauseOffscreen from "@/components/PauseOffscreen";
 import StyleGuard from "@/components/StyleGuard";
 import AuthLoadingOverlay from "@/components/AuthLoadingOverlay";
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <AuthLoadingOverlay />
             <StyleGuard />
             <PauseOffscreen />
+            <LiteMode />
           </AuthProvider>
         </ThemeProvider>
       </body>
