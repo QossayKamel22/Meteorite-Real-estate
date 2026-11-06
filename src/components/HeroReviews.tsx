@@ -45,7 +45,7 @@ export default function HeroReviews({ testimonials }: { testimonials: Testimonia
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
-      className={`glass glass-dark shimmer-border relative z-10 mt-5 w-full rounded-2xl p-4 sm:absolute sm:-bottom-8 sm:-left-6 sm:mt-0 sm:w-[19.5rem] ${reduceMotion ? "" : "sm:float-y"}`}
+      className={`glass glass-dark force-dark shimmer-border relative z-10 mt-5 w-full rounded-2xl p-4 sm:absolute sm:-bottom-8 sm:-left-6 sm:mt-0 sm:w-[19.5rem] ${reduceMotion ? "" : "sm:float-y"}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

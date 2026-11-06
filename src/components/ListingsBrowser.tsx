@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
-import { ArrowDownUp, Scale, Search, X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Scale, Search, X } from "lucide-react";
 import type { Property } from "@/lib/properties-data";
 import { isServedImage } from "@/lib/image-url";
 import PropertyCard from "@/components/PropertyCard";
@@ -77,11 +77,12 @@ function CompareModal({ items, onClose, onRemove }: { items: Property[]; onClose
 }
 
 /**
- * The listings with search, type, bedroom and price filters, a sort, and a compare tray (up to three).
- * Everything runs in the browser on the listings already on the page, so it adds no requests.
+ * The listings with one calm filter bar: search, type, price and sort in a row of fields, bedrooms as a
+ * single segmented control, and a compare tray (up to three). It all runs in the browser on the listings
+ * already on the page, so it adds no requests; typing is deferred and the cards are memoised, so
+ * filtering never makes the page stutter.
  */
 export default function ListingsBrowser({ properties, emptyText }: { properties: Property[]; emptyText: string }) {
-  const reduce = useReducedMotion() ?? false;
   const [type, setType] = useState("All");
   const [beds, setBeds] = useState<(typeof BEDS)[number]>("Any");
   const [q, setQ] = useState("");
@@ -89,11 +90,9 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   const [sort, setSort] = useState<Sort>("featured");
   const [picked, setPicked] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
-  // Cards only measure and glide once the visitor changes a filter; before that it would just cost the first paint.
-  const [touched, setTouched] = useState(false);
-  const touch = () => setTouched(true);
+  const deferredQ = useDeferredValue(q);
 
-  const types = useMemo(() => ["All", ...Array.from(new Set(properties.map((p) => p.type)))], [properties]);
+  const types = useMemo(() => Array.from(new Set(properties.map((p) => p.type))), [properties]);
   const prices = useMemo(() => {
     const top = Math.max(0, ...properties.map((p) => p.price));
     if (top === 0) return [];
@@ -102,7 +101,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   }, [properties]);
 
   const shown = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = deferredQ.trim().toLowerCase();
     let list = properties.filter((p) => {
       if (type !== "All" && p.type !== type) return false;
       if (beds === "Studio" && !p.isStudio) return false;
@@ -116,82 +115,62 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
     if (sort === "high") list = [...list].sort((a, b) => b.price - a.price);
     if (sort === "size") list = [...list].sort((a, b) => b.sizeSqft - a.sizeSqft);
     return list;
-  }, [properties, type, beds, maxPrice, q, sort]);
+  }, [properties, type, beds, maxPrice, deferredQ, sort]);
+
+  const toggleCompare = useCallback((id: string) => setPicked((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= MAX_COMPARE ? c : [...c, id])), []);
   const chosen = picked.map((id) => properties.find((p) => p.id === id)).filter((p): p is Property => Boolean(p));
   const filtered = type !== "All" || beds !== "Any" || maxPrice > 0 || q.trim() !== "";
+  const full = picked.length >= MAX_COMPARE;
 
   if (properties.length === 0) {
     return <p className="rounded-3xl border border-dashed border-brand-line p-10 text-center text-sm text-brand-ink/66">{emptyText}</p>;
   }
 
-  const pill = (on: boolean) => `relative rounded-full px-3.5 py-1.5 text-sm font-medium ring-1 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold ${on ? "text-brand-navy ring-brand-gold" : "text-brand-ink/72 ring-brand-line hover:text-heading hover:ring-brand-gold/50"}`;
+  const field = "w-full rounded-xl border border-brand-line bg-surface px-3 py-2.5 text-sm font-medium text-heading outline-none transition-colors focus:border-brand-gold";
 
   return (
-    <LayoutGroup>
-      <div className="space-y-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <label className="relative flex-1">
-            <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-brand-ink/45" />
-            <span className="sr-only">Search listings</span>
-            <input value={q} onChange={(e) => { touch(); setQ(e.target.value); }} type="search" placeholder="Search by area, building or title" className="w-full rounded-full border border-brand-line bg-surface py-2.5 pl-11 pr-4 text-sm outline-none transition-[border-color,box-shadow] focus:border-brand-gold focus:shadow-[0_0_0_4px_rgba(219,204,59,0.14)]" />
-          </label>
-          <div className="flex items-center gap-2">
-            {prices.length > 0 && (
-              <select aria-label="Maximum price" value={maxPrice} onChange={(e) => { touch(); setMaxPrice(Number(e.target.value)); }} className="rounded-full border border-brand-line bg-surface px-3.5 py-2 text-sm font-medium text-heading outline-none focus:border-brand-gold">
-                <option value={0}>Any price</option>
-                {prices.map((v) => <option key={v} value={v}>Up to AED {v.toLocaleString("en-US")}</option>)}
-              </select>
-            )}
-            <label className="flex items-center gap-1.5 text-sm text-brand-ink/66">
-              <ArrowDownUp size={15} className="text-gold-ink" />
-              <span className="sr-only">Sort listings</span>
-              <select value={sort} onChange={(e) => { touch(); setSort(e.target.value as Sort); }} className="rounded-full border border-brand-line bg-surface px-3.5 py-2 text-sm font-medium text-heading outline-none focus:border-brand-gold">
-                {SORTS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
-              </select>
-            </label>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          {types.length > 2 && (
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Property type">
-              {types.map((t) => (
-                <button key={t} type="button" aria-pressed={t === type} onClick={() => { touch(); setType(t); }} className={pill(t === type)}>
-                  {t === type && <motion.span layoutId="type-pill" transition={{ type: "spring", stiffness: 380, damping: 30 }} className="absolute inset-0 rounded-full bg-brand-gold" />}
-                  <span className="relative">{t}</span>
-                </button>
-              ))}
-            </div>
+    <>
+      <div className="rounded-2xl border border-brand-line bg-surface p-3 shadow-sm sm:p-4">
+        <label className="relative block">
+          <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-ink/45" />
+          <span className="sr-only">Search listings</span>
+          <input value={q} onChange={(e) => setQ(e.target.value)} type="search" placeholder="Search by area, building or title" className={`${field} pl-10 font-normal`} />
+        </label>
+        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-[1fr_1fr_1fr_auto]">
+          {types.length > 1 && (
+            <select aria-label="Property type" value={type} onChange={(e) => setType(e.target.value)} className={field}>
+              <option value="All">All types</option>
+              {types.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
           )}
-          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Bedrooms">
-            <span className="text-xs font-semibold uppercase tracking-wide text-brand-ink/60">Beds</span>
+          {prices.length > 0 && (
+            <select aria-label="Maximum price" value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className={field}>
+              <option value={0}>Any price</option>
+              {prices.map((v) => <option key={v} value={v}>Up to AED {v.toLocaleString("en-US")}</option>)}
+            </select>
+          )}
+          <select aria-label="Sort listings" value={sort} onChange={(e) => setSort(e.target.value as Sort)} className={`${field} ${types.length > 1 && prices.length > 0 ? "col-span-2 lg:col-span-1" : ""}`}>
+            {SORTS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
+          </select>
+          <div role="group" aria-label="Bedrooms" className="col-span-2 flex overflow-hidden rounded-xl border border-brand-line lg:col-span-1">
             {BEDS.map((b) => (
-              <button key={b} type="button" aria-pressed={b === beds} onClick={() => { touch(); setBeds(b); }} className={pill(b === beds)}>
-                {b === beds && <motion.span layoutId="beds-pill" transition={{ type: "spring", stiffness: 380, damping: 30 }} className="absolute inset-0 rounded-full bg-brand-gold" />}
-                <span className="relative">{b}</span>
+              <button key={b} type="button" aria-pressed={b === beds} onClick={() => setBeds(b)} className={`flex-1 px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-gold ${b === beds ? "bg-brand-gold text-brand-navy" : "text-brand-ink/72 hover:bg-brand-paper hover:text-heading"}`}>
+                {b === "Any" ? "Any beds" : b}
               </button>
             ))}
           </div>
-          {filtered && (
-            <button type="button" onClick={() => { touch(); setType("All"); setBeds("Any"); setMaxPrice(0); setQ(""); }} className="text-sm font-semibold text-gold-ink underline">Clear filters</button>
-          )}
         </div>
-        <p className="text-xs text-brand-ink/60" aria-live="polite">{shown.length} of {properties.length} listing{properties.length === 1 ? "" : "s"}</p>
+      </div>
+      <div className="mt-3 flex items-center justify-between text-xs text-brand-ink/60" aria-live="polite">
+        <span>{shown.length} of {properties.length} listing{properties.length === 1 ? "" : "s"}</span>
+        {filtered && <button type="button" onClick={() => { setType("All"); setBeds("Any"); setMaxPrice(0); setQ(""); }} className="text-sm font-semibold text-gold-ink underline">Clear filters</button>}
       </div>
 
-      <motion.div layout={touched && !reduce} className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <AnimatePresence mode="popLayout">
-          {shown.map((p, i) => (
-            <PropertyCard
-              key={p.id}
-              property={p}
-              delay={Math.min(i, 7) * 0.06}
-              animateLayout={touched}
-              compare={{ selected: picked.includes(p.id), disabled: picked.length >= MAX_COMPARE, onToggle: () => setPicked((c) => (c.includes(p.id) ? c.filter((x) => x !== p.id) : c.length >= MAX_COMPARE ? c : [...c, p.id])) }}
-            />
-          ))}
-        </AnimatePresence>
-      </motion.div>
+      <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {shown.map((p, i) => (
+          <PropertyCard key={p.id} property={p} delay={Math.min(i, 7) * 0.05} compare={{ selected: picked.includes(p.id), disabled: full }} onCompare={toggleCompare} />
+        ))}
+      </div>
       {shown.length === 0 && <p className="mt-6 rounded-3xl border border-dashed border-brand-line p-8 text-center text-sm text-brand-ink/66">Nothing matches those filters. Try widening them.</p>}
 
       <AnimatePresence>
@@ -207,6 +186,6 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
       <AnimatePresence>
         {showCompare && chosen.length >= 2 && <CompareModal items={chosen} onClose={() => setShowCompare(false)} onRemove={(id) => { setPicked((c) => c.filter((x) => x !== id)); if (picked.length <= 2) setShowCompare(false); }} />}
       </AnimatePresence>
-    </LayoutGroup>
+    </>
   );
 }

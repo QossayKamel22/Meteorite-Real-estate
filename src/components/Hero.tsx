@@ -145,7 +145,7 @@ export default function Hero({
             </Link>
             <Link prefetch={false}
               href="/for-rent"
-              className="glass rounded-full px-7 py-3.5 text-center text-[15px] font-semibold text-white transition-transform duration-200 hover:scale-[1.03]"
+              className="glass glass-dark force-dark rounded-full px-7 py-3.5 text-center text-[15px] font-semibold text-white transition-transform duration-200 hover:scale-[1.03]"
             >
               Browse properties for rent
             </Link>
@@ -183,7 +183,7 @@ export default function Hero({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             style={reduceMotion ? undefined : { rotateX, rotateY, transformStyle: "preserve-3d" }}
-            className="glass shimmer-border rounded-3xl p-7 sm:p-8"
+            className="glass glass-dark force-dark shimmer-border rounded-3xl p-7 sm:p-8"
           >
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-heading/60">
               At a glance

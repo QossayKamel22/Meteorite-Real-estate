@@ -857,3 +857,13 @@ html[data-lite="true"] .cta-pulse,
 html[data-lite="true"] .pin-ripple {
   animation: none !important;
 }
+
+/* A surface that stays dark whatever the site theme (cards laid over the hero photograph): it carries the dark theme's colours. */
+.force-dark {
+  --heading: #f6f4ea;
+  --brand-ink: #eceae0;
+  --brand-paper: #12142c;
+  --brand-line: rgba(255, 255, 255, 0.12);
+  --surface: #12142c;
+  color: #f6f4ea;
+}

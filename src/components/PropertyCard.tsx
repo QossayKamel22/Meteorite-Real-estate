@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { memo } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, BedDouble, Check, Bath, MapPin, Ruler } from "lucide-react";
 import FavoriteButton from "@/components/FavoriteButton";
 import { isServedImage } from "@/lib/image-url";
@@ -23,41 +24,28 @@ function formatPrice(p: Property): { amount: string; per: string } {
  * zoom, the card leans toward the pointer with a gold glow beneath it, and the enquiry button
  * slides its arrow out on hover.
  */
-export default function PropertyCard({ property, delay = 0, animateLayout = false, compare }: { property: Property; delay?: number; animateLayout?: boolean; compare?: { selected: boolean; disabled: boolean; onToggle: () => void } }) {
+function PropertyCardBase({ property, delay = 0, compare, onCompare }: { property: Property; delay?: number; compare?: { selected: boolean; disabled: boolean }; onCompare?: (id: string) => void }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLElement>(null);
   const show = useInView(ref, { once: true, amount: 0.2 });
-  const px = useMotionValue(0);
-  const py = useMotionValue(0);
-  const rx = useSpring(useTransform(py, [-0.5, 0.5], [4, -4]), { stiffness: 200, damping: 20 });
-  const ry = useSpring(useTransform(px, [-0.5, 0.5], [-5, 5]), { stiffness: 200, damping: 20 });
   const price = formatPrice(property);
   const whatsappMessage = encodeURIComponent(`Hi, I'm interested in: ${property.title} (${property.location}).`);
 
   return (
     <motion.div
-      layout={animateLayout && !reduce}
       initial={{ opacity: 0, y: reduce ? 0 : 44, scale: reduce ? 1 : 0.95 }}
       animate={show ? { opacity: 1, y: 0, scale: 1 } : undefined}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.85, delay, ease: EASE, layout: { duration: 0.5, ease: EASE } }}
-      className="h-full [perspective:900px]"
+      transition={{ duration: 0.7, delay, ease: EASE }}
+      className="h-full"
     >
-      <motion.article
+      <article
         ref={ref}
         onPointerMove={(e) => {
           if (reduce) return;
           const r = e.currentTarget.getBoundingClientRect();
-          px.set((e.clientX - r.left) / r.width - 0.5);
-          py.set((e.clientY - r.top) / r.height - 0.5);
           e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
           e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
         }}
-        onPointerLeave={() => {
-          px.set(0);
-          py.set(0);
-        }}
-        style={reduce ? undefined : { rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
         className="glass shimmer-border group relative flex h-full flex-col overflow-hidden rounded-3xl transition-shadow duration-300 hover:shadow-[0_28px_60px_-28px_rgba(219,204,59,0.5)]"
       >
         <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: "radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(219,204,59,0.14), transparent 65%)" }} />
@@ -82,7 +70,7 @@ export default function PropertyCard({ property, delay = 0, animateLayout = fals
           {compare && (
             <button
               type="button"
-              onClick={(e) => { e.stopPropagation(); compare.onToggle(); }}
+              onClick={(e) => { e.stopPropagation(); onCompare?.(property.id); }}
               disabled={compare.disabled && !compare.selected}
               aria-pressed={compare.selected}
               className={`absolute right-4 top-4 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 transition-colors disabled:opacity-40 ${compare.selected ? "bg-brand-gold text-brand-navy ring-brand-gold" : "text-brand-ink/70 ring-brand-line hover:ring-brand-gold"}`}
@@ -123,7 +111,11 @@ export default function PropertyCard({ property, delay = 0, animateLayout = fals
             <ArrowUpRight size={15} className="relative transition-transform duration-300 group-hover/b:-translate-y-0.5 group-hover/b:translate-x-0.5" />
           </a>
         </div>
-      </motion.article>
+      </article>
     </motion.div>
   );
 }
+
+/** Memoised: filtering or ticking a compare box re-renders only the cards whose own data changed. */
+const PropertyCard = memo(PropertyCardBase);
+export default PropertyCard;
