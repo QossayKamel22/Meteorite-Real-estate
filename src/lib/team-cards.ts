@@ -17,7 +17,8 @@ export type TeamMember = {
 };
 
 /** Details that were printed on the team's own cards before they could be edited in the admin. */
-export type ProfileSheet = { summary: string; highlights: string[]; skills: string[]; source: string };
+export type SheetRow = { title: string; org: string; period: string };
+export type ProfileSheet = { education: SheetRow[]; experience: SheetRow[]; skills: string[]; languages?: string };
 
 const KNOWN: { match: RegExp; brokerCard?: string; qualifications?: string; profile?: ProfileSheet }[] = [
   { match: /saad.*soboh/i, brokerCard: "46946", qualifications: "Professional Real Estate Diploma · CPM / CTB / CTV" },
@@ -26,14 +27,17 @@ const KNOWN: { match: RegExp; brokerCard?: string; qualifications?: string; prof
   {
     match: /qossay.*kamel/i,
     profile: {
-      summary: "Software engineer who builds Meteorite's website, tools and digital marketing.",
-      highlights: [
-        "Shipped Flutter mobile banking apps used by real customers on iOS and Android, at PCNC IT Solutions (Bank of Palestine, Cairo Amman Bank, Arab Islamic Bank, Safa Bank, Egyptian Arab Land Bank).",
-        "Background in digital banking and customer-facing banking technology at Arab Bank: digital sales, customer relations and internet banking.",
-        "Full-stack web development (React, TypeScript, Firebase) and AI agent engineering (Python, FastAPI, LangGraph).",
+      education: [
+        { title: "BSc in Software Engineering", org: "Bethlehem University", period: "2020 – 2024" },
+        { title: "High School Diploma, IT Stream", org: "Bethlehem High School for Boys", period: "2018 – 2020" },
+        { title: "Access English Language Scholarship", org: "American Councils, U.S. Consulate", period: "2016 – 2018" },
       ],
-      skills: ["Flutter", "React / Next.js", "TypeScript", "Firebase", "Python / FastAPI", "AI agents (LangGraph)", "UI / UX (Figma)"],
-      source: "From his public portfolio on GitHub",
+      experience: [
+        { title: "Customer Relations Officer, Digital Banking", org: "Arab Bank", period: "2025 – 2026" },
+        { title: "Flutter Developer, mobile banking apps", org: "PCNC IT Solutions", period: "2024 – 2025" },
+      ],
+      skills: ["Flutter", "React / Next.js", "TypeScript", "Firebase", "Python / FastAPI", "AI agents", "UI / UX"],
+      languages: "Arabic (native) · English (fluent)",
     },
   },
 ];

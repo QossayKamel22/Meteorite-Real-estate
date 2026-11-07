@@ -101,20 +101,40 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                     ))}
                   </ul>
                 ) : sheet ? (
-                  <div className="relative mt-3 overflow-hidden rounded-2xl border border-brand-gold/50 bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-5 text-[#f4eddc] shadow-[inset_0_0_22px_rgba(226,192,112,0.12)]">
-                    <span aria-hidden="true" className="pointer-events-none absolute inset-1.5 rounded-xl border border-[#e2c070]/30" />
-                    <p className="relative text-[10px] font-semibold uppercase tracking-[0.28em] text-[#e2c070]">Professional profile</p>
-                    <p className="relative mt-1.5 text-base font-semibold text-[#f4dc98]">{m.name}</p>
-                    <p className="relative mt-1 text-sm leading-relaxed text-[#f4eddc]/85">{sheet.summary}</p>
-                    <ul className="relative mt-3 space-y-2 text-[13px] leading-relaxed text-[#f4eddc]/85">
-                      {sheet.highlights.map((h) => (
-                        <li key={h} className="flex gap-2"><span aria-hidden="true" className="mt-[0.5em] h-1.5 w-1.5 flex-none rounded-full bg-[#e2c070]" />{h}</li>
-                      ))}
-                    </ul>
-                    <ul className="relative mt-3 flex flex-wrap gap-1.5">
-                      {sheet.skills.map((k) => <li key={k} className="rounded-full border border-[#e2c070]/40 bg-[#e2c070]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#f4dc98]">{k}</li>)}
-                    </ul>
-                    <p className="relative mt-3 text-[10px] uppercase tracking-wider text-[#f4eddc]/50">{sheet.source}</p>
+                  <div className="relative mt-3 overflow-hidden rounded-2xl border-2 border-[#e2c070]/70 bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-1.5 text-[#f4eddc] shadow-[0_18px_40px_-22px_rgba(0,0,0,0.7)]">
+                    <div className="relative rounded-xl border border-[#e2c070]/35 px-5 pb-5 pt-6 text-center">
+                      <span aria-hidden="true" className="absolute left-1/2 top-0 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#e2c070] bg-[#0a0e2c] text-[#e2c070]"><BadgeCheck size={18} /></span>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#e2c070]">Qualifications</p>
+                      <p className="mt-1.5 bg-gradient-to-b from-[#f4dc98] to-[#c89a48] bg-clip-text text-lg font-semibold text-transparent">{m.name}</p>
+                      <span aria-hidden="true" className="mx-auto my-3 block h-px w-24 bg-gradient-to-r from-transparent via-[#e2c070] to-transparent" />
+
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[#e2c070]/80">Education</p>
+                      <ul className="mt-2 space-y-2.5">
+                        {sheet.education.map((r) => (
+                          <li key={r.title}>
+                            <p className="text-sm font-semibold text-[#f4eddc]">{r.title}</p>
+                            <p className="text-xs text-[#f4eddc]/70">{r.org} · {r.period}</p>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <span aria-hidden="true" className="mx-auto my-4 block h-px w-24 bg-gradient-to-r from-transparent via-[#e2c070]/60 to-transparent" />
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[#e2c070]/80">Experience</p>
+                      <ul className="mt-2 space-y-2.5">
+                        {sheet.experience.map((r) => (
+                          <li key={r.title}>
+                            <p className="text-sm font-semibold text-[#f4eddc]">{r.title}</p>
+                            <p className="text-xs text-[#f4eddc]/70">{r.org} · {r.period}</p>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <span aria-hidden="true" className="mx-auto my-4 block h-px w-24 bg-gradient-to-r from-transparent via-[#e2c070]/60 to-transparent" />
+                      <ul className="flex flex-wrap justify-center gap-1.5">
+                        {sheet.skills.map((k) => <li key={k} className="rounded-full border border-[#e2c070]/40 bg-[#e2c070]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#f4dc98]">{k}</li>)}
+                      </ul>
+                      {sheet.languages && <p className="mt-3 text-[11px] text-[#f4eddc]/65">{sheet.languages}</p>}
+                    </div>
                   </div>
                 ) : (
                   <p className="mt-2 text-sm text-brand-ink/65">{brokerCardOf(m) ? `Broker card #${brokerCardOf(m)}, registered with the Dubai Land Department (RERA). The certificate has not been uploaded yet.` : "No certificate has been published for this team member yet."}</p>
