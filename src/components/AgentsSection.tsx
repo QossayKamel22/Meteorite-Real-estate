@@ -46,7 +46,7 @@ export default async function AgentsSection({ variant = "home" }: { variant?: "h
         <TeamGrid
           people={agents.map((a) => ({ id: a.id, name: a.name, title: a.title, photo: a.photo, email: a.email, phone: a.phone, bio: a.bio, background: a.background, credentials: a.credentials, brokerCard: a.brokerCard, qualifications: a.qualifications, profileUrl: a.profileUrl }))}
           certs={certs}
-          company={{ website: SITE_URL.replace(/^https?:\/\//, ""), address: company.address, orn: company.orn }}
+          company={{ email: company.email, website: SITE_URL.replace(/^https?:\/\//, ""), address: company.address, orn: company.orn }}
         />
 
         <Reveal delay={0.24}>

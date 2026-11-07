@@ -9,6 +9,8 @@ export type BusinessCardData = {
   photo: string;
   phone?: string;
   email: string;
+  /** The company address; shown as a second line when the person's own email is on another domain. */
+  companyEmail?: string;
   website: string;
   address: string;
   brokerCard?: string;
@@ -62,6 +64,9 @@ export default function BusinessCard({ c }: { c: BusinessCardData }) {
           <ul className="w-full space-y-[1.8cqw] text-left">
             {c.phone && <li className={row}><Phone className={ico} /><span>{c.phone}</span></li>}
             <li className={row}><Mail className={ico} /><span className="break-all">{c.email}</span></li>
+            {c.companyEmail && c.companyEmail.toLowerCase() !== c.email.toLowerCase() && c.companyEmail.split("@")[1] !== c.email.split("@")[1] && (
+              <li className={row}><Mail className={ico} /><span className="break-all">{c.companyEmail}</span></li>
+            )}
             <li className={row}><Globe className={ico} /><span>{c.website}</span></li>
             <li className={row}><MapPin className={ico} /><span className="text-[3cqw]">{c.address}</span></li>
           </ul>

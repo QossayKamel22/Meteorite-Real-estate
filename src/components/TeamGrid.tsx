@@ -6,14 +6,14 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { BadgeCheck, ChevronLeft, ChevronRight, Crown, ExternalLink, Mail, Phone, X } from "lucide-react";
 import { isServedImage } from "@/lib/image-url";
-import { brokerCardOf, qualificationsOf, type CardCert, type TeamMember } from "@/lib/team-cards";
+import { brokerCardOf, profileSheetOf, qualificationsOf, type CardCert, type TeamMember } from "@/lib/team-cards";
 import BusinessCard from "@/components/BusinessCard";
 import ImageLightbox from "@/components/ImageLightbox";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const noSub = () => () => {};
 
-type Company = { website: string; address: string; orn: string };
+type Company = { website: string; address: string; orn: string; email: string };
 
 function Dialog({ people, index, setIndex, onClose, certs, company }: { people: TeamMember[]; index: number; setIndex: (i: number) => void; onClose: () => void; certs: Record<string, CardCert[]>; company: Company }) {
   const n = people.length;
@@ -40,6 +40,7 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
   }, [go, onClose]);
 
   const paragraphs = (t?: string) => (t ?? "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  const sheet = profileSheetOf(m);
   const hasAbout = Boolean(m.bio || m.background || (m.credentials && m.credentials.length));
 
   return (
@@ -57,7 +58,7 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div key={m.id} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.25, ease: EASE }} className="grid gap-8 pt-8 sm:pt-2 md:grid-cols-[minmax(0,22rem)_1fr]">
-            <BusinessCard c={{ name: m.name, title: m.title, qualifications: qualificationsOf(m), photo: m.photo, phone: m.phone, email: m.email, website: company.website, address: company.address, brokerCard: brokerCardOf(m), orn: company.orn }} />
+            <BusinessCard c={{ name: m.name, title: m.title, qualifications: qualificationsOf(m), photo: m.photo, phone: m.phone, email: m.email, companyEmail: company.email, website: company.website, address: company.address, brokerCard: brokerCardOf(m), orn: company.orn }} />
 
             <div className="min-w-0 md:pt-8">
               <h2 className="text-xl font-semibold tracking-tight text-heading">{m.name}</h2>
@@ -84,7 +85,7 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
               )}
 
               <div className="mt-6">
-                <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> Certificates</h3>
+                <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> {mine.length === 0 && sheet ? "Qualifications" : "Certificates"}</h3>
                 {mine.length > 0 ? (
                   <ul className="mt-3 grid gap-4 sm:grid-cols-2">
                     {mine.flatMap((c) => c.images.map((src, k) => ({ c, src, k }))).map(({ c, src, k }) => (
@@ -99,6 +100,22 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                       </li>
                     ))}
                   </ul>
+                ) : sheet ? (
+                  <div className="relative mt-3 overflow-hidden rounded-2xl border border-brand-gold/50 bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-5 text-[#f4eddc] shadow-[inset_0_0_22px_rgba(226,192,112,0.12)]">
+                    <span aria-hidden="true" className="pointer-events-none absolute inset-1.5 rounded-xl border border-[#e2c070]/30" />
+                    <p className="relative text-[10px] font-semibold uppercase tracking-[0.28em] text-[#e2c070]">Professional profile</p>
+                    <p className="relative mt-1.5 text-base font-semibold text-[#f4dc98]">{m.name}</p>
+                    <p className="relative mt-1 text-sm leading-relaxed text-[#f4eddc]/85">{sheet.summary}</p>
+                    <ul className="relative mt-3 space-y-2 text-[13px] leading-relaxed text-[#f4eddc]/85">
+                      {sheet.highlights.map((h) => (
+                        <li key={h} className="flex gap-2"><span aria-hidden="true" className="mt-[0.5em] h-1.5 w-1.5 flex-none rounded-full bg-[#e2c070]" />{h}</li>
+                      ))}
+                    </ul>
+                    <ul className="relative mt-3 flex flex-wrap gap-1.5">
+                      {sheet.skills.map((k) => <li key={k} className="rounded-full border border-[#e2c070]/40 bg-[#e2c070]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#f4dc98]">{k}</li>)}
+                    </ul>
+                    <p className="relative mt-3 text-[10px] uppercase tracking-wider text-[#f4eddc]/50">{sheet.source}</p>
+                  </div>
                 ) : (
                   <p className="mt-2 text-sm text-brand-ink/65">{brokerCardOf(m) ? `Broker card #${brokerCardOf(m)}, registered with the Dubai Land Department (RERA). The certificate has not been uploaded yet.` : "No certificate has been published for this team member yet."}</p>
                 )}
