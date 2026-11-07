@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "@/lib/theme-context";
 import { ExternalLink, Moon, ShieldCheck, Sun } from "lucide-react";
+import BrandLockup from "@/components/BrandLockup";
 import AdminSignOutButton from "@/components/AdminSignOutButton";
 
 export default function AdminHeader() {
@@ -27,13 +27,7 @@ export default function AdminHeader() {
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-brand-gold/70 to-transparent" />
       <div className="mx-auto flex h-16 max-w-6xl items-center px-4 sm:px-6 lg:px-8">
         <Link prefetch={false} href="/admin" className="flex items-center gap-3">
-          <Image
-            src="/brand/logo-transparent.png"
-            alt="Meteorite Real Estate"
-            width={640}
-            height={351}
-            className="h-10 w-auto"
-          />
+          <BrandLockup size="sm" />
           <span className="flex items-center gap-1 rounded-full bg-brand-gold/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-brand-gold">
             <ShieldCheck size={12} />
             Admin

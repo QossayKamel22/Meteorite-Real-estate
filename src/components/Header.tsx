@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Heart, Menu, X } from "lucide-react";
 import { company, navLinks } from "@/lib/content";
+import BrandLockup from "@/components/BrandLockup";
 import ThemeToggle from "@/components/ThemeToggle";
 import UserAvatarMenu from "@/components/UserAvatarMenu";
 
@@ -31,14 +31,7 @@ export default function Header() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link prefetch={false} href="/" className="flex items-center gap-2" aria-label={`${company.name} home`}>
-          <Image
-            src="/brand/logo-transparent.png"
-            alt={`${company.name} logo`}
-            width={640}
-            height={351}
-            priority
-            className="h-11 w-auto transition-transform duration-300 hover:scale-105 sm:h-12"
-          />
+          <span className="transition-transform duration-300 hover:scale-[1.03]"><BrandLockup priority /></span>
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
