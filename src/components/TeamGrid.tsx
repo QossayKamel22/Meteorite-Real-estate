@@ -103,22 +103,33 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                     ))}
                   </ul>
                 ) : sheet ? (
-                  <ul className="mt-3 grid gap-4 sm:grid-cols-2">
-                    {sheet.qualifications.map((q) => (
-                      <li key={q.title}>
-                        <span className="relative flex aspect-[1289/907] flex-col items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-4 text-center ring-1 ring-brand-line">
-                          <span aria-hidden="true" className="pointer-events-none absolute inset-2 rounded-lg border border-[#e2c070]/60" />
-                          <span aria-hidden="true" className="pointer-events-none absolute inset-3.5 rounded-md border border-[#e2c070]/25" />
-                          <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#e2c070] text-[#e2c070]"><BadgeCheck size={16} /></span>
-                          <span className="relative mt-2 text-[9px] font-semibold uppercase tracking-[0.26em] text-[#e2c070]">{q.kind === "degree" ? "Degree" : q.kind === "diploma" ? "Diploma" : "Scholarship"}</span>
-                          <span className="relative mt-1.5 text-[13px] font-semibold leading-snug text-[#f4eddc]">{q.title}</span>
-                          <span className="relative mt-1 text-[10px] leading-snug text-[#f4eddc]/70">{q.org}</span>
-                        </span>
-                        <p className="mt-1.5 text-xs font-semibold text-heading">{q.title}</p>
-                        <p className="text-[11px] text-brand-ink/65">{q.org} · {q.period}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="mt-3">
+                    <div className="relative overflow-hidden rounded-xl bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-5 text-[#f4eddc] ring-1 ring-brand-line sm:p-6">
+                      <span aria-hidden="true" className="pointer-events-none absolute inset-2 rounded-lg border border-[#e2c070]/60" />
+                      <span aria-hidden="true" className="pointer-events-none absolute inset-3.5 rounded-md border border-[#e2c070]/25" />
+                      <div className="relative text-center">
+                        <span className="mx-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#e2c070] text-[#e2c070]"><BadgeCheck size={18} /></span>
+                        <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.34em] text-[#e2c070]">Professional qualifications</p>
+                        <p className="mt-1 bg-gradient-to-b from-[#f4dc98] to-[#c89a48] bg-clip-text text-lg font-semibold text-transparent">{m.name}</p>
+                        <span aria-hidden="true" className="mx-auto mt-2.5 block h-px w-28 bg-gradient-to-r from-transparent via-[#e2c070] to-transparent" />
+                      </div>
+                      <div className="relative mt-4 grid gap-x-6 gap-y-5 sm:grid-cols-3">
+                        {sheet.groups.map((g) => (
+                          <div key={g.heading} className="text-center sm:text-left">
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-[#e2c070]">{g.heading}</p>
+                            <ul className="mt-2 space-y-2">
+                              {g.items.map((it) => (
+                                <li key={it.title}>
+                                  <p className="text-[12.5px] font-semibold leading-snug text-[#f4eddc]">{it.title}</p>
+                                  {it.sub && <p className="text-[10.5px] leading-snug text-[#f4eddc]/65">{it.sub}</p>}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <p className="mt-2 text-sm text-brand-ink/65">{brokerCardOf(m) ? `Broker card #${brokerCardOf(m)}, registered with the Dubai Land Department (RERA). The certificate has not been uploaded yet.` : "No certificate has been published for this team member yet."}</p>
                 )}

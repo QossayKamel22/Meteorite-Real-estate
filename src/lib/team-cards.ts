@@ -17,9 +17,9 @@ export type TeamMember = {
 };
 
 /** Details that were printed on the team's own cards before they could be edited in the admin. */
-export type Qualification = { title: string; org: string; period: string; kind: "degree" | "diploma" | "scholarship" };
-/** For people without a licence certificate: an About text, short badges and qualification tiles, in the same layout as everyone else's. */
-export type ProfileSheet = { about: string[]; credentials: string[]; qualifications: Qualification[] };
+export type QualGroup = { heading: string; items: { title: string; sub?: string }[] };
+/** For people without a licence certificate: an About text, short badges and ONE qualifications sheet covering education, experience and expertise. */
+export type ProfileSheet = { about: string[]; credentials: string[]; groups: QualGroup[] };
 
 const KNOWN: { match: RegExp; brokerCard?: string; qualifications?: string; profile?: ProfileSheet }[] = [
   { match: /saad.*soboh/i, brokerCard: "46946", qualifications: "Professional Real Estate Diploma · CPM / CTB / CTV" },
@@ -29,14 +29,43 @@ const KNOWN: { match: RegExp; brokerCard?: string; qualifications?: string; prof
     match: /qossay.*kamel/i,
     profile: {
       about: [
-        "Software engineer who builds Meteorite's website, tools and digital marketing, drawing on mobile, web and AI engineering.",
+        "Software engineer who builds Meteorite's website, tools and digital marketing, drawing on mobile, web, design and AI engineering.",
         "Previously a Flutter developer on mobile banking apps used by real customers on iOS and Android at PCNC IT Solutions, then a customer relations officer in digital banking at Arab Bank, working across both the engineering and the customer side of digital products.",
       ],
-      credentials: ["BSc Software Engineering", "Flutter · React · Python · Firebase", "AI agents (LangGraph)", "Arabic (native) · English (fluent)"],
-      qualifications: [
-        { title: "BSc in Software Engineering", org: "Bethlehem University", period: "2020 — 2024", kind: "degree" },
-        { title: "High School Diploma, IT Stream", org: "Bethlehem High School for Boys", period: "2018 — 2020", kind: "diploma" },
-        { title: "Access English Language Scholarship", org: "American Councils, U.S. Consulate", period: "2016 — 2018", kind: "scholarship" },
+      credentials: [
+        "BSc Software Engineering · Bethlehem University",
+        "Digital Marketing & Brand",
+        "UI / UX Design · Figma",
+        "Full-Stack · React · Next.js · Firebase",
+        "Mobile · Flutter",
+        "AI Agents · Python · FastAPI · LangGraph",
+        "Arabic (native) · English (fluent)",
+      ],
+      groups: [
+        {
+          heading: "Education",
+          items: [
+            { title: "BSc in Software Engineering", sub: "Bethlehem University · 2020 — 2024" },
+            { title: "High School Diploma, IT Stream", sub: "Bethlehem High School for Boys · 2018 — 2020" },
+            { title: "Access English Language Scholarship", sub: "American Councils, U.S. Consulate · 2016 — 2018" },
+          ],
+        },
+        {
+          heading: "Experience",
+          items: [
+            { title: "AI & Digital Marketing Lead", sub: "Meteorite Real Estate" },
+            { title: "Customer Relations Officer, Digital Banking", sub: "Arab Bank · 2025 — 2026" },
+            { title: "Flutter Developer, mobile banking apps", sub: "PCNC IT Solutions · 2024 — 2025" },
+          ],
+        },
+        {
+          heading: "Expertise",
+          items: [
+            { title: "Digital marketing & brand", sub: "Website, social content and campaigns" },
+            { title: "UI / UX design", sub: "Figma, design systems, motion" },
+            { title: "Software & AI engineering", sub: "Flutter, React / Next.js, Firebase, Python, LangGraph" },
+          ],
+        },
       ],
     },
   },
