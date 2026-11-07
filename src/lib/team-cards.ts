@@ -17,9 +17,8 @@ export type TeamMember = {
 };
 
 /** Details that were printed on the team's own cards before they could be edited in the admin. */
-export type QualGroup = { heading: string; items: { title: string; sub?: string }[] };
-/** For people without a licence certificate: an About text, short badges and ONE qualifications sheet covering education, experience and expertise. */
-export type ProfileSheet = { about: string[]; credentials: string[]; groups: QualGroup[] };
+/** For people without a licence certificate: an About text and short badges (shown like everyone else's), taken from public sources. */
+export type ProfileSheet = { about: string[]; credentials: string[] };
 
 const KNOWN: { match: RegExp; brokerCard?: string; qualifications?: string; profile?: ProfileSheet }[] = [
   { match: /saad.*soboh/i, brokerCard: "46946", qualifications: "Professional Real Estate Diploma · CPM / CTB / CTV" },
@@ -40,32 +39,6 @@ const KNOWN: { match: RegExp; brokerCard?: string; qualifications?: string; prof
         "Mobile · Flutter",
         "AI Agents · Python · FastAPI · LangGraph",
         "Arabic (native) · English (fluent)",
-      ],
-      groups: [
-        {
-          heading: "Education",
-          items: [
-            { title: "BSc in Software Engineering", sub: "Bethlehem University · 2020 — 2024" },
-            { title: "High School Diploma, IT Stream", sub: "Bethlehem High School for Boys · 2018 — 2020" },
-            { title: "Access English Language Scholarship", sub: "American Councils, U.S. Consulate · 2016 — 2018" },
-          ],
-        },
-        {
-          heading: "Experience",
-          items: [
-            { title: "AI & Digital Marketing Lead", sub: "Meteorite Real Estate" },
-            { title: "Customer Relations Officer, Digital Banking", sub: "Arab Bank · 2025 — 2026" },
-            { title: "Flutter Developer, mobile banking apps", sub: "PCNC IT Solutions · 2024 — 2025" },
-          ],
-        },
-        {
-          heading: "Expertise",
-          items: [
-            { title: "Digital marketing & brand", sub: "Website, social content and campaigns" },
-            { title: "UI / UX design", sub: "Figma, design systems, motion" },
-            { title: "Software & AI engineering", sub: "Flutter, React / Next.js, Firebase, Python, LangGraph" },
-          ],
-        },
       ],
     },
   },

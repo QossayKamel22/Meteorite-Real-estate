@@ -86,8 +86,9 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                 </div>
               )}
 
+              {!(mine.length === 0 && sheet) && (
               <div className="mt-6">
-                <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> {mine.length === 0 && sheet ? "Qualifications" : "Certificates"}</h3>
+                <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> Certificates</h3>
                 {mine.length > 0 ? (
                   <ul className="mt-3 grid gap-4 sm:grid-cols-2">
                     {mine.flatMap((c) => c.images.map((src, k) => ({ c, src, k }))).map(({ c, src, k }) => (
@@ -102,38 +103,11 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                       </li>
                     ))}
                   </ul>
-                ) : sheet ? (
-                  <div className="mt-3">
-                    <div className="relative overflow-hidden rounded-xl bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-5 text-[#f4eddc] ring-1 ring-brand-line sm:p-6">
-                      <span aria-hidden="true" className="pointer-events-none absolute inset-2 rounded-lg border border-[#e2c070]/60" />
-                      <span aria-hidden="true" className="pointer-events-none absolute inset-3.5 rounded-md border border-[#e2c070]/25" />
-                      <div className="relative text-center">
-                        <span className="mx-auto flex h-9 w-9 items-center justify-center rounded-full border border-[#e2c070] text-[#e2c070]"><BadgeCheck size={18} /></span>
-                        <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.34em] text-[#e2c070]">Professional qualifications</p>
-                        <p className="mt-1 bg-gradient-to-b from-[#f4dc98] to-[#c89a48] bg-clip-text text-lg font-semibold text-transparent">{m.name}</p>
-                        <span aria-hidden="true" className="mx-auto mt-2.5 block h-px w-28 bg-gradient-to-r from-transparent via-[#e2c070] to-transparent" />
-                      </div>
-                      <div className="relative mt-4 grid gap-x-6 gap-y-5 sm:grid-cols-3">
-                        {sheet.groups.map((g) => (
-                          <div key={g.heading} className="text-center sm:text-left">
-                            <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-[#e2c070]">{g.heading}</p>
-                            <ul className="mt-2 space-y-2">
-                              {g.items.map((it) => (
-                                <li key={it.title}>
-                                  <p className="text-[12.5px] font-semibold leading-snug text-[#f4eddc]">{it.title}</p>
-                                  {it.sub && <p className="text-[10.5px] leading-snug text-[#f4eddc]/65">{it.sub}</p>}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
                 ) : (
                   <p className="mt-2 text-sm text-brand-ink/65">{brokerCardOf(m) ? `Broker card #${brokerCardOf(m)}, registered with the Dubai Land Department (RERA). The certificate has not been uploaded yet.` : "No certificate has been published for this team member yet."}</p>
                 )}
               </div>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
