@@ -23,9 +23,9 @@ export default async function Footer() {
             <Image
               src="/brand/logo-transparent.png"
               alt={`${company.name} logo`}
-              width={149}
-              height={27}
-              className="h-7 w-auto brightness-125"
+              width={640}
+              height={351}
+              className="h-20 w-auto"
             />
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/60">
               {company.legalTagline}

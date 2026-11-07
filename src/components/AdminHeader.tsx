@@ -30,9 +30,9 @@ export default function AdminHeader() {
           <Image
             src="/brand/logo-transparent.png"
             alt="Meteorite Real Estate"
-            width={132}
-            height={24}
-            className="h-6 w-auto"
+            width={640}
+            height={351}
+            className="h-10 w-auto"
           />
           <span className="flex items-center gap-1 rounded-full bg-brand-gold/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-brand-gold">
             <ShieldCheck size={12} />

@@ -20,7 +20,7 @@ function Poster({ reel }: { reel: Reel }) {
       {reel.cover && <Image src={reel.cover} alt="" fill sizes="300px" unoptimized className="object-cover" />}
       {!reel.cover && (
         <div aria-hidden="true" className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 opacity-20 [&_svg]:h-28 [&_svg]:w-28">
-          <Image src="/brand/logo-transparent.png" alt="" width={149} height={27} className="h-auto w-44 brightness-125" />
+          <Image src="/brand/logo-transparent.png" alt="" width={640} height={351} className="h-auto w-40" />
         </div>
       )}
       <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.25),transparent_35%,rgba(5,6,20,0.85))]" />

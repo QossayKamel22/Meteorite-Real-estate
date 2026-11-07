@@ -34,10 +34,10 @@ export default function Header() {
           <Image
             src="/brand/logo-transparent.png"
             alt={`${company.name} logo`}
-            width={149}
-            height={27}
+            width={640}
+            height={351}
             priority
-            className="h-7 w-auto transition-transform duration-300 hover:scale-105 sm:h-8"
+            className="h-11 w-auto transition-transform duration-300 hover:scale-105 sm:h-12"
           />
         </Link>
 

@@ -35,9 +35,9 @@ export default function LogoLoadingOverlay({ visible }: { visible: boolean }) {
             <Image
               src="/brand/logo-transparent.png"
               alt="Meteorite Real Estate"
-              width={297}
-              height={54}
-              className={`h-auto w-44 object-contain sm:w-52 ${reduceMotion ? "" : "float-y"}`}
+              width={640}
+              height={351}
+              className={`h-auto w-36 object-contain sm:w-44 ${reduceMotion ? "" : "float-y"}`}
               priority
             />
             <div className="h-px w-32 overflow-hidden rounded-full bg-white/10">
