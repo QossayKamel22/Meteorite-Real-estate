@@ -41,7 +41,10 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
 
   const paragraphs = (t?: string) => (t ?? "").split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
   const sheet = profileSheetOf(m);
-  const hasAbout = Boolean(m.bio || m.background || (m.credentials && m.credentials.length));
+  const savedAbout = Boolean(m.bio || m.background || (m.credentials && m.credentials.length));
+  const aboutText = savedAbout ? [...paragraphs(m.bio).slice(0, 2), ...paragraphs(m.background).slice(0, 1)] : sheet?.about ?? [];
+  const badges = savedAbout ? m.credentials ?? [] : sheet?.credentials ?? [];
+  const hasAbout = aboutText.length > 0 || badges.length > 0;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-end justify-center bg-[#05061a]/85 backdrop-blur-sm sm:items-center sm:p-6" onClick={onClose} role="dialog" aria-modal="true" aria-label={`${m.name}, ${m.title}`}>
@@ -73,19 +76,18 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                 <div className="mt-6">
                   <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65">About</h3>
                   <div className="mt-2 space-y-2.5 text-sm leading-relaxed text-brand-ink/80">
-                    {paragraphs(m.bio).slice(0, 2).map((p, i) => <p key={i}>{p}</p>)}
-                    {paragraphs(m.background).slice(0, 1).map((p, i) => <p key={`b${i}`}>{p}</p>)}
+                    {aboutText.map((p, i) => <p key={i}>{p}</p>)}
                   </div>
-                  {m.credentials && m.credentials.length > 0 && (
+                  {badges.length > 0 && (
                     <ul className="mt-3 flex flex-wrap gap-2">
-                      {m.credentials.map((c) => <li key={c} className="rounded-full bg-brand-gold/15 px-3 py-1 text-xs font-medium text-heading">{c}</li>)}
+                      {badges.map((c) => <li key={c} className="rounded-full bg-brand-gold/15 px-3 py-1 text-xs font-medium text-heading">{c}</li>)}
                     </ul>
                   )}
                 </div>
               )}
 
               <div className="mt-6">
-                {!(mine.length === 0 && sheet) && <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> Certificates</h3>}
+                <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> {mine.length === 0 && sheet ? "Qualifications" : "Certificates"}</h3>
                 {mine.length > 0 ? (
                   <ul className="mt-3 grid gap-4 sm:grid-cols-2">
                     {mine.flatMap((c) => c.images.map((src, k) => ({ c, src, k }))).map(({ c, src, k }) => (
@@ -101,41 +103,22 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                     ))}
                   </ul>
                 ) : sheet ? (
-                  <div className="relative mt-5 rounded-2xl border-2 border-[#e2c070]/70 bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-1.5 text-[#f4eddc] shadow-[0_18px_40px_-22px_rgba(0,0,0,0.7)]">
-                    <div className="relative rounded-xl border border-[#e2c070]/35 px-5 pb-5 pt-6 text-center">
-                      <span aria-hidden="true" className="absolute left-1/2 top-0 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#e2c070] bg-[#0a0e2c] text-[#e2c070]"><BadgeCheck size={18} /></span>
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#e2c070]">Qualifications</p>
-                      <p className="mt-1.5 bg-gradient-to-b from-[#f4dc98] to-[#c89a48] bg-clip-text text-lg font-semibold text-transparent">{m.name}</p>
-                      <span aria-hidden="true" className="mx-auto my-3 block h-px w-24 bg-gradient-to-r from-transparent via-[#e2c070] to-transparent" />
-
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[#e2c070]/80">Education</p>
-                      <ul className="mt-2 space-y-2.5">
-                        {sheet.education.map((r) => (
-                          <li key={r.title}>
-                            <p className="text-sm font-semibold text-[#f4eddc]">{r.title}</p>
-                            <p className="text-xs text-[#f4eddc]/70">{r.org} · {r.period}</p>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <span aria-hidden="true" className="mx-auto my-4 block h-px w-24 bg-gradient-to-r from-transparent via-[#e2c070]/60 to-transparent" />
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[#e2c070]/80">Experience</p>
-                      <ul className="mt-2 space-y-2.5">
-                        {sheet.experience.map((r) => (
-                          <li key={r.title}>
-                            <p className="text-sm font-semibold text-[#f4eddc]">{r.title}</p>
-                            <p className="text-xs text-[#f4eddc]/70">{r.org} · {r.period}</p>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <span aria-hidden="true" className="mx-auto my-4 block h-px w-24 bg-gradient-to-r from-transparent via-[#e2c070]/60 to-transparent" />
-                      <ul className="flex flex-wrap justify-center gap-1.5">
-                        {sheet.skills.map((k) => <li key={k} className="rounded-full border border-[#e2c070]/40 bg-[#e2c070]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#f4dc98]">{k}</li>)}
-                      </ul>
-                      {sheet.languages && <p className="mt-3 text-[11px] text-[#f4eddc]/65">{sheet.languages}</p>}
-                    </div>
-                  </div>
+                  <ul className="mt-3 grid gap-4 sm:grid-cols-2">
+                    {sheet.qualifications.map((q) => (
+                      <li key={q.title}>
+                        <span className="relative flex aspect-[1289/907] flex-col items-center justify-center overflow-hidden rounded-xl bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-4 text-center ring-1 ring-brand-line">
+                          <span aria-hidden="true" className="pointer-events-none absolute inset-2 rounded-lg border border-[#e2c070]/60" />
+                          <span aria-hidden="true" className="pointer-events-none absolute inset-3.5 rounded-md border border-[#e2c070]/25" />
+                          <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[#e2c070] text-[#e2c070]"><BadgeCheck size={16} /></span>
+                          <span className="relative mt-2 text-[9px] font-semibold uppercase tracking-[0.26em] text-[#e2c070]">{q.kind === "degree" ? "Degree" : q.kind === "diploma" ? "Diploma" : "Scholarship"}</span>
+                          <span className="relative mt-1.5 text-[13px] font-semibold leading-snug text-[#f4eddc]">{q.title}</span>
+                          <span className="relative mt-1 text-[10px] leading-snug text-[#f4eddc]/70">{q.org}</span>
+                        </span>
+                        <p className="mt-1.5 text-xs font-semibold text-heading">{q.title}</p>
+                        <p className="text-[11px] text-brand-ink/65">{q.org} · {q.period}</p>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
                   <p className="mt-2 text-sm text-brand-ink/65">{brokerCardOf(m) ? `Broker card #${brokerCardOf(m)}, registered with the Dubai Land Department (RERA). The certificate has not been uploaded yet.` : "No certificate has been published for this team member yet."}</p>
                 )}
