@@ -27,6 +27,8 @@ function parseAgentInput(body: Record<string, unknown>): AgentInput | string {
   const credentials = Array.isArray(body.credentials)
     ? body.credentials.filter((c): c is string => typeof c === "string" && c.trim().length > 0)
     : undefined;
+  const brokerCard = typeof body.brokerCard === "string" && /^\d{3,8}$/.test(body.brokerCard.trim()) ? body.brokerCard.trim() : undefined;
+  const qualifications = typeof body.qualifications === "string" && body.qualifications.trim() ? body.qualifications.trim().slice(0, 120) : undefined;
   const visible = typeof body.visible === "boolean" ? body.visible : true;
 
   return {
@@ -40,6 +42,8 @@ function parseAgentInput(body: Record<string, unknown>): AgentInput | string {
     ...(bio ? { bio } : {}),
     ...(background ? { background } : {}),
     ...(credentials && credentials.length ? { credentials } : {}),
+    ...(brokerCard ? { brokerCard } : {}),
+    ...(qualifications ? { qualifications } : {}),
   };
 }
 

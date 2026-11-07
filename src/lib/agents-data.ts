@@ -19,6 +19,10 @@ export type Agent = {
   bio?: string;
   background?: string;
   credentials?: string[];
+  /** The DLD broker card number; the certificate with this licence number is shown with the person. */
+  brokerCard?: string;
+  /** One line under the title on the business card (for example a diploma). */
+  qualifications?: string;
 };
 
 export type AgentInput = Omit<Agent, "id" | "order">;
@@ -111,6 +115,8 @@ function toAgent(id: string, data: Record<string, unknown>): Agent {
     bio: data.bio as string | undefined,
     background: data.background as string | undefined,
     credentials: data.credentials as string[] | undefined,
+    brokerCard: data.brokerCard as string | undefined,
+    qualifications: data.qualifications as string | undefined,
   };
 }
 

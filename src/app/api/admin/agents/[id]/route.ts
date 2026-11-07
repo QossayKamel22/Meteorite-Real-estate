@@ -19,6 +19,8 @@ function parseAgentPatch(body: Record<string, unknown>): Partial<AgentInput> | s
   if (typeof body.phone === "string") patch.phone = body.phone.trim() || undefined;
   if (typeof body.profileUrl === "string") patch.profileUrl = body.profileUrl.trim() || undefined;
   if (typeof body.bio === "string") patch.bio = body.bio.trim() || undefined;
+  if (typeof body.brokerCard === "string") patch.brokerCard = /^\d{3,8}$/.test(body.brokerCard.trim()) ? body.brokerCard.trim() : undefined;
+  if (typeof body.qualifications === "string") patch.qualifications = body.qualifications.trim().slice(0, 120) || undefined;
   if (typeof body.background === "string") patch.background = body.background.trim() || undefined;
   if (Array.isArray(body.credentials)) {
     patch.credentials = body.credentials.filter(

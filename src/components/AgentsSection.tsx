@@ -1,97 +1,18 @@
-import Image from "next/image";
-import { isServedImage } from "@/lib/image-url";
-import { BadgeCheck, Crown, Mail, Phone } from "lucide-react";
-import { company } from "@/lib/content";
+import { BadgeCheck } from "lucide-react";
+import { company, SITE_URL } from "@/lib/content";
 import { getStats } from "@/lib/site-stats";
-import { getAgents, type Agent } from "@/lib/agents-data";
+import { getAgents } from "@/lib/agents-data";
+import { getCertificates } from "@/lib/certificates-data";
+import { certsFor, type CardCert } from "@/lib/team-cards";
+import TeamGrid from "@/components/TeamGrid";
 import Reveal from "@/components/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 
-function AgentCard({
-  agent,
-  delay,
-  featured = false,
-}: {
-  agent: Agent;
-  delay: number;
-  featured?: boolean;
-}) {
-  const isLead = agent.title.toLowerCase().includes("ceo");
-  const isCeoPhoto = agent.name === "Saad Abdullah Soboh";
-
-  return (
-    <Reveal delay={delay} className={featured ? "sm:col-span-2 lg:col-span-1" : undefined}>
-      <div
-        className={`glass glass-dark shimmer-border group relative flex h-full flex-col items-center overflow-hidden rounded-3xl text-center transition-transform duration-300 hover:-translate-y-1.5 ${
-          featured ? "p-9 ring-1 ring-brand-gold/25" : "p-6"
-        }`}
-      >
-        {isLead && (
-          <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-brand-gold/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-gold">
-            <Crown size={11} /> Founder
-          </span>
-        )}
-        <div className="relative">
-          <div className="absolute -inset-1.5 rounded-full bg-gradient-to-br from-brand-gold/50 to-transparent opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
-          <div
-            className={`relative overflow-hidden rounded-full ring-1 ring-white/15 ${featured ? "h-32 w-32" : "h-28 w-28"}`}
-          >
-            <Image
-              src={agent.photo}
-              unoptimized={isServedImage(agent.photo)}
-              alt={`Portrait of ${agent.name}`}
-              fill
-              className={`transition-transform duration-500 group-hover:scale-110 ${isCeoPhoto ? "object-contain" : "object-cover"}`}
-              sizes="128px"
-            />
-          </div>
-          <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-brand-gold text-brand-navy ring-2 ring-brand-navy">
-            <BadgeCheck size={15} strokeWidth={2.25} />
-          </span>
-        </div>
-
-        <h3 className={`mt-5 font-semibold text-white ${featured ? "text-xl" : "text-lg"}`}>
-          {agent.name}
-        </h3>
-        <p className="mt-2 max-w-full whitespace-nowrap rounded-full border border-brand-gold/40 bg-brand-gold/10 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-brand-gold">
-          {agent.title}
-        </p>
-
-        <span aria-hidden="true" className="mt-5 h-px w-12 bg-brand-gold/40" />
-
-        <div className="mt-4 flex items-center justify-center gap-2.5">
-          {"phone" in agent && agent.phone && (
-            <a
-              href={`tel:${agent.phone.replace(/\s/g, "")}`}
-              aria-label={`Call ${agent.name}`}
-              title={`Call ${agent.name}`}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-brand-gold ring-1 ring-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-gold hover:text-brand-navy"
-            >
-              <Phone size={16} />
-            </a>
-          )}
-          <a
-            href={`mailto:${agent.email}`}
-            aria-label={`Email ${agent.name}`}
-            title={`Email ${agent.name}`}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-brand-gold ring-1 ring-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-gold hover:text-brand-navy"
-          >
-            <Mail size={16} />
-          </a>
-          {"profileUrl" in agent && agent.profileUrl && (
-            <a href={agent.profileUrl} target="_blank" rel="noopener noreferrer" className="ml-1 inline-flex items-center gap-1 text-sm font-medium text-white/60 transition-colors hover:text-brand-gold">
-              Profile <span aria-hidden="true">→</span>
-            </a>
-          )}
-        </div>
-      </div>
-    </Reveal>
-  );
-}
-
 export default async function AgentsSection({ variant = "home" }: { variant?: "home" | "about" }) {
   const isAbout = variant === "about";
-  const [stats, agents] = await Promise.all([getStats(), getAgents()]);
+  const [stats, agents, certificates] = await Promise.all([getStats(), getAgents(), getCertificates()]);
+  const cardCerts: CardCert[] = certificates.map((c) => ({ id: c.id, title: c.title, licenseNo: c.licenseNo, registrationDate: c.registrationDate, expiryDate: c.expiryDate, activities: c.activities, images: c.images }));
+  const certs = Object.fromEntries(agents.map((a) => [a.id, certsFor(a, cardCerts)]));
   const agentCount = stats.professionalAgents;
 
   return (
@@ -122,11 +43,11 @@ export default async function AgentsSection({ variant = "home" }: { variant?: "h
           </Reveal>
         </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {agents.map((agent, i) => (
-            <AgentCard key={agent.id} agent={agent} delay={i * 0.08} featured={isAbout && i === 0} />
-          ))}
-        </div>
+        <TeamGrid
+          people={agents.map((a) => ({ id: a.id, name: a.name, title: a.title, photo: a.photo, email: a.email, phone: a.phone, bio: a.bio, background: a.background, credentials: a.credentials, brokerCard: a.brokerCard, qualifications: a.qualifications, profileUrl: a.profileUrl }))}
+          certs={certs}
+          company={{ website: SITE_URL.replace(/^https?:\/\//, ""), address: company.address, orn: company.orn }}
+        />
 
         <Reveal delay={0.24}>
           <p className="mt-8 text-center text-sm text-white/45">

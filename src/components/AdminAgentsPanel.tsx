@@ -17,6 +17,8 @@ type FormState = {
   bio: string;
   background: string;
   credentials: string;
+  brokerCard: string;
+  qualifications: string;
   visible: boolean;
 };
 
@@ -30,6 +32,8 @@ const EMPTY_FORM: FormState = {
   bio: "",
   background: "",
   credentials: "",
+  brokerCard: "",
+  qualifications: "",
   visible: true,
 };
 
@@ -44,6 +48,8 @@ function agentToForm(agent: Agent): FormState {
     bio: agent.bio ?? "",
     background: agent.background ?? "",
     credentials: agent.credentials?.join("\n") ?? "",
+    brokerCard: agent.brokerCard ?? "",
+    qualifications: agent.qualifications ?? "",
     visible: agent.visible !== false,
   };
 }
@@ -59,6 +65,8 @@ function formToPayload(form: FormState): AgentInput {
     bio: form.bio.trim() || undefined,
     background: form.background.trim() || undefined,
     visible: form.visible,
+    brokerCard: form.brokerCard.trim(),
+    qualifications: form.qualifications.trim(),
     credentials: form.credentials
       .split("\n")
       .map((c) => c.trim())
@@ -157,6 +165,18 @@ function AgentForm({
             onChange={(e) => set("profileUrl", e.target.value)}
             className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold"
           />
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <label className="block text-xs font-medium text-brand-ink/70">DLD broker card number</label>
+          <input value={form.brokerCard} onChange={(e) => set("brokerCard", e.target.value)} inputMode="numeric" placeholder="e.g. 46946" className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold" />
+          <p className="mt-1 text-[11px] text-brand-ink/60">Shown on the business card, and the matching certificate appears with the person.</p>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-brand-ink/70">Line under the title on the card (optional)</label>
+          <input value={form.qualifications} maxLength={120} onChange={(e) => set("qualifications", e.target.value)} placeholder="e.g. Professional Real Estate Diploma" className="mt-1 w-full rounded-lg border border-brand-line bg-background px-3 py-2 text-sm outline-none focus:border-brand-gold" />
         </div>
       </div>
 
