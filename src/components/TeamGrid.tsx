@@ -85,7 +85,7 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
               )}
 
               <div className="mt-6">
-                <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> {mine.length === 0 && sheet ? "Qualifications" : "Certificates"}</h3>
+                {!(mine.length === 0 && sheet) && <h3 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-brand-ink/65"><BadgeCheck size={14} className="text-gold-ink" /> Certificates</h3>}
                 {mine.length > 0 ? (
                   <ul className="mt-3 grid gap-4 sm:grid-cols-2">
                     {mine.flatMap((c) => c.images.map((src, k) => ({ c, src, k }))).map(({ c, src, k }) => (
@@ -101,7 +101,7 @@ function Dialog({ people, index, setIndex, onClose, certs, company }: { people: 
                     ))}
                   </ul>
                 ) : sheet ? (
-                  <div className="relative mt-3 overflow-hidden rounded-2xl border-2 border-[#e2c070]/70 bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-1.5 text-[#f4eddc] shadow-[0_18px_40px_-22px_rgba(0,0,0,0.7)]">
+                  <div className="relative mt-5 rounded-2xl border-2 border-[#e2c070]/70 bg-[linear-gradient(160deg,#10163f,#0a0e2c)] p-1.5 text-[#f4eddc] shadow-[0_18px_40px_-22px_rgba(0,0,0,0.7)]">
                     <div className="relative rounded-xl border border-[#e2c070]/35 px-5 pb-5 pt-6 text-center">
                       <span aria-hidden="true" className="absolute left-1/2 top-0 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#e2c070] bg-[#0a0e2c] text-[#e2c070]"><BadgeCheck size={18} /></span>
                       <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-[#e2c070]">Qualifications</p>
