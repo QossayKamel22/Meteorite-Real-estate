@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 /** Looping decorations: when one is off screen it is paused, so a long page never animates dozens of things at once. */
-const SELECTOR = ".particle, .ken-burns, .marquee-track, .float-y, .light-sweep, .stat-orbit, .cta-aurora, .glow-field, .glow-field-podcast, .skyline-drift, .shooting-star, .featured-spin, .seal-spin, .tile-ring, .partner-fill, .sh-ring, .sh-push, .sh-blob, .sh-dot, .sh-shine, .sh-pulse-dot, #start-here, .sh-cta";
+const SELECTOR = ".particle, .ken-burns, .marquee-track, .float-y, .light-sweep, .stat-orbit, .cta-aurora, .glow-field, .glow-field-podcast, .skyline-drift, .shooting-star, .featured-spin, .seal-spin, .tile-ring, .partner-fill, .sh-glow";
 
 export default function PauseOffscreen() {
   const path = usePathname();
