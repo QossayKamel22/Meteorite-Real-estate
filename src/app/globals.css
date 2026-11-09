@@ -933,3 +933,125 @@ html[data-lite="true"] .pin-ripple {
     transform 0.2s ease-out,
     opacity 0.3s ease 0.15s;
 }
+
+/* "Where do you start?" section (components/StartHere.tsx). Hidden only once armed by script, started on view. */
+.sh-rise-wrap {
+  overflow: hidden;
+}
+.sh-arm .sh-rise {
+  transform: translateY(110%);
+}
+.sh-in .sh-rise {
+  transform: none;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.sh-arm .sh-fade {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.sh-in .sh-fade {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s ease var(--d, 0s),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.sh-push {
+  animation: sh-push 18s ease-in-out infinite alternate;
+}
+@keyframes sh-push {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+.sh-cycle {
+  display: block;
+  height: 1.15em;
+  line-height: 1.15em;
+  overflow: hidden;
+}
+.sh-cycle-list {
+  display: block;
+  animation: sh-cycle 10s cubic-bezier(0.7, 0, 0.2, 1) infinite;
+}
+.sh-cycle-item {
+  display: block;
+  height: 1.15em;
+}
+@keyframes sh-cycle {
+  0%,
+  16% {
+    transform: translateY(0);
+  }
+  20%,
+  36% {
+    transform: translateY(calc(-100% / 6));
+  }
+  40%,
+  56% {
+    transform: translateY(calc(-200% / 6));
+  }
+  60%,
+  76% {
+    transform: translateY(calc(-300% / 6));
+  }
+  80%,
+  96% {
+    transform: translateY(calc(-400% / 6));
+  }
+  100% {
+    transform: translateY(calc(-500% / 6));
+  }
+}
+.sh-odo-win {
+  display: block;
+  height: 1em;
+  width: 0.62em;
+  overflow: hidden;
+}
+.sh-odo-strip {
+  display: block;
+}
+.sh-odo-d {
+  display: block;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+}
+/* Before the section is in view the strip rests on the final year, so without script the year still reads 2005. */
+.sh-odo-strip {
+  transform: translateY(calc(var(--t) * -1em));
+}
+.sh-arm .sh-odo-strip {
+  transform: translateY(0);
+}
+.sh-in .sh-odo-strip {
+  transform: translateY(calc(var(--t) * -1em));
+  transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s);
+}
+.sh-marquee {
+  animation: sh-marquee 40s linear infinite;
+}
+@keyframes sh-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sh-arm .sh-rise,
+  .sh-arm .sh-fade {
+    transform: none;
+    opacity: 1;
+  }
+  .sh-arm .sh-odo-strip {
+    transform: translateY(calc(var(--t) * -1em));
+  }
+  .sh-push,
+  .sh-marquee,
+  .sh-cycle-list {
+    animation: none;
+  }
+}

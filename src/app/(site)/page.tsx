@@ -2,7 +2,7 @@ import Hero from "@/components/Hero";
 import StatsSection from "@/components/StatsSection";
 import AboutIntro from "@/components/AboutIntro";
 import PhotoCollage from "@/components/PhotoCollage";
-import PromoFilm from "@/components/PromoFilm";
+import StartHere from "@/components/StartHere";
 import PropertyDiscovery from "@/components/PropertyDiscovery";
 import FeaturedProjectSection from "@/components/FeaturedProjectSection";
 import CeoSection from "@/components/CeoSection";
@@ -51,7 +51,7 @@ export default async function Home() {
       <Hero stats={stats} ceo={ceo} testimonials={testimonials} content={content} images={heroImages} />
       <StatsSection />
       <AboutIntro />
-      <PromoFilm />
+      <StartHere />
       <PhotoCollage />
       <ProjectFilmsSection config={projectFilms} />
       <PropertyDiscovery />
