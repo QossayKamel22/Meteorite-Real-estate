@@ -75,7 +75,48 @@ function mapAuthErrorCode(code: string | undefined): string {
  * provisions/refreshes the Firestore user profile. This is what determines
  * admin access — there is no separate admin login.
  */
+const ROLE_CACHE_PREFIX = "meteorite:role:";
+const ROLE_CACHE_MS = 10 * 60 * 1000;
+
+/** The role last confirmed by the server for this account in this tab (sessionStorage, so it ends with the tab). */
+function readCachedRole(uid: string, ignoreAge = false): Role | null {
+  try {
+    const raw = window.sessionStorage.getItem(ROLE_CACHE_PREFIX + uid);
+    if (!raw) return null;
+    const { role, at } = JSON.parse(raw) as { role?: string; at?: number };
+    if (role !== "admin" && role !== "user") return null;
+    if (!ignoreAge && (typeof at !== "number" || Date.now() - at > ROLE_CACHE_MS)) return null;
+    return role;
+  } catch {
+    return null;
+  }
+}
+function writeCachedRole(uid: string, role: Role) {
+  try {
+    window.sessionStorage.setItem(ROLE_CACHE_PREFIX + uid, JSON.stringify({ role, at: Date.now() }));
+  } catch {
+    /* storage unavailable: every page load simply asks the server */
+  }
+}
+function clearCachedRoles() {
+  try {
+    for (const k of Object.keys(window.sessionStorage)) if (k.startsWith(ROLE_CACHE_PREFIX)) window.sessionStorage.removeItem(k);
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * The server is asked once per account per tab (then every ROLE_CACHE_MS), not on every page load: the
+ * provision endpoint is rate limited per visitor, and a refresh-heavy session used to hit that limit and lose
+ * the Admin entry in the avatar menu. If the server refuses or fails, the last confirmed role is kept
+ * rather than dropping to "no role".
+ */
 async function syncServerSession(firebaseUser: User, forceRefreshToken = false): Promise<Role | null> {
+  if (!forceRefreshToken) {
+    const fresh = readCachedRole(firebaseUser.uid);
+    if (fresh) return fresh;
+  }
   try {
     const idToken = await firebaseUser.getIdToken(forceRefreshToken);
     await fetch("/api/login", { headers: { Authorization: `Bearer ${idToken}` } });
@@ -84,11 +125,13 @@ async function syncServerSession(firebaseUser: User, forceRefreshToken = false):
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) return readCachedRole(firebaseUser.uid, true);
     const data = await res.json();
-    return data.role === "admin" ? "admin" : "user";
+    const role: Role = data.role === "admin" ? "admin" : "user";
+    writeCachedRole(firebaseUser.uid, role);
+    return role;
   } catch {
-    return null;
+    return readCachedRole(firebaseUser.uid, true);
   }
 }
 
@@ -125,6 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const r = await syncServerSession(firebaseUser);
           setRole(r);
         } else {
+          clearCachedRoles();
           setRole(null);
         }
         // Whatever action (sign-in, sign-out) triggered this change, the

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   const clientKey = getClientKey(request);
-  if (await isRateLimitedEdge(`provision:${clientKey}`, 12, 10 * 60)) {
+  if (await isRateLimitedEdge(`provision:${clientKey}`, 60, 10 * 60)) {
     return NextResponse.json({ error: "Too many attempts. Please try again shortly." }, { status: 429 });
   }
 
