@@ -933,3 +933,70 @@ html[data-lite="true"] .pin-ripple {
     transform 0.2s ease-out,
     opacity 0.3s ease 0.15s;
 }
+
+/* "Where do you start?" section (components/StartHere.tsx): hidden only once armed by script, started on view. */
+.sh-rise-wrap {
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.sh-arm .sh-rise {
+  transform: translateY(110%);
+}
+.sh-in .sh-rise {
+  transform: none;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.sh-arm .sh-fade {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.sh-in .sh-fade {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s ease var(--d, 0s),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.sh-arm .sh-line {
+  transform: scaleX(0);
+}
+.sh-in .sh-line {
+  transform: none;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+.sh-push {
+  animation: sh-push 20s ease-in-out infinite alternate;
+}
+@keyframes sh-push {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+.sh-glow {
+  animation: sh-glow 6s ease-in-out infinite alternate;
+}
+@keyframes sh-glow {
+  from {
+    opacity: 0.55;
+    scale: 0.9;
+  }
+  to {
+    opacity: 1;
+    scale: 1.15;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sh-arm .sh-rise,
+  .sh-arm .sh-fade,
+  .sh-arm .sh-line {
+    transform: none;
+    opacity: 1;
+  }
+  .sh-push,
+  .sh-glow {
+    animation: none;
+  }
+}
