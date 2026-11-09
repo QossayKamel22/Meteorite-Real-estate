@@ -889,3 +889,47 @@ html[data-lite="true"] .pin-ripple {
   content-visibility: auto;
   contain-intrinsic-size: auto 30rem;
 }
+
+/* Reveal: the scroll-in fade-and-lift, as CSS (see components/Reveal.tsx). */
+.reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 22px));
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal:not(.is-in) {
+    transform: none;
+  }
+}
+
+/* Thin gold bar at the very top while a page change is in flight (see RouteTransitionOverlay). */
+@keyframes nav-progress {
+  from {
+    transform: scaleX(0.05);
+  }
+  to {
+    transform: scaleX(0.85);
+  }
+}
+.nav-bar {
+  transform-origin: left;
+  transform: scaleX(0);
+  opacity: 0;
+}
+.nav-bar[data-phase="run"] {
+  opacity: 1;
+  animation: nav-progress 8s cubic-bezier(0.1, 0.6, 0.2, 1) forwards;
+}
+.nav-bar[data-phase="finish"] {
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 0.2s ease-out,
+    opacity 0.3s ease 0.15s;
+}
