@@ -59,13 +59,13 @@ function CompareModal({ items, onClose, onRemove }: { items: Property[]; onClose
           <button type="button" onClick={onClose} aria-label="Close" className="flex h-11 w-11 items-center justify-center rounded-full text-brand-ink/66 hover:bg-brand-paper"><X size={18} /></button>
         </div>
         <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[34rem] border-separate border-spacing-0 text-left text-sm">
+          <table style={{ minWidth: `${7 + items.length * 11}rem` }} className="w-full table-fixed border-separate border-spacing-0 text-left text-sm">
             <thead>
               <tr>
                 <th className="sticky left-0 w-28 bg-surface" />
                 {items.map((p) => (
-                  <th key={p.id} className="px-2 pb-3 align-top">
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-brand-paper">
+                  <th key={p.id} className="px-2 pb-3 align-top font-normal">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-brand-paper">
                       <Image src={p.image} alt={p.title} fill sizes="240px" unoptimized={isServedImage(p.image)} className="object-cover" />
                       <button type="button" onClick={() => onRemove(p.id)} aria-label={`Remove ${p.title}`} className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-white"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/65 hover:bg-red-600"><X size={12} /></span></button>
                     </div>
@@ -82,7 +82,7 @@ function CompareModal({ items, onClose, onRemove }: { items: Property[]; onClose
                   <tr key={r.label} className="border-t border-brand-line">
                     <th scope="row" className="sticky left-0 border-t border-brand-line bg-surface py-2.5 pr-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/66">{r.label}</th>
                     {vals.map((v, i) => (
-                      <td key={i} className={`border-t border-brand-line px-2 py-2.5 text-brand-ink/85 ${best !== null && Math.abs(items[i].price / Math.max(1, items[i].sizeSqft) - best) < 0.001 && items.length > 1 ? "font-semibold text-emerald-600" : ""}`}>{v}</td>
+                      <td key={i} className={`break-words border-t border-brand-line px-2 py-2.5 text-brand-ink/85 ${best !== null && Math.abs(items[i].price / Math.max(1, items[i].sizeSqft) - best) < 0.001 && items.length > 1 ? "font-semibold text-emerald-600" : ""}`}>{v}</td>
                     ))}
                   </tr>
                 );
