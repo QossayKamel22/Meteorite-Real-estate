@@ -58,37 +58,34 @@ function CompareModal({ items, onClose, onRemove }: { items: Property[]; onClose
           <h2 className="text-lg font-semibold text-heading">Compare properties</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="flex h-11 w-11 items-center justify-center rounded-full text-brand-ink/66 hover:bg-brand-paper"><X size={18} /></button>
         </div>
+        {/* A grid, not a table: every property column is exactly 1fr wide whatever its text, so all the photos are the same size. */}
         <div className="mt-4 overflow-x-auto">
-          <table style={{ minWidth: `${7 + items.length * 11}rem` }} className="w-full table-fixed border-separate border-spacing-0 text-left text-sm">
-            <thead>
-              <tr>
-                <th className="sticky left-0 w-28 bg-surface" />
-                {items.map((p) => (
-                  <th key={p.id} className="px-2 pb-3 align-top font-normal">
-                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-brand-paper">
-                      <Image src={p.image} alt={p.title} fill sizes="240px" unoptimized={isServedImage(p.image)} className="object-cover" />
-                      <button type="button" onClick={() => onRemove(p.id)} aria-label={`Remove ${p.title}`} className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-white"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/65 hover:bg-red-600"><X size={12} /></span></button>
-                    </div>
-                    <Link prefetch={false} href={`/property/${p.id}`} className="mt-2 line-clamp-2 block text-sm font-semibold text-heading hover:text-gold-ink">{p.title}</Link>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => {
-                const vals = items.map(r.get);
-                const best = r.label === "Price / sqft" ? Math.min(...items.map((p) => p.price / Math.max(1, p.sizeSqft))) : null;
-                return (
-                  <tr key={r.label} className="border-t border-brand-line">
-                    <th scope="row" className="sticky left-0 border-t border-brand-line bg-surface py-2.5 pr-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/66">{r.label}</th>
-                    {vals.map((v, i) => (
-                      <td key={i} className={`break-words border-t border-brand-line px-2 py-2.5 text-brand-ink/85 ${best !== null && Math.abs(items[i].price / Math.max(1, items[i].sizeSqft) - best) < 0.001 && items.length > 1 ? "font-semibold text-emerald-600" : ""}`}>{v}</td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div role="table" aria-label="Property comparison" style={{ gridTemplateColumns: `7rem repeat(${items.length}, minmax(0, 1fr))`, minWidth: `${7 + items.length * 10}rem` }} className="grid text-left text-sm">
+            <div role="row" className="contents">
+              <div role="columnheader" className="sticky left-0 z-10 bg-surface" />
+              {items.map((p) => (
+                <div key={p.id} role="columnheader" className="min-w-0 px-2 pb-3 font-normal">
+                  <div className="relative h-32 w-full overflow-hidden rounded-xl bg-brand-paper sm:h-40">
+                    <Image src={p.image} alt={p.title} fill sizes="(min-width: 640px) 240px, 160px" unoptimized={isServedImage(p.image)} className="object-cover" />
+                    <button type="button" onClick={() => onRemove(p.id)} aria-label={`Remove ${p.title}`} className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-white"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/65 hover:bg-red-600"><X size={12} /></span></button>
+                  </div>
+                  <Link prefetch={false} href={`/property/${p.id}`} className="mt-2 line-clamp-2 block text-sm font-semibold text-heading hover:text-gold-ink">{p.title}</Link>
+                </div>
+              ))}
+            </div>
+            {rows.map((r) => {
+              const vals = items.map(r.get);
+              const best = r.label === "Price / sqft" ? Math.min(...items.map((p) => p.price / Math.max(1, p.sizeSqft))) : null;
+              return (
+                <div key={r.label} role="row" className="contents">
+                  <div role="rowheader" className="sticky left-0 z-10 border-t border-brand-line bg-surface py-2.5 pr-2 text-xs font-semibold uppercase tracking-wide text-brand-ink/66">{r.label}</div>
+                  {vals.map((v, i) => (
+                    <div key={i} role="cell" className={`min-w-0 break-words border-t border-brand-line px-2 py-2.5 text-brand-ink/85 ${best !== null && Math.abs(items[i].price / Math.max(1, items[i].sizeSqft) - best) < 0.001 && items.length > 1 ? "font-semibold text-emerald-600" : ""}`}>{v}</div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </motion.div>
     </motion.div>
