@@ -32,9 +32,9 @@ export default function StartHere() {
   }, []);
 
   return (
-    <section ref={ref} aria-labelledby="start-here" className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-      <div className="relative isolate overflow-hidden rounded-[2rem] bg-brand-navy px-6 py-16 text-center text-white shadow-[0_40px_90px_-40px_rgba(13,16,49,0.8)] sm:px-12 sm:py-24">
-        <Image src="/brand/hero/dubai-night-skyline.jpg" alt="" fill sizes="(min-width: 1152px) 72rem, 100vw" className="-z-20 object-cover opacity-45" />
+    <section ref={ref} aria-labelledby="start-here" className="relative isolate overflow-hidden bg-brand-navy px-4 py-20 text-center text-white sm:px-6 sm:py-28">
+      <div className="mx-auto max-w-4xl">
+        <Image src="/brand/hero/dubai-night-skyline.jpg" alt="" fill sizes="100vw" className="-z-20 object-cover opacity-45" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(13,16,49,0.3),rgba(13,16,49,0.93)_78%)]" />
         <span aria-hidden="true" className="sh-glow absolute left-1/2 top-1/2 -z-10 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-gold/25 blur-3xl sm:h-96 sm:w-96" />
 
