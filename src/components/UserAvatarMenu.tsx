@@ -108,7 +108,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
         <Avatar user={user} size={36} />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-heading">{user.name ?? user.email}</p>
-          {user.name && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
+          {user.name && <p className="truncate text-xs text-brand-ink/66">{user.email}</p>}
         </div>
         {role === "admin" && (
           <Link prefetch={false}
@@ -158,7 +158,7 @@ export default function UserAvatarMenu({ variant = "desktop" }: { variant?: "des
               <Avatar user={user} size={34} />
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold leading-tight text-heading">{user.name ?? "Account"}</p>
-                {user.email && <p className="truncate text-xs text-brand-ink/50">{user.email}</p>}
+                {user.email && <p className="truncate text-xs text-brand-ink/66">{user.email}</p>}
               </div>
             </div>
             <div className="my-1 h-px bg-brand-line" />

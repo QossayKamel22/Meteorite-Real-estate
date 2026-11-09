@@ -45,7 +45,7 @@ export default function GalleryField({ value, onChange }: { value: string[]; onC
   return (
     <div>
       <div className="flex items-center justify-between">
-        <label className="block text-xs font-medium text-brand-ink/70">More photos <span className="text-brand-ink/50">(optional, up to {MAX})</span></label>
+        <label className="block text-xs font-medium text-brand-ink/70">More photos <span className="text-brand-ink/66">(optional, up to {MAX})</span></label>
         <button type="button" disabled={busy || value.length >= MAX} onClick={() => input.current?.click()} className="inline-flex items-center gap-1.5 rounded-full border border-brand-line px-3 py-1 text-xs font-semibold text-heading hover:border-brand-gold disabled:opacity-40">
           {busy ? <Loader2 size={13} className="animate-spin" /> : <ImagePlus size={13} />} Add photos
         </button>
@@ -59,7 +59,7 @@ export default function GalleryField({ value, onChange }: { value: string[]; onC
                 <Image src={src} alt="" fill sizes="96px" unoptimized className="object-cover" />
                 <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label={`Remove photo ${i + 1}`} className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/65 text-white opacity-0 hover:bg-red-600 focus-visible:opacity-100 group-hover:opacity-100"><X size={11} /></button>
               </div>
-              <div className="mt-1 flex items-center justify-between text-brand-ink/55">
+              <div className="mt-1 flex items-center justify-between text-brand-ink/66">
                 <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Move earlier" className="disabled:opacity-25"><ChevronLeft size={14} /></button>
                 <span className="text-[10px] tabular-nums">{i + 1}</span>
                 <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label="Move later" className="disabled:opacity-25"><ChevronRight size={14} /></button>

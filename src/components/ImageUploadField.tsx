@@ -74,7 +74,7 @@ export default function ImageUploadField({
           >
             {value ? "Change photo" : "Upload photo"}
           </button>
-          <p className="mt-1 text-[11px] text-brand-ink/40">JPG or PNG, up to 15MB</p>
+          <p className="mt-1 text-[11px] text-brand-ink/66">JPG or PNG, up to 15MB</p>
         </div>
       </div>
       {error && <p className="mt-1.5 text-xs font-medium text-red-600">{error}</p>}

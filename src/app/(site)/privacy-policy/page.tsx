@@ -175,7 +175,7 @@ export default function PrivacyPolicyPage() {
               </Link>{" "}
               page.
             </p>
-            <p className="mt-4 flex items-center gap-1.5 text-xs text-brand-ink/45">
+            <p className="mt-4 flex items-center gap-1.5 text-xs text-brand-ink/66">
               <FileText size={13} />
               {company.name} · RERA ORN {company.orn} · Broker Card #{company.brokerCard}
             </p>

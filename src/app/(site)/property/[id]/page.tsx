@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, Bath, BedDouble, Check, MapPin, MessageCircle, Phone, Ruler } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Bath, BedDouble, Check, MapPin, MessageCircle, Phone, Ruler, ShieldCheck } from "lucide-react";
 import { company } from "@/lib/content";
 import { getProperties, getProperty } from "@/lib/properties-data";
 import { isServedImage, SAFE_DOC_ID } from "@/lib/image-url";
@@ -52,7 +52,7 @@ export default async function PropertyPage({ params }: Props) {
   ];
 
   return (
-    <div>
+    <div className="pb-20 md:pb-0">
       <section className="relative isolate -mt-16 overflow-hidden bg-brand-navy pt-28 sm:pt-32">
         <Image src={image} alt="" fill priority sizes="100vw" unoptimized={isServedImage(image)} className="-z-20 object-cover opacity-40 blur-2xl" aria-hidden="true" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(8,10,34,0.75),rgba(13,16,49,0.95))]" />
@@ -66,6 +66,7 @@ export default async function PropertyPage({ params }: Props) {
               <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold"><MapPin size={13} /> {p.location}</p>
               <h1 className="mt-3 text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl">{p.title}</h1>
               <p className="mt-4 text-3xl font-semibold tracking-tight text-brand-gold-soft">{money(p)}</p>
+              {p.purpose === "sale" && p.sizeSqft > 0 && <p className="mt-1 text-sm text-white/70">AED {Math.round(p.price / p.sizeSqft).toLocaleString("en-US")} per sqft</p>}
               <ul className="mt-5 grid grid-cols-3 gap-2">
                 {specs.map(({ Icon, label, value }) => (
                   <li key={label} className="rounded-2xl border border-white/12 bg-white/[0.06] px-3 py-2.5 text-center">
@@ -116,6 +117,14 @@ export default async function PropertyPage({ params }: Props) {
             <p className="mb-5 mt-1 text-sm text-brand-ink/66">Leave your details and our team will come back to you.</p>
             <ContactForm source={`/property/${p.id}`} presetMessage={`Hi, I'm interested in: ${p.title} (${p.location}).`} />
           </div>
+          <div className="flex items-start gap-3 rounded-3xl border border-brand-line p-5 text-sm">
+            <ShieldCheck size={20} aria-hidden="true" className="mt-0.5 flex-none text-gold-ink" />
+            <div>
+              <p className="font-semibold text-heading">{company.name}</p>
+              <p className="mt-0.5 text-brand-ink/66">RERA-licensed brokerage · ORN {company.orn}</p>
+              <p className="text-brand-ink/66">Broker Card #{company.brokerCard} · in Dubai since 2005</p>
+            </div>
+          </div>
         </aside>
       </section>
 
@@ -127,6 +136,12 @@ export default async function PropertyPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      {/* Always-reachable contact on phones: the page is long, and the call to action should never scroll away. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-brand-line bg-surface/95 px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
+        <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-brand-gold px-5 text-sm font-semibold text-brand-navy"><MessageCircle size={16} aria-hidden="true" /> WhatsApp</a>
+        <a href={`tel:${company.phoneE164}`} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-brand-navy px-5 text-sm font-semibold text-white dark:bg-white/10"><Phone size={15} aria-hidden="true" /> Call</a>
+      </div>
     </div>
   );
 }

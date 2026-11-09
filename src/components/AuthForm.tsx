@@ -112,7 +112,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         Continue with Google
       </button>
 
-      <div className="mt-6 flex items-center gap-3 text-xs text-brand-ink/40">
+      <div className="mt-6 flex items-center gap-3 text-xs text-brand-ink/66">
         <span className="h-px flex-1 bg-brand-line" />
         or
         <span className="h-px flex-1 bg-brand-line" />
@@ -166,7 +166,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold text-brand-ink/50 hover:text-heading"
+              className="absolute inset-y-0 right-0 flex items-center px-4 text-xs font-semibold text-brand-ink/66 hover:text-heading"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? "Hide" : "Show"}
@@ -174,7 +174,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           </div>
           {isLogin && (
             <div className="mt-2 text-right">
-              <Link prefetch={false} href="/contact-us" className="text-xs font-medium text-brand-ink/50 hover:text-heading">
+              <Link prefetch={false} href="/contact-us" className="text-xs font-medium text-brand-ink/66 hover:text-heading">
                 Forgot password?
               </Link>
             </div>
@@ -203,7 +203,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
       >
         Continue as guest
       </button>
-      <p className="mt-2 text-center text-xs text-brand-ink/45">
+      <p className="mt-2 text-center text-xs text-brand-ink/66">
         Browse properties and save favorites on this device without an account.
       </p>
     </div>

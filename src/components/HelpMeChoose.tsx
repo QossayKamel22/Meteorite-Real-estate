@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Sparkles, X } from "lucide-react";
 import type { Property } from "@/lib/properties-data";
 import { isServedImage } from "@/lib/image-url";
+import { useDialog } from "@/lib/use-dialog";
 
 const BEDS = ["Studio", "1", "2", "3", "4+"] as const;
 const money = (p: Property) => `AED ${p.price.toLocaleString("en-US")}${p.purpose === "rent" ? (p.rentFrequency === "monthly" ? " /mo" : " /yr") : ""}`;
@@ -22,6 +23,16 @@ function distance(p: Property, budget: number, beds: string): number {
     d += beds === "4+" ? (have >= 4 ? 0 : 4 - have) : Math.abs(want - have);
   }
   return d;
+}
+
+/** The sheet itself: a component of its own so the dialog behaviour (Escape, focus trap, restore focus) mounts with it. */
+function Sheet({ onClose, children }: { onClose: () => void; children: ReactNode }) {
+  const ref = useDialog<HTMLDivElement>(onClose);
+  return (
+    <motion.div ref={ref} tabIndex={-1} initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }} onClick={(e) => e.stopPropagation()} className="max-h-[90vh] w-full max-w-lg overflow-auto rounded-t-3xl bg-surface p-6 shadow-2xl outline-none sm:rounded-3xl">
+      {children}
+    </motion.div>
+  );
 }
 
 /**
@@ -48,20 +59,20 @@ export default function HelpMeChoose({ properties, prices, onApply }: { properti
       setBeds(null);
     }, 250);
   }
-  const chip = (on: boolean) => `rounded-full border px-4 py-2 text-sm font-medium transition-colors ${on ? "border-brand-gold bg-brand-gold text-brand-navy" : "border-brand-line text-brand-ink/80 hover:border-brand-gold/60"}`;
+  const chip = (on: boolean) => `min-h-11 rounded-full border px-4 text-sm font-medium transition-colors ${on ? "border-brand-gold bg-brand-gold text-brand-navy" : "border-brand-line text-brand-ink/80 hover:border-brand-gold/60"}`;
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-brand-gold/50 bg-brand-gold/10 px-4 py-2.5 text-sm font-semibold text-gold-ink transition-colors hover:bg-brand-gold hover:text-brand-navy">
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex min-h-11 flex-none items-center gap-2 rounded-xl border border-brand-gold/50 bg-brand-gold/10 px-4 text-sm font-semibold text-gold-ink transition-colors hover:bg-brand-gold hover:text-brand-navy">
         <Sparkles size={15} /> Help me choose
       </button>
       <AnimatePresence>
         {open && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-end justify-center bg-[#05061a]/80 backdrop-blur-sm sm:items-center sm:p-6" onClick={close} role="dialog" aria-modal="true" aria-label="Help me choose">
-            <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 30, opacity: 0 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }} onClick={(e) => e.stopPropagation()} className="max-h-[90vh] w-full max-w-lg overflow-auto rounded-t-3xl bg-surface p-6 shadow-2xl sm:rounded-3xl">
+            <Sheet onClose={close}>
               <div className="flex items-center justify-between">
                 <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold-ink"><Sparkles size={14} /> Step {Math.min(step + 1, 3)} of 3</p>
-                <button type="button" onClick={close} aria-label="Close" className="flex h-9 w-9 items-center justify-center rounded-full text-brand-ink/66 hover:bg-brand-paper"><X size={18} /></button>
+                <button type="button" onClick={close} aria-label="Close" className="flex h-11 w-11 items-center justify-center rounded-full text-brand-ink/66 hover:bg-brand-paper"><X size={18} /></button>
               </div>
               <div className="mt-2 h-1 overflow-hidden rounded-full bg-brand-ink/10"><div className="h-full rounded-full bg-brand-gold transition-all duration-500" style={{ width: `${((step + 1) / 3) * 100}%` }} /></div>
 
@@ -81,7 +92,7 @@ export default function HelpMeChoose({ properties, prices, onApply }: { properti
                     {BEDS.map((b) => <button key={b} type="button" onClick={() => { setBeds(b); setStep(2); }} className={chip(beds === b)}>{b === "Studio" ? "Studio" : `${b} bed`}</button>)}
                     <button type="button" onClick={() => { setBeds("Any"); setStep(2); }} className={chip(beds === "Any")}>Not sure</button>
                   </div>
-                  <button type="button" onClick={() => setStep(0)} className="mt-5 text-sm font-medium text-brand-ink/66 underline">Back</button>
+                  <button type="button" onClick={() => setStep(0)} className="mt-3 inline-flex min-h-11 items-center text-sm font-medium text-brand-ink/66 underline">Back</button>
                 </div>
               )}
               {step === 2 && (
@@ -104,12 +115,12 @@ export default function HelpMeChoose({ properties, prices, onApply }: { properti
                     ))}
                   </ul>
                   <div className="mt-5 flex flex-wrap items-center gap-3">
-                    <button type="button" onClick={() => { onApply(budget ?? 0, beds === "Any" || beds === null ? "Any" : beds); close(); }} className="rounded-full bg-brand-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-navy-light dark:bg-brand-gold dark:text-brand-navy">Show these in the list</button>
-                    <button type="button" onClick={() => setStep(0)} className="text-sm font-medium text-brand-ink/66 underline">Start again</button>
+                    <button type="button" onClick={() => { onApply(budget ?? 0, beds === "Any" || beds === null ? "Any" : beds); close(); }} className="min-h-11 rounded-full bg-brand-navy px-5 text-sm font-semibold text-white hover:bg-brand-navy-light dark:bg-brand-gold dark:text-brand-navy">Show these in the list</button>
+                    <button type="button" onClick={() => setStep(0)} className="inline-flex min-h-11 items-center text-sm font-medium text-brand-ink/66 underline">Start again</button>
                   </div>
                 </div>
               )}
-            </motion.div>
+            </Sheet>
           </motion.div>
         )}
       </AnimatePresence>
