@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Mail, MessageCircle, Phone, Trash2 } from "lucide-react";
+import { Check, Copy, Mail, MessageCircle, Phone, Trash2 } from "lucide-react";
 import type { ContactMessage } from "@/lib/messages-shared";
 
 const ago = (iso: string) => {
@@ -19,6 +19,9 @@ export default function AdminMessagesPanel({ messages }: { messages: ContactMess
   const [open, setOpen] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState<string | null>(null);
+  const copyTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(copyTimer.current), []);
   const shown = useMemo(() => (filter === "unread" ? messages.filter((m) => !m.read) : messages), [messages, filter]);
   const unread = messages.filter((m) => !m.read).length;
 
@@ -34,6 +37,33 @@ export default function AdminMessagesPanel({ messages }: { messages: ContactMess
     } finally {
       setBusy(null);
     }
+  }
+
+  /** Copies the message text; falls back to a hidden textarea where the Clipboard API is unavailable (plain http, older browsers). */
+  async function copyMessage(id: string, text: string) {
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        ok = document.execCommand("copy");
+      } catch {
+        ok = false;
+      }
+      ta.remove();
+    }
+    if (!ok) return setError("Couldn't copy. Select the text and copy it manually.");
+    setError("");
+    setCopied(id);
+    window.clearTimeout(copyTimer.current);
+    copyTimer.current = window.setTimeout(() => setCopied(null), 2000);
   }
 
   return (
@@ -82,6 +112,9 @@ export default function AdminMessagesPanel({ messages }: { messages: ContactMess
                     {wa && <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-brand-line px-3.5 py-1.5 font-medium text-heading hover:border-brand-gold"><MessageCircle size={14} /> WhatsApp</a>}
                     {m.source && <a href={m.source} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-ink/60 underline">From {m.source}</a>}
                     <span className="flex-1" />
+                    <button type="button" aria-live="polite" onClick={() => copyMessage(m.id, m.message)} className="inline-flex items-center gap-1.5 rounded-full border border-brand-line px-3.5 py-1.5 font-medium text-heading hover:border-brand-gold">
+                      {copied === m.id ? <><Check size={14} className="text-emerald-600" /> Copied</> : <><Copy size={14} /> Copy message</>}
+                    </button>
                     {m.read && <button type="button" disabled={busy === m.id} onClick={() => call(m.id, { method: "PATCH", body: JSON.stringify({ read: false }) })} className="inline-flex items-center gap-1 text-xs font-medium text-brand-ink/66 hover:text-heading"><Check size={13} /> Mark unread</button>}
                     <button type="button" disabled={busy === m.id} onClick={() => window.confirm("Delete this message?") && call(m.id, { method: "DELETE" })} aria-label="Delete message" className="flex h-8 w-8 items-center justify-center rounded-full text-brand-ink/55 hover:bg-red-50 hover:text-red-600"><Trash2 size={14} /></button>
                   </div>
