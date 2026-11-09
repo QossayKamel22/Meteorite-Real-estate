@@ -934,21 +934,21 @@ html[data-lite="true"] .pin-ripple {
     opacity 0.3s ease 0.15s;
 }
 
-/* "Where do you start?" section (components/StartHere.tsx): hidden only once armed by script, started on view. */
+/* "Where do you start?" section (components/StartHere.tsx). Transform/opacity only; entrance hidden only once armed by script. */
 .sh-rise-wrap {
   overflow: hidden;
   vertical-align: bottom;
 }
 .sh-arm .sh-rise {
-  transform: translateY(110%);
+  transform: translateY(115%);
 }
 .sh-in .sh-rise {
   transform: none;
-  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
 }
 .sh-arm .sh-fade {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(12px);
 }
 .sh-in .sh-fade {
   opacity: 1;
@@ -962,10 +962,26 @@ html[data-lite="true"] .pin-ripple {
 }
 .sh-in .sh-line {
   transform: none;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+}
+/* A gold light that circles the card's border. */
+.sh-ring {
+  inset: -100%;
+  background: conic-gradient(from 0deg, transparent 0 62%, rgba(219, 204, 59, 0.15) 72%, #dbcc3b 88%, transparent 100%);
+  animation: sh-spin 9s linear infinite;
+}
+@keyframes sh-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* The skyline leans toward the pointer, and slowly pushes in. */
+.sh-parallax {
+  transform: translate3d(calc(var(--px, 0) * -16px), calc(var(--py, 0) * -10px), 0);
+  transition: transform 0.4s ease-out;
 }
 .sh-push {
-  animation: sh-push 20s ease-in-out infinite alternate;
+  animation: sh-push 22s ease-in-out infinite alternate;
 }
 @keyframes sh-push {
   from {
@@ -975,17 +991,107 @@ html[data-lite="true"] .pin-ripple {
     transform: scale(1.1);
   }
 }
-.sh-glow {
-  animation: sh-glow 6s ease-in-out infinite alternate;
+.sh-blob {
+  animation: sh-drift 14s ease-in-out infinite alternate;
 }
-@keyframes sh-glow {
+.sh-blob-b {
+  animation-duration: 18s;
+  animation-direction: alternate-reverse;
+}
+@keyframes sh-drift {
   from {
-    opacity: 0.55;
-    scale: 0.9;
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
+    transform: translate3d(90px, 40px, 0) scale(1.25);
+  }
+}
+/* City lights rising through the card. */
+.sh-dot {
+  position: absolute;
+  bottom: -12px;
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 999px;
+  background: #e9dd7a;
+  box-shadow: 0 0 10px 2px rgba(219, 204, 59, 0.55);
+  opacity: 0;
+  animation: sh-lift var(--t) linear infinite var(--dl);
+}
+@keyframes sh-lift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(14px, -460px, 0);
+    opacity: 0;
+  }
+}
+/* A soft sheen sweeping across the whole card now and then. */
+.sh-shine {
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.13), transparent);
+  transform: skewX(-20deg) translateX(0);
+  animation: sh-sheen 7s ease-in-out infinite;
+}
+@keyframes sh-sheen {
+  0%,
+  55% {
+    transform: skewX(-20deg) translateX(0);
+  }
+  100% {
+    transform: skewX(-20deg) translateX(520%);
+  }
+}
+.sh-pulse-dot {
+  animation: sh-pulse 2s ease-in-out infinite;
+}
+@keyframes sh-pulse {
+  0%,
+  100% {
+    transform: scale(1);
     opacity: 1;
-    scale: 1.15;
+  }
+  50% {
+    transform: scale(1.7);
+    opacity: 0.5;
+  }
+}
+/* A gold wave travelling through the headline's letters. */
+.sh-in .sh-letter {
+  animation: sh-wave 6s ease-in-out infinite calc(1.6s + var(--i, 0) * 0.07s);
+}
+@keyframes sh-wave {
+  0%,
+  14%,
+  100% {
+    color: #fff;
+  }
+  7% {
+    color: #dbcc3b;
+  }
+}
+/* The WhatsApp button: a ring that pulses out of it. */
+.sh-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow: 0 0 0 0 rgba(219, 204, 59, 0.6);
+  animation: sh-ping 2.6s ease-out infinite 2s;
+  pointer-events: none;
+}
+@keyframes sh-ping {
+  0% {
+    box-shadow: 0 0 0 0 rgba(219, 204, 59, 0.6);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 16px rgba(219, 204, 59, 0);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -995,8 +1101,32 @@ html[data-lite="true"] .pin-ripple {
     transform: none;
     opacity: 1;
   }
+  .sh-ring,
   .sh-push,
-  .sh-glow {
+  .sh-blob,
+  .sh-dot,
+  .sh-shine,
+  .sh-pulse-dot,
+  .sh-letter,
+  .sh-cta::after {
     animation: none;
   }
+  .sh-dot,
+  .sh-shine {
+    display: none;
+  }
+}
+/* Lite mode (weak devices): keep the entrance, drop the looping decoration. */
+html[data-lite="true"] .sh-ring,
+html[data-lite="true"] .sh-push,
+html[data-lite="true"] .sh-blob,
+html[data-lite="true"] .sh-letter,
+html[data-lite="true"] .sh-pulse-dot,
+html[data-lite="true"] .sh-cta::after {
+  animation: none !important;
+}
+html[data-lite="true"] .sh-dot,
+html[data-lite="true"] .sh-shine,
+html[data-lite="true"] .sh-blob {
+  display: none !important;
 }
