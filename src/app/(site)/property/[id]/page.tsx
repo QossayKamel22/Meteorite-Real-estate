@@ -77,8 +77,14 @@ export default async function PropertyPage({ params }: Props) {
                 ))}
               </ul>
               <div className="mt-5 flex flex-wrap gap-2.5">
+                {p.closed ? (
+                  <p className="inline-flex items-center gap-2 rounded-full border border-brand-gold/60 px-5 py-2.5 text-sm font-semibold text-brand-gold">This property has been {p.purpose === "rent" ? "rented" : "sold"}</p>
+                ) : (
+                  <>
                 <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-brand-gold px-5 py-2.5 text-sm font-semibold text-brand-navy shadow-[0_8px_24px_-8px_rgba(219,204,59,0.6)] transition-transform hover:scale-[1.03]"><MessageCircle size={16} /> WhatsApp about this</a>
                 <a href={`tel:${company.phoneE164}`} className="inline-flex items-center gap-2 rounded-full border border-white/25 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-brand-gold"><Phone size={15} /> Call</a>
+                  </>
+                )}
                 <FavoriteButton id={p.id} label className="rounded-full border border-white/25 px-5 py-2.5 text-white hover:border-brand-gold" />
               </div>
             </div>
@@ -111,12 +117,20 @@ export default async function PropertyPage({ params }: Props) {
           )}
         </div>
         <aside className="space-y-6">
+          {p.closed ? (
+            <div className="glass shimmer-border rounded-3xl p-6">
+              <h2 className="text-lg font-semibold text-heading">No longer available</h2>
+              <p className="mt-1 text-sm text-brand-ink/66">This property has been {p.purpose === "rent" ? "rented" : "sold"}. Browse our current {p.purpose === "rent" ? "rentals" : "properties for sale"} or tell us what you are looking for.</p>
+              <Link prefetch={false} href={back} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full bg-brand-gold px-5 text-sm font-semibold text-brand-navy">See available {p.purpose === "rent" ? "rentals" : "properties"} <ArrowUpRight size={14} /></Link>
+            </div>
+          ) : (<>
           <ViewingBooker title={p.title} location={p.location} path={`/property/${p.id}`} times={slots.times} days={slots.days} closedWeekdays={slots.closedWeekdays} />
           <div className="glass shimmer-border rounded-3xl p-6">
             <h2 className="text-lg font-semibold text-heading">Enquire about this property</h2>
             <p className="mb-5 mt-1 text-sm text-brand-ink/66">Leave your details and our team will come back to you.</p>
             <ContactForm source={`/property/${p.id}`} presetMessage={`Hi, I'm interested in: ${p.title} (${p.location}).`} />
           </div>
+          </>)}
           <div className="flex items-start gap-3 rounded-3xl border border-brand-line p-5 text-sm">
             <ShieldCheck size={20} aria-hidden="true" className="mt-0.5 flex-none text-gold-ink" />
             <div>
@@ -138,10 +152,10 @@ export default async function PropertyPage({ params }: Props) {
       )}
 
       {/* Always-reachable contact on phones: the page is long, and the call to action should never scroll away. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-brand-line bg-surface/95 px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
+      {!p.closed && <div className="fixed inset-x-0 bottom-0 z-30 flex gap-2 border-t border-brand-line bg-surface/95 px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
         <a href={wa} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-brand-gold px-5 text-sm font-semibold text-brand-navy"><MessageCircle size={16} aria-hidden="true" /> WhatsApp</a>
         <a href={`tel:${company.phoneE164}`} className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-full bg-brand-navy px-5 text-sm font-semibold text-white dark:bg-white/10"><Phone size={15} aria-hidden="true" /> Call</a>
-      </div>
+      </div>}
     </div>
   );
 }

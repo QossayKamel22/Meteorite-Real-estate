@@ -23,10 +23,13 @@ const BEDS = ["Any", "Studio", "1", "2", "3", "4+"] as const;
 const MAX_COMPARE = 3;
 const SORT_KEYS = SORTS.map((s) => s.key);
 
-type Filters = { type: string; beds: (typeof BEDS)[number]; maxPrice: number; q: string };
+type Status = "all" | "available" | "closed";
+type Filters = { type: string; beds: (typeof BEDS)[number]; maxPrice: number; q: string; status: Status };
 
 /** Whether a listing passes the filters (shared by the list and by the "what if I removed this filter" hints). */
 function matches(p: Property, f: Filters): boolean {
+  if (f.status === "available" && p.closed) return false;
+  if (f.status === "closed" && !p.closed) return false;
   if (f.type !== "All" && p.type !== f.type) return false;
   if (f.beds === "Studio" && !p.isStudio) return false;
   if (f.beds === "4+" && (p.isStudio || p.bedrooms < 4)) return false;
@@ -93,13 +96,14 @@ function CompareModal({ items, onClose, onRemove }: { items: Property[]; onClose
 }
 
 /** Shown when nothing matches: says which single filter, if relaxed, would bring results back. */
-function EmptyState({ properties, filters, onClear, onRelax }: { properties: Property[]; filters: Filters; onClear: () => void; onRelax: (key: "type" | "beds" | "maxPrice" | "q") => void }) {
+function EmptyState({ properties, filters, onClear, onRelax }: { properties: Property[]; filters: Filters; onClear: () => void; onRelax: (key: "type" | "beds" | "maxPrice" | "q" | "status") => void }) {
   const hints = useMemo(() => {
-    const out: { key: "type" | "beds" | "maxPrice" | "q"; label: string; count: number }[] = [];
-    const tries: { key: "type" | "beds" | "maxPrice" | "q"; active: boolean; label: string; next: Filters }[] = [
+    const out: { key: "type" | "beds" | "maxPrice" | "q" | "status"; label: string; count: number }[] = [];
+    const tries: { key: "type" | "beds" | "maxPrice" | "q" | "status"; active: boolean; label: string; next: Filters }[] = [
       { key: "maxPrice", active: filters.maxPrice > 0, label: "Remove the price limit", next: { ...filters, maxPrice: 0 } },
       { key: "beds", active: filters.beds !== "Any", label: "Show any number of bedrooms", next: { ...filters, beds: "Any" } },
       { key: "type", active: filters.type !== "All", label: `Show all property types`, next: { ...filters, type: "All" } },
+      { key: "status", active: filters.status !== "all", label: "Show every listing", next: { ...filters, status: "all" } },
       { key: "q", active: filters.q.trim() !== "", label: "Clear the search", next: { ...filters, q: "" } },
     ];
     for (const t of tries) {
@@ -149,6 +153,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
   const [q, setQ] = useState("");
   const [maxPrice, setMaxPrice] = useState(0);
   const [sort, setSort] = useState<Sort>("featured");
+  const [status, setStatus] = useState<Status>("all");
   const [picked, setPicked] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   const [more, setMore] = useState(false);
@@ -164,7 +169,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
     return Array.from({ length: 6 }, (_, i) => Math.ceil((top * (i + 1)) / 6 / step) * step).filter((v, i, a) => a.indexOf(v) === i);
   }, [properties]);
 
-  const filters = useMemo<Filters>(() => ({ type, beds, maxPrice, q: deferredQ }), [type, beds, maxPrice, deferredQ]);
+  const filters = useMemo<Filters>(() => ({ type, beds, maxPrice, q: deferredQ, status }), [type, beds, maxPrice, deferredQ, status]);
   const shown = useMemo(() => {
     let list = properties.filter((p) => matches(p, filters));
     if (sort === "low") list = [...list].sort((a, b) => a.price - b.price);
@@ -180,13 +185,15 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
     const bd = sp.get("beds");
     const mx = Number(sp.get("max"));
     const so = sp.get("sort") as Sort | null;
+    const st = sp.get("status");
     /* eslint-disable react-hooks/set-state-in-effect -- one-time restore from the URL / sessionStorage after hydration */
     if (t && properties.some((p) => p.type === t)) setType(t);
     if (bd && (BEDS as readonly string[]).includes(bd)) setBeds(bd as (typeof BEDS)[number]);
     if (Number.isFinite(mx) && mx > 0) setMaxPrice(mx);
     if (so && SORT_KEYS.includes(so)) setSort(so);
+    if (st === "available" || st === "closed") setStatus(st);
     setQ((sp.get("q") ?? "").slice(0, 80));
-    setMore(sp.has("type") || sp.has("max") || sp.has("sort"));
+    setMore(sp.has("type") || sp.has("max") || sp.has("sort") || sp.has("status"));
     try {
       const saved = JSON.parse(window.sessionStorage.getItem(storageKey) ?? "[]");
       if (Array.isArray(saved)) {
@@ -208,11 +215,12 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
     if (beds !== "Any") next.set("beds", beds);
     if (maxPrice > 0) next.set("max", String(maxPrice));
     if (sort !== "featured") next.set("sort", sort);
+    if (status !== "all") next.set("status", status);
     if (deferredQ.trim()) next.set("q", deferredQ.trim());
     const qs = next.toString();
     const url = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
     if (url !== `${window.location.pathname}${window.location.search}${window.location.hash}`) window.history.replaceState(window.history.state, "", url);
-  }, [ready, type, beds, maxPrice, sort, deferredQ]);
+  }, [ready, type, beds, maxPrice, sort, deferredQ, status]);
 
   // Remember the compare picks for this tab, so they survive opening a listing and coming back.
   useEffect(() => {
@@ -227,11 +235,12 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
 
   const toggleCompare = useCallback((id: string) => setPicked((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= MAX_COMPARE ? c : [...c, id])), []);
   const chosen = picked.map((id) => properties.find((p) => p.id === id)).filter((p): p is Property => Boolean(p));
-  const filtered = type !== "All" || beds !== "Any" || maxPrice > 0 || q.trim() !== "";
-  const panelCount = (type !== "All" ? 1 : 0) + (maxPrice > 0 ? 1 : 0) + (sort !== "featured" ? 1 : 0);
+  const filtered = type !== "All" || beds !== "Any" || maxPrice > 0 || q.trim() !== "" || status !== "all";
+  const panelCount = (type !== "All" ? 1 : 0) + (maxPrice > 0 ? 1 : 0) + (sort !== "featured" ? 1 : 0) + (status !== "all" ? 1 : 0);
   const full = picked.length >= MAX_COMPARE;
-  const clearAll = useCallback(() => { setType("All"); setBeds("Any"); setMaxPrice(0); setQ(""); setSort("featured"); }, []);
-  const relax = useCallback((key: "type" | "beds" | "maxPrice" | "q") => {
+  const clearAll = useCallback(() => { setType("All"); setBeds("Any"); setMaxPrice(0); setQ(""); setSort("featured"); setStatus("all"); }, []);
+  const relax = useCallback((key: "type" | "beds" | "maxPrice" | "q" | "status") => {
+    if (key === "status") setStatus("all");
     if (key === "type") setType("All");
     if (key === "beds") setBeds("Any");
     if (key === "maxPrice") setMaxPrice(0);
@@ -271,7 +280,17 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
         </div>
       </div>
       {more && (
-        <div id="more-filters" className="mt-3 grid gap-3 sm:grid-cols-3">
+        <div id="more-filters" className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {properties.some((p) => p.closed) && (
+            <label>
+              <span className={labelCls}>Availability</span>
+              <select value={status} onChange={(e) => setStatus(e.target.value as Status)} className={field}>
+                <option value="all">All listings</option>
+                <option value="available">Available now</option>
+                <option value="closed">{properties[0]?.purpose === "rent" ? "Rented" : "Sold"}</option>
+              </select>
+            </label>
+          )}
           {types.length > 1 && (
             <label>
               <span className={labelCls}>Property type</span>
@@ -309,7 +328,7 @@ export default function ListingsBrowser({ properties, emptyText }: { properties:
           <PropertyCard key={p.id} property={p} delay={Math.min(i, 7) * 0.05} priority={i < 2} comparable selected={picked.includes(p.id)} compareDisabled={full} onCompare={toggleCompare} />
         ))}
       </div>
-      {shown.length === 0 && <EmptyState properties={properties} filters={{ type, beds, maxPrice, q }} onClear={clearAll} onRelax={relax} />}
+      {shown.length === 0 && <EmptyState properties={properties} filters={{ type, beds, maxPrice, q, status }} onClear={clearAll} onRelax={relax} />}
 
       <AnimatePresence>
         {picked.length > 0 && (

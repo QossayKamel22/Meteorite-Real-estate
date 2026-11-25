@@ -92,6 +92,9 @@ function PropertyCardBase({ property, delay = 0, comparable = false, selected = 
         </ul>
 
         <div className="relative z-10 mt-auto flex items-center gap-2 pt-4">
+          {property.closed ? (
+            <span className="inline-flex min-h-11 flex-1 cursor-not-allowed select-none items-center justify-center rounded-full border border-brand-line px-5 text-sm font-semibold text-brand-ink/50">No longer available</span>
+          ) : (
           <a
             href={`https://wa.me/${company.phoneE164.replace("+", "")}?text=${whatsappMessage}`}
             target="_blank"
@@ -100,6 +103,7 @@ function PropertyCardBase({ property, delay = 0, comparable = false, selected = 
           >
             Ask about this property <ArrowUpRight size={15} aria-hidden="true" />
           </a>
+          )}
           {comparable && (
             <button
               type="button"
