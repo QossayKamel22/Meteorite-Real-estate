@@ -61,7 +61,7 @@ export default async function PropertyPage({ params }: Props) {
             <ArrowLeft size={15} /> Back to {p.purpose === "rent" ? "rentals" : "properties for sale"}
           </Link>
           <div className="mt-5 grid items-end gap-8 lg:grid-cols-[1.25fr_0.75fr]">
-            <PropertyGallery images={[image, ...(p.gallery ?? [])]} title={p.title} badge={p.type} badge2={p.closed ? (p.purpose === "rent" ? "Rented" : "Sold") : p.purpose === "rent" ? "For rent" : "For sale"} />
+            <PropertyGallery images={[image, ...(p.gallery ?? [])]} title={p.title} closed={p.closed === true} badge={p.type} badge2={p.closed ? (p.purpose === "rent" ? "Rented" : "Sold") : p.purpose === "rent" ? "For rent" : "For sale"} />
             <div>
               <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-brand-gold"><MapPin size={13} /> {p.location}</p>
               <h1 className="mt-3 text-2xl font-semibold leading-tight tracking-tight text-white sm:text-3xl">{p.title}</h1>

@@ -55,7 +55,13 @@ function PropertyCardBase({ property, delay = 0, comparable = false, selected = 
         <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-navy/55 to-transparent" />
         <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white">{property.type}</span>
         {property.closed && (
-          <span className="absolute inset-x-0 top-1/2 z-[4] -translate-y-1/2 bg-brand-navy/85 py-2 text-center text-sm font-bold uppercase tracking-[0.25em] text-brand-gold">{property.purpose === "rent" ? "Rented" : "Sold"}</span>
+          <div aria-hidden="true" className="absolute inset-0 z-[4] flex items-center justify-center bg-brand-navy/50">
+            <span className="relative flex items-center gap-3 border border-brand-gold/80 bg-brand-navy/85 px-7 py-3 shadow-[0_18px_50px_-12px_rgba(0,0,0,0.7)] before:pointer-events-none before:absolute before:-inset-1.5 before:border before:border-brand-gold/30">
+              <span className="h-1.5 w-1.5 rotate-45 bg-brand-gold" />
+              <span className="bg-gradient-to-b from-brand-gold-soft to-brand-gold bg-clip-text text-sm font-semibold uppercase tracking-[0.45em] text-transparent">{property.purpose === "rent" ? "Rented" : "Sold"}</span>
+              <span className="h-1.5 w-1.5 rotate-45 bg-brand-gold" />
+            </span>
+          </div>
         )}
         {property.badge && !property.closed && (
           <span className={`absolute left-3 top-12 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${property.badge === "reduced" ? "bg-red-600 text-white" : property.badge === "exclusive" ? "bg-brand-navy text-brand-gold ring-1 ring-brand-gold/60" : "bg-brand-gold text-brand-navy"}`}>
@@ -72,7 +78,7 @@ function PropertyCardBase({ property, delay = 0, comparable = false, selected = 
           {perSqft > 0 && <span className="text-xs text-brand-ink/66">· AED {perSqft.toLocaleString("en-US")}/sqft</span>}
         </p>
         <h3 className="mt-1 line-clamp-2 text-sm font-medium text-brand-ink/80">
-          <Link prefetch={false} href={`/property/${property.id}`} className="after:absolute after:inset-0 after:z-[5] focus-visible:outline-none">{property.title}</Link>
+          <Link prefetch={false} href={`/property/${property.id}`} className="after:absolute after:inset-0 after:z-[5] focus-visible:outline-none">{property.closed && <span className="sr-only">{property.purpose === "rent" ? "Rented: " : "Sold: "}</span>}{property.title}</Link>
         </h3>
         <p className="mt-2 flex items-center gap-1.5 text-xs text-brand-ink/66">
           <MapPin size={12} aria-hidden="true" className="flex-none text-brand-gold" />

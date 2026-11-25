@@ -9,7 +9,7 @@ import { isServedImage } from "@/lib/image-url";
  * The listing's photos: one large picture with arrows, keys and a strip of thumbnails. Only the visible
  * picture is loaded at full size; the strip uses small ones, and the next picture is warmed on demand.
  */
-export default function PropertyGallery({ images, title, badge, badge2 }: { images: string[]; title: string; badge: string; badge2: string }) {
+export default function PropertyGallery({ images, title, badge, badge2, closed = false }: { images: string[]; title: string; badge: string; badge2: string; closed?: boolean }) {
   const [i, setI] = useState(0);
   const n = images.length;
   const go = useCallback((d: number) => setI((v) => (v + d + n) % n), [n]);
@@ -38,7 +38,7 @@ export default function PropertyGallery({ images, title, badge, badge2 }: { imag
           />
         ))}
         <span className="absolute left-4 top-4 rounded-full bg-brand-navy/85 px-3.5 py-1 text-xs font-semibold text-white">{badge}</span>
-        <span className="absolute right-4 top-4 rounded-full bg-brand-gold px-3.5 py-1 text-xs font-bold uppercase tracking-wide text-brand-navy">{badge2}</span>
+        <span className={closed ? "absolute right-4 top-4 border border-brand-gold/80 bg-brand-navy/90 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.35em] text-brand-gold shadow-lg" : "absolute right-4 top-4 rounded-full bg-brand-gold px-3.5 py-1 text-xs font-bold uppercase tracking-wide text-brand-navy"}>{closed && <span aria-hidden="true" className="mr-2 inline-block h-1.5 w-1.5 rotate-45 bg-brand-gold align-middle" />}{badge2}</span>
         {n > 1 && (
           <>
             {([[-1, "Previous photo", ChevronLeft, "left-3"], [1, "Next photo", ChevronRight, "right-3"]] as const).map(([d, label, Icon, pos]) => (
