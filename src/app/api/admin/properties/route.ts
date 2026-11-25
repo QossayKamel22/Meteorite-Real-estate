@@ -71,6 +71,7 @@ function parsePropertyInput(body: Record<string, unknown>): PropertyInput | stri
     sizeSqft,
     isStudio,
     visible,
+    closed: body.closed === true,
     gallery,
     badge: parseBadge(body.badge) || undefined,
     ...(purpose === "rent" && rentFrequency ? { rentFrequency } : {}),

@@ -41,7 +41,7 @@ function PropertyCardBase({ property, delay = 0, comparable = false, selected = 
   const compareBlocked = compareDisabled && !selected;
 
   return (
-    <article style={{ "--rise-delay": `${delay}s` } as React.CSSProperties} className="card-rise group relative flex h-full flex-col overflow-hidden rounded-3xl border border-brand-line bg-surface shadow-sm transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(219,204,59,0.55)] focus-within:ring-2 focus-within:ring-brand-gold">
+    <article style={{ "--rise-delay": `${delay}s` } as React.CSSProperties} className={`card-rise group relative flex h-full flex-col overflow-hidden rounded-3xl border border-brand-line bg-surface shadow-sm transition-shadow duration-300 hover:shadow-[0_24px_50px_-28px_rgba(219,204,59,0.55)] focus-within:ring-2 focus-within:ring-brand-gold ${property.closed ? "[&_img]:grayscale" : ""}`}>
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-paper">
         <Image
           src={property.image}
@@ -54,7 +54,10 @@ function PropertyCardBase({ property, delay = 0, comparable = false, selected = 
         />
         <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-brand-navy/55 to-transparent" />
         <span className="absolute left-3 top-3 rounded-full bg-brand-navy/85 px-3 py-1 text-xs font-semibold text-white">{property.type}</span>
-        {property.badge && (
+        {property.closed && (
+          <span className="absolute inset-x-0 top-1/2 z-[4] -translate-y-1/2 bg-brand-navy/85 py-2 text-center text-sm font-bold uppercase tracking-[0.25em] text-brand-gold">{property.purpose === "rent" ? "Rented" : "Sold"}</span>
+        )}
+        {property.badge && !property.closed && (
           <span className={`absolute left-3 top-12 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${property.badge === "reduced" ? "bg-red-600 text-white" : property.badge === "exclusive" ? "bg-brand-navy text-brand-gold ring-1 ring-brand-gold/60" : "bg-brand-gold text-brand-navy"}`}>
             {property.badge === "reduced" ? "Price reduced" : property.badge === "exclusive" ? "Exclusive" : "New"}
           </span>

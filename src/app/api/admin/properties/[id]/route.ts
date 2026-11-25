@@ -77,6 +77,7 @@ function parsePropertyPatch(body: Record<string, unknown>): Partial<PropertyInpu
     patch.gallery = g;
   }
   if (typeof body.visible === "boolean") patch.visible = body.visible;
+  if (typeof body.closed === "boolean") patch.closed = body.closed;
   if (typeof body.sourceUrl === "string") patch.sourceUrl = body.sourceUrl.trim() || undefined;
 
   return patch;

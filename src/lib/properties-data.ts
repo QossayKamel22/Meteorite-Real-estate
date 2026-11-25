@@ -31,6 +31,8 @@ export type Property = {
   order: number;
   /** Defaults to true when absent. */
   visible?: boolean;
+  /** "closed" = already rented (purpose rent) or sold (purpose sale). Absent = still available. */
+  closed?: boolean;
 };
 
 export type PropertyInput = Omit<Property, "id" | "order">;
@@ -297,6 +299,7 @@ function toProperty(id: string, data: Record<string, unknown>): Property {
     sourceUrl: data.sourceUrl as string | undefined,
     order: (data.order as number) ?? 0,
     visible: data.visible as boolean | undefined,
+    closed: data.closed === true ? true : undefined,
   };
 }
 
@@ -311,7 +314,9 @@ export async function getProperties(opts?: {
   let all = docs.map((d) => toProperty(d.id, d.data));
   if (opts?.purpose) all = all.filter((p) => p.purpose === opts.purpose);
   if (opts?.includeHidden) return all; // admin: keep the raw data URL so the edit form round-trips it unchanged
-  return all.filter((p) => p.visible !== false).map((p) => ({ ...p, image: publicImageSrc("property", p.id, p.image) }));
+  // Available listings first; rented / sold ones stay visible (marked) but sink to the end.
+  const shown = all.filter((p) => p.visible !== false).map((p) => ({ ...p, image: publicImageSrc("property", p.id, p.image) }));
+  return [...shown.filter((p) => !p.closed), ...shown.filter((p) => p.closed)];
 }
 
 export async function getProperty(id: string): Promise<Property | null> {

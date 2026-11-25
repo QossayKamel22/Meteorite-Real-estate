@@ -27,6 +27,7 @@ type FormState = {
   badge: string;
   sourceUrl: string;
   visible: boolean;
+  closed: boolean;
 };
 
 const EMPTY_FORM: FormState = {
@@ -47,6 +48,7 @@ const EMPTY_FORM: FormState = {
   badge: "",
   sourceUrl: "",
   visible: true,
+  closed: false,
 };
 
 function propertyToForm(p: Property): FormState {
@@ -68,6 +70,7 @@ function propertyToForm(p: Property): FormState {
     badge: p.badge ?? "",
     sourceUrl: p.sourceUrl ?? "",
     visible: p.visible !== false,
+    closed: p.closed === true,
   };
 }
 
@@ -93,6 +96,7 @@ function formToPayload(form: FormState): PropertyInput {
     badge: form.badge,
     sourceUrl: form.sourceUrl.trim() || undefined,
     visible: form.visible,
+    closed: form.closed,
   } as PropertyInput;
 }
 
@@ -301,6 +305,16 @@ function PropertyForm({
           />
         </div>
       </div>
+
+      <label className="flex items-center gap-2 pt-1 text-sm font-medium text-brand-ink/70">
+        <input
+          type="checkbox"
+          checked={form.closed}
+          onChange={(e) => set("closed", e.target.checked)}
+          className="h-4 w-4 rounded border-brand-line accent-brand-gold"
+        />
+        Mark as {form.purpose === "rent" ? "Rented" : "Sold"} (stays on the site with a banner)
+      </label>
 
       <label className="flex items-center gap-2 pt-1 text-sm font-medium text-brand-ink/70">
         <input
