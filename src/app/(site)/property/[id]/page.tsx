@@ -112,7 +112,7 @@ export default async function PropertyPage({ params }: Props) {
               </ul>
             </>
           )}
-          {p.sourceUrl && (
+          {p.sourceUrl && !p.closed && (
             <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-ink hover:underline">View the original listing on Bayut <ArrowUpRight size={14} /></a>
           )}
         </div>
