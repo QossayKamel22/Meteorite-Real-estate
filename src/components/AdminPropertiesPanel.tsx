@@ -532,6 +532,17 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
     setBusyId(null);
   }
 
+  async function handleToggleClosed(p: Property) {
+    setBusyId(p.id);
+    await fetch(`/api/admin/properties/${p.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ closed: !p.closed }),
+    });
+    router.refresh();
+    setBusyId(null);
+  }
+
   return (
     <div>
       <ul className="space-y-3">
@@ -593,6 +604,16 @@ export default function AdminPropertiesPanel({ properties }: { properties: Prope
                       <ExternalLink size={14} />
                     </a>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => handleToggleClosed(p)}
+                    disabled={busyId === p.id}
+                    aria-pressed={p.closed === true}
+                    title={p.closed ? "Back on the market" : p.purpose === "rent" ? "Mark as Rented" : "Mark as Sold"}
+                    className={`flex h-8 flex-none items-center justify-center rounded-full px-2.5 text-[11px] font-bold uppercase tracking-wide disabled:opacity-50 ${p.closed ? "bg-brand-navy text-brand-gold" : "text-brand-ink/50 ring-1 ring-brand-line hover:text-heading"}`}
+                  >
+                    {p.purpose === "rent" ? "Rented" : "Sold"}
+                  </button>
                   <button
                     type="button"
                     onClick={() => handleToggleVisible(p)}
